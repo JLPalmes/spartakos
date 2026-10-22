@@ -10,6 +10,8 @@ status: Propuesta de trabajo; sin arquitectura elegida
 
 ## Estado y alcance
 
+Disponible un [simulador local con cuatro cuentas simultáneas](simulacion/README.md), servidor persistente y permisos por sesión. Hay catorce pruebas HTTP superadas además de las diez pruebas de la maqueta anterior. No se ha adoptado una arquitectura distribuida de producción ni ejecutado el laboratorio estructural E01–E15.
+
 Disponible una [maqueta descartable de experiencia](prototipo/README.md), con diez pruebas locales del modelo superadas y comprobaciones en navegador. El [informe](RESULTADOS-DEL-PROTOTIPO.md) documenta alcance y defectos corregidos. No hay aplicación de red, pruebas con participantes ni laboratorio estructural ejecutado. Se ha preparado el [paquete de apertura](PREPARACION-DE-APERTURA.md).
 
 Se ha preparado una [propuesta de resolución de todos los pendientes Q01–Q29](RESOLUCION-DE-PENDIENTES.md), con procedimientos de acreditación, fichas de compromiso operativo y guiones de validación. No se han obtenido adhesiones, ejecutado pruebas de producto ni adoptado decisiones de gobierno. Las [puertas de avance](VALIDACION-Y-PUERTAS-DE-AVANCE.md) distinguen lo preparado de la evidencia necesaria.
@@ -18,7 +20,7 @@ El mecanismo candidato de [reciprocidad y acreditación](RECIPROCIDAD-ACREDITACI
 
 La primera pasada de los diez bloques funcionales está completada documentalmente. La [síntesis funcional](REVISION-FUNCIONAL.md) organiza la revisión y las decisiones pendientes. La selección técnica y el laboratorio siguen aplazados hasta revisar los comportamientos que condicionan arquitectura.
 
-La [especificación integral v0.19](ESPECIFICACION.md) está disponible para revisión, con anexos de aceptación, decisiones y antecedentes. El desarrollo de la red está pendiente. El repositorio de referencia es [JLPalmes/spartakos](https://github.com/JLPalmes/spartakos), con [licencias adoptadas](LICENCIAS.md) y guías de colaboración desde esta etapa.
+La [especificación integral v0.20](ESPECIFICACION.md) está disponible para revisión, con anexos de aceptación, decisiones y antecedentes. El desarrollo de la red está pendiente. El repositorio de referencia es [JLPalmes/spartakos](https://github.com/JLPalmes/spartakos), con [licencias adoptadas](LICENCIAS.md) y guías de colaboración desde esta etapa.
 
 La base de servicio se apoya en iniciativas voluntarias gratuitas y distribuidas; los servicios comerciales añaden prestaciones opcionales. La arquitectura híbrida con funciones sustituibles es la hipótesis de trabajo.
 

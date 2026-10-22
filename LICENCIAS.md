@@ -12,7 +12,7 @@ El material original de este proyecto se ofrece bajo las siguientes licencias. L
 
 | Material | Licencia |
 | --- | --- |
-| Código del prototipo (`prototipo/*.mjs`, `prototipo/*.css`, `prototipo/*.html`), `verificar.py` y código propio de servicio que no indique otra licencia | [AGPL-3.0-or-later](LICENSE) |
+| Código del prototipo (`prototipo/*.mjs`, `prototipo/*.css`, `prototipo/*.html`), código local `simulacion/*.mjs`, `simulacion/*.html`, `simulacion/*.css`, `verificar.py` y código propio de servicio que no indique otra licencia | [AGPL-3.0-or-later](LICENSE) |
 | Documentación original (`*.md`, incluida la documentación dentro de directorios) | [CC-BY-SA-4.0](LICENSES/CC-BY-SA-4.0.txt) |
 | Captura ficticia `prototipo/comunidad-verificada.png` | [CC-BY-SA-4.0](LICENSES/CC-BY-SA-4.0.txt) |
 | SDK o bibliotecas independientes de integración que se incorporen con aviso expreso | [Apache-2.0](LICENSES/Apache-2.0.txt) |

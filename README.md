@@ -9,7 +9,7 @@ date: 2026-10-22
 
 Nombre provisional de la red: **Spartakos**.
 
-Proyecto en fase de especificación y prototipo descartable. Existe una maqueta local con datos ficticios; todavía no existe una aplicación de red operativa.
+Proyecto en fase de especificación y prototipo descartable. Existe una maqueta de experiencia y un simulador con servidor local y cuentas ficticias; todavía no existe una red distribuida operativa.
 
 La orientación confirmada es una base gratuita sostenida por iniciativas voluntarias distribuidas, con servicios comerciales opcionales no imprescindibles. Experiencia sencilla, identidad y publicaciones bajo control de sus titulares y derecho efectivo a cambiar de proveedor.
 
@@ -19,21 +19,25 @@ Repositorio de referencia: [JLPalmes/spartakos](https://github.com/JLPalmes/spar
 
 Para participar: [guía de contribución](CONTRIBUTING.md), [coordinación inicial](GOVERNANCE.md), [conducta](CODE_OF_CONDUCT.md) y [seguridad de esta etapa](SECURITY.md).
 
-## Abrir el prototipo y comprobar la copia
+## Prototipo con servidor local y varias cuentas
 
-Requisitos: Python 3 y Node.js 22 o posterior. No hay dependencias de terceros que instalar. Desde la raíz de una copia del repositorio:
+La [simulación funcional](simulacion/README.md) permite abrir cuatro cuentas a la vez o usar pestañas separadas. Comparte publicaciones mediante un servidor local, aplica permisos por sesión y conserva los datos al reiniciar. Alicia administra, Bruno participa, Carla empieza con lectura y Diego no pertenece a la comunidad privada.
+
+Requisitos: Node.js 22 o posterior y Python 3 para la verificación documental. No hay dependencias de terceros que instalar. Desde la raíz del repositorio:
 
 ```sh
 python3 verificar.py
-node --test prototipo/modelo.test.mjs
-python3 -m http.server 8765 --bind 127.0.0.1 --directory prototipo
+node --test prototipo/modelo.test.mjs simulacion/servidor.test.mjs
+node simulacion/servidor.mjs
 ```
 
-Abrir `http://127.0.0.1:8765`. Los datos son ficticios y se borran al recargar; no introducir información personal. Estas comprobaciones no prueban seguridad ni una red distribuida.
+Abrir `http://127.0.0.1:8787`. Son cuentas ficticias de acceso libre. No introducir información personal: el laboratorio no implementa identidad portable, descentralización ni cifrado de extremo a extremo. Los datos se guardan en una carpeta local excluida del repositorio.
+
+La [maqueta anterior sin servidor](prototipo/README.md) se conserva como antecedente; su puerto 8765 corresponde a esa versión.
 
 ## Lectura principal
 
-1. [Especificación integral v0.19](ESPECIFICACION.md): primera pasada funcional y contraste comparado; reciprocidad y acreditación como mecanismos candidatos.
+1. [Especificación integral v0.20](ESPECIFICACION.md): primera pasada funcional y contraste comparado; reciprocidad y acreditación como mecanismos candidatos.
 2. [Decisiones, dudas y riesgos](DECISIONES-Y-DUDAS.md): qué está confirmado, qué se propone y qué exige ensayo.
 3. [Matriz de aceptación](MATRIZ-DE-ACEPTACION.md): 148 pruebas especificadas, ninguna ejecutada; incluye escenarios condicionados a adoptar reciprocidad.
 4. [Antecedentes y lecciones](ANTECEDENTES-Y-LECCIONES.md): fuentes, cobertura y límites de la investigación.
@@ -59,7 +63,7 @@ Los documentos de análisis conservan los antecedentes técnicos. La especificac
 
 ## Prototipo y comprobaciones
 
-La [maqueta de experiencia](prototipo/README.md) permite probar recorridos con datos ficticios. Se han superado diez pruebas del modelo local y comprobado en navegador publicación restringida, interés privado, importación ficticia y unanimidad. El [informe de resultados](RESULTADOS-DEL-PROTOTIPO.md) distingue estas comprobaciones de las pruebas de producto, que siguen sin ejecutarse.
+La [simulación con varias cuentas](simulacion/README.md) añade catorce pruebas HTTP a las diez de la [maqueta anterior](prototipo/README.md). Se comprueban permisos por sesión, persistencia, audiencia y consentimiento, sin atribuir a esas pruebas garantías de una red distribuida. El [informe de resultados](RESULTADOS-DEL-PROTOTIPO.md) distingue estas comprobaciones de las pruebas de producto, que siguen sin ejecutarse.
 
 El [contrato preliminar de datos y autoridad](CONTRATO-DE-DATOS-Y-AUTORIDAD.md) fija separaciones antes de elegir componentes. El [paquete de apertura](PREPARACION-DE-APERTURA.md) documenta el repositorio y las licencias adoptadas, y las condiciones de contribución.
 
@@ -67,4 +71,4 @@ El [contrato preliminar de datos y autoridad](CONTRATO-DE-DATOS-Y-AUTORIDAD.md) 
 
 La [resolución propuesta de los 29 pendientes](RESOLUCION-DE-PENDIENTES.md) concreta recomendaciones, alternativas y dependencias. Se complementa con el [gobierno de la acreditación](GOBIERNO-DE-LA-ACREDITACION.md), el [programa de operadores voluntarios](OPERACION-Y-VOLUNTARIADO.md) y el [protocolo de validación](VALIDACION-Y-PUERTAS-DE-AVANCE.md). Son propuestas listas para revisar, sin ratificación implícita.
 
-La continuación exige evidencia: participantes para probar recorridos, archivos consentidos para importación, operadores comprometidos y ensayos técnicos. Las licencias iniciales y el destino público están adoptados. La autoridad de gobierno de la red, los operadores y la validación siguen pendientes. No se ha iniciado la implementación de la red; la maqueta es descartable.
+La continuación exige evidencia: participantes para probar recorridos, archivos consentidos para importación, operadores comprometidos y ensayos técnicos. Las licencias iniciales y el destino público están adoptados. La autoridad de gobierno de la red, los operadores y la validación siguen pendientes. El simulador es una implementación local experimental; no adopta todavía la arquitectura de producción.

@@ -2,9 +2,9 @@
 title: Spartakos — Resultados de la primera comprobación del prototipo
 lang: es-ES
 license: CC-BY-SA-4.0
-version: 0.1
+version: 0.2
 date: 2026-10-22
-status: Diez pruebas locales del modelo superadas; sin validación con participantes
+status: Diez pruebas de maqueta y catorce pruebas HTTP superadas; sin validación con participantes
 ---
 
 # Primera comprobación del prototipo
@@ -41,3 +41,17 @@ El [contrato preliminar](CONTRATO-DE-DATOS-Y-AUTORIDAD.md) separa titularidad, a
 Los guiones V01–V09 siguen sin ejecutarse con participantes. No se ha medido comprensión, utilidad al volver, presión social, experiencia móvil, accesibilidad completa, recursos voluntarios ni comparación operativa. Los 148 criterios de la matriz de producto permanecen **sin ejecutar**; no se contabilizan estas diez pruebas como cumplimiento de esos criterios.
 
 Antes de laboratorio de producción y contribuciones externas, concretar la [apertura del desarrollo](PREPARACION-DE-APERTURA.md). Las licencias y el destino público iniciales están adoptados; no modifican los resultados ni convierten las comprobaciones locales en garantías de red.
+
+## 6. Simulador con servidor local y varias cuentas
+
+Se incorpora [simulacion/](simulacion/README.md): cuatro sesiones independientes, servidor HTTP local, persistencia de datos ficticios y comprobación de permisos en servidor. Se han superado catorce pruebas HTTP además de las diez pruebas anteriores, veinticuatro en total. Las pruebas utilizan servidores temporales reales en loopback y escenarios separados.
+
+Se comprueban lectura privada, publicación y comentarios por rol, privacidad de guardados, autoría vinculada a sesión, consentimiento individual, mayoría insuficiente, unanimidad con historial protegido, expulsiones elusivas, cambios de audiencia, revocación de permisos, escrituras simultáneas, reinicio, exportación y restricciones de acceso al servicio local. La prueba de Host utiliza HTTP directo porque el cliente fetch normaliza esa cabecera; no se ha relajado el control para hacer pasar la prueba.
+
+En navegador se observaron cuatro cuentas simultáneas: una publicación privada de Bruno llegó a Alicia y Carla y no apareció en Diego. El borrador de Alicia se conservó durante la actualización. Los consentimientos de Alicia y Bruno no permitieron abrir la comunidad; la negativa de Carla cerró la propuesta. La interfaz de Carla no ofreció responder a publicaciones privadas con su permiso inicial de lectura.
+
+También se comprobó en navegador la revocación de publicación a Bruno mientras mantenía un borrador restringido: se conservó el texto y se deshabilitó el envío, sin seleccionar público. Al restaurar el permiso volvió a poder enviarlo al mismo destino.
+
+Durante revisión se identificó el riesgo de ampliar sin querer la audiencia de un borrador al perder permisos o abrirse la comunidad. La audiencia se envía expresamente al servidor; el cliente mantiene el destino restringido o bloquea el envío cuando pierde permiso, sin cambiar a público. Hay pruebas de regresión para ambos casos.
+
+No se han ejecutado E01–E15 ni A01–A148 como suite de producto. El almacenamiento y el control de acceso corresponden a un único proceso local, con identidades ficticias de acceso libre. No prueban identidad soberana, distribución, cifrado ni usabilidad con participantes.
