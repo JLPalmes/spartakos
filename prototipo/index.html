@@ -1,0 +1,25 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: AGPL-3.0-or-later -->
+<html lang="es-ES">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Prototipo de experiencia de Spartakos con datos ficticios. Sin cuentas ni conexión a una red social.">
+  <title>Spartakos · Prototipo de experiencia</title>
+  <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+  <div class="demo">Prototipo de experiencia · Datos ficticios · Los cambios se borran al recargar</div>
+  <header><a class="brand" href="#inicio">Spartakos</a><span>Un lugar para compartir con criterio propio</span></header>
+  <div class="layout">
+    <nav aria-label="Navegación principal">
+      <a href="#inicio">Inicio</a><a href="#explorar">Explorar</a><a href="#guardado">Mi interés</a>
+      <a href="#comunidad">Mi comunidad</a><a href="#archivo">Mi archivo</a><a href="#continuidad">Mi cuenta y salida</a>
+    </nav>
+    <main id="main" tabindex="-1"></main>
+  </div>
+  <div id="feedback" role="status" aria-live="polite"></div>
+  <footer>Demostración local. No ofrece identidad portable, cifrado, almacenamiento seguro ni recuperación reales. Software bajo <a href="https://github.com/JLPalmes/spartakos/blob/main/LICENSE">AGPL-3.0-or-later</a>, sin garantías. <a href="https://github.com/JLPalmes/spartakos/tree/main/prototipo">Código fuente</a>.</footer>
+  <script type="module" src="interfaz.mjs"></script>
+</body>
+</html>
