@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+.DS_Store
+__pycache__/
+*.py[cod]
+node_modules/
+.env
+.env.*
+!.env.example
+*.log
+*.zip
+*.tar
+*.tar.gz
+*.sqlite
+*.sqlite3
+exports/
+exportaciones/
+datos-personales/
+resultados-locales/
