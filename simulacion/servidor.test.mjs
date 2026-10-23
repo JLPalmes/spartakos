@@ -322,3 +322,14 @@ test('HTTP conserva un borrador tras revocar y revalida al publicarlo sin duplic
  await f.cmd('alicia',{type:'set-role',community:'cuaderno',member:'bruno',role:'contributor'});
  assert.equal((await f.cmd('bruno',publication)).status,200);assert.equal((await f.cmd('bruno',publication)).status,409);
 });
+test('papelera propia persiste y restaurar no publica ni concede permisos',async t=>{
+ const f=await fixture(t);await f.cmd('bruno',{type:'save-draft',text:'Recuperable',community:'cuaderno',audience:'members'});
+ assert.equal((await f.cmd('bruno',{type:'trash-draft',id:'d1',version:1})).status,200);
+ await f.restart();const token=await f.login('bruno');
+ const trashed=(await f.request('/api/state',{token})).data;
+ assert.equal(trashed.drafts[0].status,'trashed');assert.equal(trashed.drafts[0].text,'Recuperable');
+ assert.equal((await f.request('/api/commands',{method:'POST',token,body:{type:'restore-draft',id:'d1',version:2}})).status,200);
+ const restored=(await f.request('/api/state',{token})).data;
+ assert.equal(restored.drafts[0].status,'draft');assert.equal(restored.posts.length,2);
+ const alicia=await f.login('alicia');assert.deepEqual((await f.request('/api/state',{token:alicia})).data.drafts,[]);
+});

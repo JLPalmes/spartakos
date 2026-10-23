@@ -2,7 +2,7 @@
 title: Spartakos — Prototipo local con varias cuentas
 lang: es-ES
 license: CC-BY-SA-4.0
-version: 0.7
+version: 0.8
 date: 2026-10-23
 status: Laboratorio funcional de un solo servidor; identidades ficticias
 ---
@@ -66,7 +66,7 @@ python3 verificar.py
 node --test prototipo/modelo.test.mjs simulacion/*.test.mjs
 ```
 
-Hay 75 pruebas: diez de la maqueta anterior, 30 HTTP, cuatro de selección y recorrido de conversaciones, diez de programación, siete de citas y límites, ocho de recuentos horarios y seis de borradores. Cubren separación entre sesiones, permisos, audiencia, consentimiento, revocación, privacidad de guardados, persistencia, exportación, escrituras simultáneas, reacciones reversibles, migración de datos y lectura de historiales con 2.001 mensajes (no creación de nuevos hilos de esa profundidad), límite de tres niveles, citas, avisos y su privacidad. Estas pruebas no constituyen una auditoría de seguridad ni ejecutan la matriz completa A01–A148.
+Hay 78 pruebas: diez de la maqueta anterior, 31 HTTP, cuatro de selección y recorrido de conversaciones, diez de programación, siete de citas y límites, ocho de recuentos horarios y ocho de borradores. Cubren separación entre sesiones, permisos, audiencia, consentimiento, revocación, privacidad de guardados, persistencia, exportación, escrituras simultáneas, reacciones reversibles, migración de datos y lectura de historiales con 2.001 mensajes (no creación de nuevos hilos de esa profundidad), límite de tres niveles, citas, avisos y su privacidad. Estas pruebas no constituyen una auditoría de seguridad ni ejecutan la matriz completa A01–A148.
 
 Código bajo AGPL-3.0-or-later y documentación bajo CC-BY-SA-4.0, según el [mapa de licencias](../LICENCIAS.md). La [maqueta anterior](../prototipo/README.md) se conserva como antecedente descartable.
 
@@ -102,4 +102,6 @@ Escribe y pulsa Guardar borrador. La acción envía el texto al servidor local, 
 
 En dos pestañas, un conflicto no sobrescribe: conserva el texto y ofrece Guardar como copia. Si pierdes permiso para publicar, puedes seguir guardando el pendiente en el mismo destino, pero no publicarlo ni cambiarlo automáticamente a público. Al publicar o programar, el servidor controla versión y marca el borrador como utilizado junto con el resultado. Las versiones utilizadas quedan consultables como referencia y la exportación incluye solo las propias.
 
-Por ahora se guardan publicaciones iniciales de texto, no respuestas ni la selección tentativa de fecha. Programar confirma fecha y hora por separado. Las ediciones sin guardar se pierden al recargar. No se implementa todavía eliminación de borradores ni historial completo de versiones.
+Por ahora se guardan publicaciones iniciales de texto, no respuestas ni la selección tentativa de fecha. Programar confirma fecha y hora por separado. Las ediciones sin guardar se pierden al recargar. Hay papelera recuperable y restauración; el borrado definitivo y el historial completo de versiones siguen pendientes.
+
+Mover a papelera conserva el borrador y permite restaurarlo. La papelera se abre desde Borradores; no se vacía automáticamente. Si se aparta una referencia ya publicada o programada, su publicación o programación sigue existiendo: esta acción solo organiza los borradores. Restaurar conserva su estado anterior y no repite el envío.

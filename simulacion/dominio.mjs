@@ -77,7 +77,21 @@ export function command(original, actor, input, now=Date.now()) {
     if(sourceDraft.status!=='draft'||sourceDraft.version!==input.draftVersion)fail(409,'El borrador ha cambiado o ya se ha utilizado. Se conserva tu texto; revisa la versión guardada.');
     if((input.community??null)!==sourceDraft.community||input.parent)fail(400,'El borrador debe conservar su espacio de publicación.');
   }
-  if(input.type==='save-draft'){
+  if(['trash-draft','restore-draft'].includes(input.type)){
+    const draft=data.drafts.find(d=>d.id===input.id&&d.author===actor);
+    if(!draft)fail(404,'Borrador no disponible.');
+    if(draft.version!==input.version)fail(409,'El borrador ha cambiado. Revisa su estado antes de continuar.');
+    if(input.type==='trash-draft'){
+      if(draft.status==='trashed')fail(409,'El borrador ya está en la papelera.');
+      draft.previousStatus=draft.status;draft.status='trashed';draft.trashedAt=new Date(now).toISOString();
+      message='Borrador movido a la papelera. Puedes restaurarlo; esto no retira una publicación ni cancela una programación.';
+    }else{
+      if(draft.status!=='trashed')fail(409,'El borrador no está en la papelera.');
+      draft.status=draft.previousStatus;delete draft.previousStatus;delete draft.trashedAt;
+      message='Borrador restaurado con su estado anterior; no se publica ni programa automáticamente.';
+    }
+    draft.version++;draft.updatedAt=new Date(now).toISOString();
+  }else if(input.type==='save-draft'){
     const text=typeof input.text==='string'?input.text:'';
     if(!text.trim()||text.length>3000)fail(400,'Escribe entre 1 y 3000 caracteres para guardar el borrador.');
     if(input.parent)fail(400,'Esta versión guarda borradores de publicaciones iniciales, no respuestas.');
@@ -85,6 +99,7 @@ export function command(original, actor, input, now=Date.now()) {
     if(input.id||input.copyOf){
       source=data.drafts.find(d=>d.id===(input.id??input.copyOf)&&d.author===actor);
       if(!source)fail(404,'Borrador no disponible.');
+      if(source.status==='trashed')fail(409,'Restaura el borrador antes de utilizarlo.');
       if(input.id&&source.status!=='draft')fail(409,'El borrador ya se ha utilizado.');
       if(input.id){draft=source;if(draft.version!==input.version)fail(409,'Hay otra versión guardada. Tu texto se conserva; puedes guardarlo como copia.');}
       if((input.community??null)!==source.community)fail(400,'Conserva el espacio del borrador original.');

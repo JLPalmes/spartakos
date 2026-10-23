@@ -45,3 +45,21 @@ test('migrar preserva datos y guardar rechaza citas privadas fuera de su comunid
  assert.throws(()=>command(data,'bruno',{...input,text:' '}),{status:400});
  const saved=save();assert.deepEqual(migrateData(saved).drafts,saved.drafts);
 });
+test('papelera reversible conserva contenido y exige propiedad y versión',()=>{
+ let data=save();
+ assert.throws(()=>command(data,'alicia',{type:'trash-draft',id:'d1',version:1}),{status:404});
+ data=command(data,'bruno',{type:'trash-draft',id:'d1',version:1}).data;
+ assert.equal(data.drafts[0].status,'trashed');assert.equal(data.drafts[0].text,input.text);
+ assert.throws(()=>command(data,'bruno',{type:'restore-draft',id:'d1',version:1}),{status:409});
+ assert.throws(()=>command(data,'bruno',{...input,copyOf:'d1'}),{status:409});
+ data=command(data,'bruno',{type:'restore-draft',id:'d1',version:2}).data;
+ assert.equal(data.drafts[0].status,'draft');assert.equal(data.drafts[0].audience,'members');assert.equal(data.posts.length,2);
+});
+test('restaurar referencia publicada no reactiva publicación ni modifica el resultado',()=>{
+ let data=command(save(),'bruno',{type:'publish',draftId:'d1',draftVersion:1,text:'Publicada',community:'cuaderno',audience:'members'}).data;
+ const posts=structuredClone(data.posts);
+ data=command(data,'bruno',{type:'trash-draft',id:'d1',version:2}).data;
+ data=command(data,'bruno',{type:'restore-draft',id:'d1',version:3}).data;
+ assert.equal(data.drafts[0].status,'published');assert.deepEqual(data.posts,posts);
+ assert.throws(()=>command(data,'bruno',{type:'publish',draftId:'d1',draftVersion:4,text:'Duplicar',community:'cuaderno',audience:'members'}),{status:409});
+});
