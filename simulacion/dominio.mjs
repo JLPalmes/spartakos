@@ -11,7 +11,7 @@ export const accounts = [
   {id:'diego', name:'Diego', description:'No pertenece a la comunidad privada'},
 ];
 export function initialData() {
-  return {schema:2, revision:0, nextId:3,likes:{},
+  return {schema:3, revision:0, nextId:3,likes:{},scheduled:[],nextScheduleId:1,
     communities:[{id:'cuaderno',name:'Cuaderno compartido',visibility:'private',
       members:{alicia:'admin',bruno:'contributor',carla:'reader'},
       protected:['alicia','bruno','carla'],proposal:null,proposalVersion:0}],
@@ -21,9 +21,11 @@ export function initialData() {
     ],saved:Object.fromEntries(accounts.map(a=>[a.id,[]]))};
 }
 export function migrateData(original) {
-  if(![1,2].includes(original.schema))throw Error('Versión de datos no compatible.');
+  if(![1,2,3].includes(original.schema))throw Error('Versión de datos no compatible.');
   const data=structuredClone(original);
   if(data.schema===1){data.schema=2;data.likes={};}
+  if(data.schema===2){data.schema=3;data.scheduled=[];data.nextScheduleId=1;}
+  if(!Array.isArray(data.scheduled)||!Number.isSafeInteger(data.nextScheduleId))throw Error('Registro de programación no válido.');
   if(!data.likes || typeof data.likes!=='object' || Array.isArray(data.likes))throw Error('Registro de reacciones no válido.');
   return data;
 }
@@ -43,17 +45,45 @@ export function view(data, actor) {
   return {revision:data.revision,user:accounts.find(a=>a.id===actor),
     posts:posts.map(p=>({...p,authorName:accounts.find(a=>a.id===p.author)?.name??p.author,
       likes:(data.likes?.[p.id]??[]).map(id=>({id,name:accounts.find(a=>a.id===id)?.name??id}))})),
+    scheduled:data.scheduled.filter(s=>s.author===actor),
     saved:data.saved[actor].filter(id=>posts.some(p=>p.id===id)),
     communities:data.communities.filter(c=>c.visibility==='public'||c.members[actor]).map(c=>({...c,role:c.members[actor]??null})),
     formerProposals:data.communities.filter(c=>!c.members[actor]&&c.proposal&&c.protected.includes(actor)).map(c=>({id:c.id,name:c.name,proposal:c.proposal})),
   };
 }
-export function command(original, actor, input) {
+export function command(original, actor, input, now=Date.now()) {
   if (!accounts.some(a=>a.id===actor)) fail(401,'Sesión no válida.');
   if (!input || typeof input!=='object' || Array.isArray(input)) fail(400,'Acción no válida.');
   const data=structuredClone(original);
   let message='Cambios guardados.';
-  if (input.type==='publish') {
+  if(['schedule','edit-schedule','cancel-schedule','publish-schedule'].includes(input.type)) {
+    let item;
+    if(input.type!=='schedule'){
+      item=data.scheduled.find(s=>s.id===input.id&&s.author===actor);
+      if(!item)fail(404,'Programación no disponible.');
+      if(item.version!==input.version)fail(409,'La programación ha cambiado. Revisa su estado antes de continuar.');
+      if(['published','cancelled'].includes(item.status))fail(409,'Esta programación ya ha terminado.');
+    }
+    if(input.type==='cancel-schedule'){
+      item.status='cancelled';item.version++;message='Programación cancelada.';
+    }else if(input.type==='publish-schedule'){
+      const result=command(data,actor,{...item.publication,type:'publish'},now);
+      Object.assign(data,result.data);item=data.scheduled.find(s=>s.id===input.id);
+      item.status='published';item.postId=data.posts.at(-1).id;item.version++;message='Publicada ahora; programación finalizada.';
+    }else{
+      if(input.parent)fail(400,'Esta versión programa publicaciones iniciales, no respuestas.');
+      // Valida texto, destino y permisos usando exactamente las reglas de publicación.
+      const checked=command(data,actor,{type:'publish',text:input.text,community:input.community,audience:input.audience},now).data.posts.at(-1);
+      const due=typeof input.publishAt==='string'&&/(Z|[+-]\d{2}:\d{2})$/.test(input.publishAt)?Date.parse(input.publishAt):NaN;
+      if(!Number.isFinite(due)||due<=now)fail(400,'Elige una fecha y hora futuras con zona horaria.');
+      try{if(typeof input.timeZone!=='string')throw Error();new Intl.DateTimeFormat('es-ES',{timeZone:input.timeZone}).format(due);}catch{fail(400,'Zona horaria no válida.');}
+      if(![5,15,60,1440].includes(input.lateMinutes))fail(400,'Elige un margen de retraso de 5, 15, 60 o 1440 minutos.');
+      const values={publication:{text:checked.text,community:checked.community,audience:checked.audience},publishAt:new Date(due).toISOString(),timeZone:input.timeZone,lateMinutes:input.lateMinutes,status:'pending',reason:null};
+      if(item){Object.assign(item,values);item.version++;}
+      else data.scheduled.push({id:`s${data.nextScheduleId++}`,author:actor,version:1,createdAt:new Date(now).toISOString(),...values});
+      message='Programación guardada. El servidor publicará si conserva permisos y está dentro del margen autorizado.';
+    }
+  } else if (input.type==='publish') {
     const text=typeof input.text==='string'?input.text.trim():'';
     if (!text || text.length>3000) fail(400,'Escribe entre 1 y 3000 caracteres.');
     let audience='public',community=null,parent=null;
@@ -73,7 +103,7 @@ export function command(original, actor, input) {
       const permitted=parent?['admin','contributor','commenter']:['admin','contributor'];
       if (!permitted.includes(c.members[actor])) fail(403,parent?'No tienes permiso para comentar aquí.':'No tienes permiso para iniciar publicaciones aquí.');
     }
-    data.posts.push({id:`p${data.nextId++}`,author:actor,text,audience,community,parent,createdAt:new Date().toISOString()});
+    data.posts.push({id:`p${data.nextId++}`,author:actor,text,audience,community,parent,createdAt:new Date(now).toISOString()});
     message=parent?'Respuesta publicada.':'Publicación guardada.';
   } else if (input.type==='save') {
     const post=data.posts.find(p=>p.id===input.post);
@@ -127,4 +157,24 @@ export function command(original, actor, input) {
   } else fail(400,'Acción desconocida.');
   data.revision++;
   return {data,message};
+}
+
+// Una única transición persistida por el servidor: publicación y cierre se guardan juntas.
+export function runDue(original,now=Date.now()) {
+  let data=structuredClone(original),changed=false;
+  for(const id of data.scheduled.filter(s=>s.status==='pending'&&Date.parse(s.publishAt)<=now).map(s=>s.id)){
+    let item=data.scheduled.find(s=>s.id===id);
+    if(now>Date.parse(item.publishAt)+item.lateMinutes*60000){
+      item.status='expired';item.reason='Se superó el margen de retraso autorizado.';
+    }else{
+      try{
+        const result=command(data,item.author,{...item.publication,type:'publish'},now);
+        data=result.data;item=data.scheduled.find(s=>s.id===id);
+        item.status='published';item.postId=data.posts.at(-1).id;item.reason=null;
+      }catch(error){if(!(error instanceof RuleError))throw error;item.status='blocked';item.reason='El destino o los permisos ya no permiten publicar. Revisa y vuelve a programar.';}
+    }
+    item.version++;changed=true;
+  }
+  if(changed)data.revision++;
+  return {data,changed};
 }

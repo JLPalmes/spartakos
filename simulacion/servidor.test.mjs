@@ -193,7 +193,7 @@ test('los datos de la primera versión migran sin perder publicaciones ni guarda
   assert.equal(state.revision,7);assert.equal(state.posts.length,2);assert.deepEqual(state.saved,['p1']);
   assert(state.posts.every(p=>Array.isArray(p.likes)&&p.likes.length===0));
   const persisted=JSON.parse(await readFile(path.join(f.directory,'estado.json'),'utf8'));
-  assert.equal(persisted.schema,2);assert.deepEqual(persisted.posts,legacy.posts);
+  assert.equal(persisted.schema,3);assert.deepEqual(persisted.posts,legacy.posts);
 });
 test('las reacciones persisten y la exportación solo atribuye las propias',async t=>{
   const f=await fixture(t);
@@ -204,7 +204,7 @@ test('las reacciones persisten y la exportación solo atribuye las propias',asyn
   assert.deepEqual(state.posts.find(p=>p.id==='p2').likes,[{id:'bruno',name:'Bruno'}]);
   const exported=(await f.request('/api/export',{token})).data;
   assert.deepEqual(exported.liked,['p2']);assert.deepEqual(exported.saved,[]);
-  assert.equal(exported.format,'spartakos-local-simulation-v2');
+  assert.equal(exported.format,'spartakos-local-simulation-v3');
 });
 test('abrir la comunidad no publica las reacciones de su historial restringido',async t=>{
   const f=await fixture(t);
@@ -221,4 +221,28 @@ test('Me gusta exige una intención explícita y no admite valores ambiguos',asy
   for(const active of [undefined,'true',1,null])assert.equal((await f.cmd('bruno',{type:'like',post:'p1',active})).status,400);
   const s=(await f.request('/api/state',{token:f.tokens.bruno})).data;
   assert.equal(s.revision,0);assert.deepEqual(s.posts.find(p=>p.id==='p1').likes,[]);
+});
+
+test('el servidor publica sin cliente abierto, persiste y no repite tras reinicio',async t=>{
+ const f=await fixture(t);
+ const scheduled=await f.cmd('bruno',{type:'schedule',text:'Envío automático HTTP',community:'cuaderno',audience:'members',publishAt:new Date(Date.now()+1500).toISOString(),timeZone:'Atlantic/Canary',lateMinutes:5});
+ assert.equal(scheduled.status,200);
+ assert.equal((await f.request('/api/state',{token:f.tokens.alicia})).data.scheduled.length,0);
+ assert.equal((await f.request('/api/export',{token:f.tokens.bruno})).data.scheduled.length,1);
+ // Durante la espera no hay peticiones HTTP: el temporizador debe ejecutar por sí mismo.
+ await new Promise(r=>setTimeout(r,2600));
+ const disk=JSON.parse(await readFile(path.join(f.directory,'estado.json'),'utf8'));
+ assert.equal(disk.scheduled[0].status,'published');
+ assert.equal(disk.posts.filter(p=>p.text==='Envío automático HTTP').length,1);
+ await f.restart();const token=await f.login('bruno');
+ const state=(await f.request('/api/state',{token})).data;
+ assert.equal(state.posts.filter(p=>p.text==='Envío automático HTTP').length,1);
+ assert.equal(state.scheduled[0].status,'published');
+});
+test('acciones sobre programación ajena no revelan su existencia',async t=>{
+ const f=await fixture(t);
+ await f.cmd('bruno',{type:'schedule',text:'Pendiente privada',community:'cuaderno',audience:'members',publishAt:new Date(Date.now()+3600000).toISOString(),timeZone:'Atlantic/Canary',lateMinutes:15});
+ for(const type of ['edit-schedule','cancel-schedule','publish-schedule'])assert.equal((await f.cmd('diego',{type,id:'s1',version:1})).status,404);
+ const state=(await f.request('/api/state',{token:f.tokens.diego})).data;
+ assert(!JSON.stringify(state).includes('Pendiente privada'));
 });

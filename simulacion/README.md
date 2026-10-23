@@ -2,7 +2,7 @@
 title: Spartakos — Prototipo local con varias cuentas
 lang: es-ES
 license: CC-BY-SA-4.0
-version: 0.2
+version: 0.3
 date: 2026-10-23
 status: Laboratorio funcional de un solo servidor; identidades ficticias
 ---
@@ -66,6 +66,14 @@ python3 verificar.py
 node --test prototipo/modelo.test.mjs simulacion/*.test.mjs
 ```
 
-Hay 36 pruebas: diez de la maqueta anterior, 22 HTTP y cuatro de selección y recorrido de conversaciones. Cubren separación entre sesiones, permisos, audiencia, consentimiento, revocación, privacidad de guardados, persistencia, exportación, escrituras simultáneas, reacciones reversibles, migración de datos y conversaciones con 2.001 mensajes. Estas pruebas no constituyen una auditoría de seguridad ni ejecutan la matriz completa A01–A148.
+Hay 48 pruebas: diez de la maqueta anterior, 24 HTTP, cuatro de selección y recorrido de conversaciones y diez de programación. Cubren separación entre sesiones, permisos, audiencia, consentimiento, revocación, privacidad de guardados, persistencia, exportación, escrituras simultáneas, reacciones reversibles, migración de datos y conversaciones con 2.001 mensajes. Estas pruebas no constituyen una auditoría de seguridad ni ejecutan la matriz completa A01–A148.
 
 Código bajo AGPL-3.0-or-later y documentación bajo CC-BY-SA-4.0, según el [mapa de licencias](../LICENCIAS.md). La [maqueta anterior](../prototipo/README.md) se conserva como antecedente descartable.
+
+## Publicación programada
+
+El editor muestra una audiencia fija en Inicio general y en comunidades privadas; solo ofrece selector si hay varias audiencias válidas. Programar abre fecha y hora en la zona indicada del dispositivo, muestra el momento efectivo y permite elegir margen máximo de retraso (15 minutos por defecto). Confirma para guardar en el servidor.
+
+Programadas permite editar contenido y fecha, cancelar o publicar ahora. Los cambios conservan destino y audiencia. Otros usuarios no reciben estos pendientes. El servidor comprueba cada segundo y funciona aunque se cierre el cliente; debe seguir ejecutándose en el ordenador. Después de reiniciarse conserva pendientes y estados. Si vuelve fuera del margen, el envío vence. Si pierde permisos, se bloquea y exige revisión; restaurar permisos no lo reactiva solo.
+
+Solo se programan publicaciones iniciales de texto. Los condicionales (aprobación, secuencias, intervalos y confirmación) quedan [estudiados como propuestas](../FUNCIONAL-03-PUBLICACIONES-Y-CONVERSACIONES.md), sin ejecución en el prototipo. La exportación contiene programaciones propias, pero no se puede importarlas para activar otro servidor.
