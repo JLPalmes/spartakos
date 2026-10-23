@@ -2,7 +2,7 @@
 title: Spartakos — Interacción útil y autonomía de atención
 lang: es-ES
 license: CC-BY-SA-4.0
-version: 0.2
+version: 0.3
 date: 2026-10-23
 status: Me gusta sencillo y Guardar privado implementados en el simulador; validación de producto pendiente
 ---
@@ -19,7 +19,7 @@ Los mecanismos de interacción se justifican por la función que cumplen. La rev
 
 | Intención | Candidato de interacción | Visibilidad propuesta | Efecto |
 | --- | --- | --- | --- |
-| Expresar valoración o afinidad | «Me gusta», sin graduación | Compartida dentro de la audiencia permitida | No implica adhesión a cada afirmación ni reputación del autor |
+| Expresar valoración o afinidad | «Me gusta», sin graduación | Identidad oculta para otros usuarios | No implica adhesión a cada afirmación ni reputación del autor |
 | Conservar contenido | «Guardar» | Privada | Guardar o recuperar el contenido para uso propio |
 | Recibir novedades | Seguimiento de conversación | Privada por defecto | Suscripción revocable con avisos agrupados |
 | Desarrollar una idea | Responder | Audiencia del espacio | Aportación con contexto, no voto |
@@ -78,4 +78,14 @@ Comparar también una variante sin reacciones rápidas, solo respuesta y guardad
 
 ## 8. Decisiones abiertas
 
-Presentación y visibilidad de recuentos de «Me gusta»; posibilidad de consultar participantes sin contador protagonista; relación entre guardar y seguir; notificaciones y expresión afectiva en distintos contenidos. La graduación de «Coincido» deja de ser una decisión abierta. Resolver las cuestiones restantes junto con publicaciones y conversaciones.
+Presentación y utilidad de posibles recuentos de «Me gusta»; se descarta consultar la identidad de participantes; relación entre guardar y seguir; notificaciones y expresión afectiva en distintos contenidos. La graduación de «Coincido» deja de ser una decisión abierta. Resolver las cuestiones restantes junto con publicaciones y conversaciones.
+
+## 10. Identidad oculta y aprobación visual neutral
+
+Decisión adoptada: el autor y otros lectores no pueden consultar quién ha dado Me gusta. Cada persona ve exclusivamente su propia elección y puede retirarla. Se elimina la lista Reacciones y no se envían avisos individuales. El recuento queda pendiente de estudio; mientras tanto no se entrega ni se muestra una cantidad. Esta regla sustituye las propuestas anteriores de listas de participantes.
+
+El botón utiliza un check verde de aprobación, sin corazón, animación ni expresión afectiva. Conserva el texto Me gusta y añade Marcado cuando está activo. El estado se comunica mediante texto, borde y aria-pressed; el color no es la única señal. Debe mantenerse legible y operable con teclado y en modo oscuro. Es una orientación visual, no una interpretación automática de verdad o acuerdo con todas las afirmaciones.
+
+El servidor responde únicamente con el booleano de elección propia; no basta con ocultar una lista en la interfaz si el cliente todavía recibe sus identidades. La exportación personal incluye solo reacciones propias. El proveedor conserva el vínculo para permitir retirar la reacción y evitar duplicados; no se ofrece anonimato frente al operador. La ausencia de recuentos elimina esa vía directa de inferencia, pero el prototipo no promete resistencia a análisis de tráfico o vigilancia del servidor.
+
+Antes de introducir recuentos se estudiarán utilidad, presión social e inferencias en audiencias pequeñas. La decisión sobre cantidades exactas, aproximadas o diferidas queda abierta y no debe reintroducir listas de identidades.

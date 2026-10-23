@@ -2,7 +2,7 @@
 title: Spartakos — Publicaciones, audiencias y conversaciones
 lang: es-ES
 license: CC-BY-SA-4.0
-version: 0.3
+version: 0.4
 date: 2026-10-23
 status: Diseño funcional propuesto; decisiones pendientes identificadas
 ---
@@ -48,7 +48,7 @@ Seguir una conversación es opcional y privado. Una respuesta propia puede inclu
 
 ## 4. Interacciones según el contenido
 
-La interacción vigente utiliza «Me gusta» sencillo y reversible y «Guardar» privado. Una reacción no implica acuerdo con cada afirmación ni reputación del autor. Ambas acciones son independientes y respetan la audiencia del contenido. Guardar no avisa al autor ni suscribe a novedades. La graduación de «Coincido» está descartada; véase [Interacción útil](FUNCIONAL-02-INTERACCION-UTIL.md).
+La interacción vigente utiliza «Me gusta» sencillo y reversible y «Guardar» privado. Una reacción no implica acuerdo con cada afirmación ni reputación del autor. Ambas acciones son independientes y respetan la audiencia del contenido. La identidad de quienes dan Me gusta no se muestra al autor ni a otros usuarios; cada cuenta solo conoce su propia elección. El botón es un check verde de aprobación, sin corazón. No se muestran listas ni recuentos mientras se estudia la utilidad de estos últimos. Guardar no avisa al autor ni suscribe a novedades. La graduación de «Coincido» está descartada; véase [Interacción útil](FUNCIONAL-02-INTERACCION-UTIL.md).
 
 No medir éxito por volumen de reacciones. Una pregunta resuelta con pocas intervenciones puede resultar más útil que una polémica prolongada. La expresión afectiva no queda prohibida: puede ocurrir en respuestas sin diseñar una competición de aprobación.
 

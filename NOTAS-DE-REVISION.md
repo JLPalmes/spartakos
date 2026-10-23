@@ -3,7 +3,7 @@ title: Spartakos — Notas de revisión del prototipo
 lang: es-ES
 license: CC-BY-SA-4.0
 date: 2026-10-23
-status: N01–N07 implementadas en el simulador; validación de producto pendiente
+status: N01–N08 implementadas en el simulador; validación de producto pendiente
 ---
 
 # Notas de revisión del prototipo
@@ -63,3 +63,7 @@ Inicio general y comunidades privadas muestran una indicación fija. Solo una co
 ## N07. Tres niveles de conversación y continuación por cita
 
 **Decisión:** publicación inicial, respuesta y respuesta a respuesta. No se crea un cuarto nivel, ni siquiera mediante una petición directa al servidor. Desde el último nivel se continúa con una publicación propia que cita el mensaje y avisa a su autor. Se aplican los permisos para iniciar publicaciones y las restricciones de audiencia. **Estado:** implementado, incluidos aviso interno, marca de lectura, cita programada e historial anterior conservado. Sustituye la posibilidad de crear respuestas sin límite de profundidad descrita inicialmente en N02.
+
+## N08. Me gusta sin identidad visible y check neutral
+
+**Decisión:** ocultar identidades al autor y otros usuarios, retirar Reacciones y posponer cualquier recuento. Botón con check verde, sin corazón ni animaciones, con texto y estado accesibles. **Estado:** implementado tanto en interfaz como en respuestas del servidor. El vínculo se conserva en el servidor para retirar la reacción; no supone anonimato frente al proveedor. Sustituye las presentaciones anteriores con lista de personas.

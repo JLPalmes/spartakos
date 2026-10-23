@@ -2,9 +2,9 @@
 title: Spartakos — Resultados de la primera comprobación del prototipo
 lang: es-ES
 license: CC-BY-SA-4.0
-version: 0.5
+version: 0.6
 date: 2026-10-23
-status: 57 pruebas automáticas superadas; interacción, programación y citas comprobadas en navegador
+status: 58 pruebas automáticas superadas; identidades de reacciones ocultas en interfaz y API
 ---
 
 # Primera comprobación del prototipo
@@ -81,3 +81,11 @@ Resultado: **57 pruebas automáticas superadas, 0 fallos**: diez de modelo anter
 En navegador con datos sintéticos: Bruno creó niveles segundo y tercero; el tercero no ofreció Responder y sí Citar en una publicación. Alicia citó ese mensaje y publicó un tema nuevo en la misma comunidad restringida. Bruno recibió el aviso correspondiente. La nueva publicación mostró atribución y referencia al mensaje citado, con Responder disponible como primer nivel de otro hilo.
 
 Se mantiene pendiente la validación con participantes, las preferencias de avisos y la protección frente a citas abusivas en un servicio real. Estas pruebas locales no ejecutan la matriz completa de producto.
+
+## 10. Me gusta sin identidades visibles
+
+Resultado: **58 pruebas automáticas superadas, 0 fallos**: diez de modelo anterior, 27 HTTP, cuatro de conversaciones, diez de programación y siete de citas y niveles. Se adaptan las comprobaciones de reacciones a la nueva visibilidad y se añade una prueba HTTP con cuatro cuentas: cada sesión recibe únicamente su elección propia, sin lista de identidades ni cantidad; la exportación solo incluye las reacciones propias y no se generan avisos. Se comprueba también la respuesta de un comando para evitar filtraciones por una vía distinta a la consulta de estado.
+
+La interfaz elimina Reacciones y utiliza check verde, texto Me gusta, indicación Marcado y aria-pressed. Los resultados anteriores que describen listas visibles pertenecen a versiones sustituidas. No se promete anonimato frente al proveedor; sigue pendiente decidir sobre la utilidad de recuentos.
+
+En navegador se comprobó que Bruno puede marcar y retirar el check; Alicia no recibe ese estado ni una lista de personas. El botón comunica Marcado y aria-pressed solo en la cuenta que reacciona. La captura utiliza contenido sintético del laboratorio.
