@@ -2,8 +2,8 @@
 title: Spartakos — Publicaciones, audiencias y conversaciones
 lang: es-ES
 license: CC-BY-SA-4.0
-version: 0.1
-date: 2026-10-22
+version: 0.2
+date: 2026-10-23
 status: Diseño funcional propuesto; decisiones pendientes identificadas
 ---
 
@@ -19,7 +19,7 @@ Un solo editor, con herramientas básicas y opciones adicionales progresivas. Bo
 
 ## 2. Lugar y audiencia
 
-El editor parte de un contexto: espacio personal o comunidad. La audiencia aparece junto a la acción de publicar, sin exigir recorrer una configuración. Se recuerda dentro del mismo contexto, no se traslada una elección pública a un espacio privado.
+El editor parte de un contexto: espacio personal o comunidad. El destino se determina al entrar en Inicio general o en una comunidad. Cuando solo existe una audiencia válida, se muestra una indicación fija; solo se ofrece el selector «Audiencia» cuando hay alternativas reales, como publicar para todo el público o solo para integrantes de una comunidad pública. La audiencia aparece junto a la acción de publicar, sin exigir recorrer una configuración. Se recuerda dentro del mismo contexto, no se traslada una elección pública a un espacio privado.
 
 | Destino inicial | Audiencia | Regla comprensible |
 | --- | --- | --- |
@@ -48,9 +48,7 @@ Seguir una conversación es opcional y privado. Una respuesta propia puede inclu
 
 ## 4. Interacciones según el contenido
 
-No toda pieza requiere una señal de acuerdo. «Coincido» tiene sentido sobre una afirmación, pero no debe forzarse sobre preguntas, imágenes o relatos personales. La variante mínima conserva respuesta y «Me interesa» privado; la graduación de acuerdo continúa como candidata.
-
-Si existe acuerdo público, se vincula a la versión sobre la que se expresó, sin convertirse en contador de valor del autor. «Me interesa» conserva acceso posterior y no suscribe a novedades sin explicarlo. Denuncia y desacuerdo permanecen separados.
+La interacción vigente utiliza «Me gusta» sencillo y reversible y «Guardar» privado. Una reacción no implica acuerdo con cada afirmación ni reputación del autor. Ambas acciones son independientes y respetan la audiencia del contenido. Guardar no avisa al autor ni suscribe a novedades. La graduación de «Coincido» está descartada; véase [Interacción útil](FUNCIONAL-02-INTERACCION-UTIL.md).
 
 No medir éxito por volumen de reacciones. Una pregunta resuelta con pocas intervenciones puede resultar más útil que una polémica prolongada. La expresión afectiva no queda prohibida: puede ocurrir en respuestas sin diseñar una competición de aprobación.
 
@@ -100,3 +98,49 @@ El autor puede exportar su aportación; no obtiene por ello permiso para hacer p
 Audiencia personal a destinatarios elegidos; acceso de nuevos miembros al historial; navegación por ramas; señales apropiadas para contenido no argumentativo; alcance de citas y redistribución; exposición de versiones anteriores; cierre de comentarios en espacios personales y comunitarios.
 
 La continuación debe desarrollar comunidades y permisos, porque determina quién autoriza acciones y cómo se resuelven estos casos sin añadir decisiones a cada publicación. No se seleccionan todavía bibliotecas o protocolos.
+
+## 10. Publicación programada y condiciones
+
+### 10.1 Alcance acordado y recorrido
+
+Se incorpora programación por fecha, hora y zona horaria. El recorrido ordinario sigue siendo Publicar; Programar abre las opciones adicionales. Se muestra la fecha efectiva, zona y margen máximo de retraso antes de confirmar. La publicación queda en Programadas, accesible únicamente a su autor salvo una autorización futura expresa de revisión. Puede editarse, reprogramarse, cancelarse o publicarse inmediatamente. La edición conserva destino y audiencia; trasladar el contenido a otro espacio exige una acción explícita distinta.
+
+El servidor responsable guarda y ejecuta la programación aunque el cliente esté cerrado. El laboratorio requiere mantener encendido el proceso local; no ofrece disponibilidad permanente. La fecha se almacena como instante UTC junto a la zona de referencia. Un cambio posterior de zona del dispositivo no desplaza el envío. En el editor se indica la zona del dispositivo; al editar una programación creada en otra zona se muestra la conversión. Las horas inexistentes por cambio estacional se rechazan. Para una hora repetida se muestra la interpretación efectiva con su designación horaria; el producto deberá validar que esta explicación resulte comprensible.
+
+Antes de confirmar, el usuario elige un margen máximo de retraso. El simulador propone 15 minutos y permite 5, 15, 60 o 1.440 minutos; son valores de ensayo. Si el servidor vuelve demasiado tarde, la publicación vence y no se envía. No existe publicación tardía ilimitada por defecto.
+
+### 10.2 Ejecución y continuidad
+
+| Situación | Resultado exigido |
+| --- | --- |
+| Llega la hora y se conservan permisos | Publicar una vez con autor, destino y audiencia previstos |
+| El cliente está cerrado | El servidor ejecuta sin necesitar una sesión activa del cliente |
+| Se pierden permisos o desaparece el destino | Bloquear; conservar contenido y explicar el estado al autor |
+| Se restauran los permisos | No reactivar automáticamente una publicación bloqueada; exigir revisión |
+| Se abre una comunidad antes del envío | Mantener restringida la publicación preparada para integrantes |
+| Se supera el margen de retraso | Marcar vencida, sin publicar |
+| Se cancela o se publica inmediatamente | Terminar la programación; un reintento no crea otra publicación por el temporizador |
+| Dos clientes editan o actúan sobre el mismo pendiente | Comprobar versión; rechazar la acción obsoleta |
+| El servidor se reinicia | Recuperar pendientes persistidos; aplicar permisos y margen vigentes |
+
+El simulador guarda en la misma escritura atómica la publicación y el cierre de su programación. Esto evita repetir la ejecución tras un reinicio dentro del modelo de un único proceso y archivo local. No es una garantía distribuida ni cubre corrupción de disco, varios procesos sobre los mismos datos o restaurar una copia antigua.
+
+La portabilidad futura debe trasladar contenido pendiente, fechas y estados con transferencia exclusiva de la autoridad de ejecución. Exportar no activa un segundo ejecutor. El laboratorio incluye programaciones propias en la exportación, pero no implementa su traslado ni importación ejecutable.
+
+### 10.3 Condiciones candidatas; todavía no implementadas
+
+| Condición | Propuesta de funcionamiento | Problemas que debe resolver antes de adoptarse |
+| --- | --- | --- |
+| Aprobación de una persona o equipo | Autorizar una versión concreta antes de una fecha límite | Revisores expresamente designados; acceso mínimo al borrador; retirar aprobación al editar contenido, destino o audiencia; decidir si hace falta una o varias aprobaciones |
+| Publicación previa de otro mensaje | Ejecutar una secuencia cuando el antecedente conste publicado | No confundir hora prevista con éxito; bloquear ciclos y dependencias desaparecidas; detener la cadena ante cancelación o fallo; no copiar contenido privado entre espacios |
+| Fecha mínima y fecha límite | Ejecutar al cumplirse la condición dentro del intervalo autorizado | Definir precedencia entre condición, hora y vencimiento; comunicar por qué no se publicó; evitar esperas indefinidas |
+| Confirmación final del autor | Avisar de que está preparada y esperar confirmación | Un aviso no equivale a consentimiento; ausencia de respuesta implica no publicar; limitar avisos y permitir cancelación |
+| Señal externa verificable | Un servicio autorizado comunica un hecho y activa la condición | Autenticidad, caducidad, duplicados, errores y manipulación; quién responde del disparador; qué datos recibe el servicio y cómo se revoca |
+
+Propuesta de prioridad posterior: aprobación y secuencias, después de comprobar demanda. Los disparadores externos requieren un ensayo separado. No se incluyen condiciones basadas en alcanzar Me gusta, seguidores o actividad; incentivarían la presión de participación. Tampoco se propone un disparador de inactividad del autor: la falta de conexión no prueba su voluntad ni un acontecimiento personal.
+
+Si se combinan condiciones, el diseño deberá expresar claramente si se exigen todas o alguna y qué ocurre al vencer. No se incorpora un editor general de reglas al recorrido básico. Ninguna condición puede conceder permisos, ampliar audiencia, saltarse moderación ni publicar en nombre de otra persona.
+
+### 10.4 Estado de implementación
+
+Implementadas en el simulador: fecha y hora en la zona del cliente, margen de retraso, gestión privada de pendientes, edición con versión, cancelación, publicación inmediata, ejecución periódica por servidor, bloqueo por permisos y recuperación tras reinicio. La programación se limita a publicaciones iniciales de texto; respuestas programadas, adjuntos, revisores, secuencias, avisos externos y traslado entre proveedores quedan pendientes. El contenido pendiente es legible por el operador local; no hay cifrado de extremo a extremo.

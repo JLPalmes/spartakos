@@ -2,9 +2,9 @@
 title: Spartakos — Resultados de la primera comprobación del prototipo
 lang: es-ES
 license: CC-BY-SA-4.0
-version: 0.3
+version: 0.4
 date: 2026-10-23
-status: 36 pruebas automáticas superadas; segunda revisión local comprobada en navegador
+status: 48 pruebas automáticas superadas; interacción y programación comprobadas en navegador
 ---
 
 # Primera comprobación del prototipo
@@ -65,3 +65,11 @@ En un escenario desechable de navegador con cuatro cuentas se comprobó: borrado
 El estado local anterior se respaldó antes de actualizarlo. La migración añade el almacén de reacciones sin reiniciar publicaciones ni guardados. Los datos de ensayo del usuario y las capturas que los contengan no se incorporan al repositorio. Los borradores no persisten al recargar la pestaña.
 
 Estas comprobaciones siguen siendo de laboratorio: no ejecutan la matriz A01–A148 ni sustituyen pruebas de usabilidad, accesibilidad, seguridad o infraestructura distribuida.
+
+## 8. Programación y simplificación de audiencia
+
+Se han superado **48 pruebas automáticas, 0 fallos**: diez del modelo anterior, 24 HTTP, cuatro de conversaciones y diez de programación. Las nuevas verificaciones cubren fecha futura, zona y márgenes válidos; ejecución única; privacidad de pendientes; edición y cancelación con versión y propiedad; publicación inmediata; pérdida de permisos; vencimiento; audiencia restringida tras abrir comunidad; migración y conservación de datos. Una prueba HTTP deja de consultar el servidor y comprueba después en disco que el temporizador publicó por sí mismo; reiniciar conserva un único resultado. Otra rechaza acciones sobre programaciones ajenas sin revelar su existencia.
+
+En un escenario separado del contenido del usuario se comprobó en navegador: audiencia fija sin desplegable en comunidad privada; programación de texto privado con fecha, zona y margen visibles; aparición en Programadas; edición del texto pendiente; publicación inmediata y aparición de una sola publicación en el mismo espacio privado. La captura del ensayo utiliza únicamente contenido sintético.
+
+Las condiciones adicionales están documentadas como propuestas, no implementadas. El laboratorio necesita el proceso local encendido y no ofrece un servicio permanente ni ejecución distribuida. La matriz A01–A148 continúa sin ejecutarse como suite de producto.

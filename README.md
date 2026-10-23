@@ -21,7 +21,7 @@ Para participar: [guía de contribución](CONTRIBUTING.md), [coordinación inici
 
 ## Prototipo con servidor local y varias cuentas
 
-La [simulación funcional](simulacion/README.md) permite abrir cuatro cuentas a la vez o usar pestañas separadas. Comparte publicaciones mediante un servidor local, aplica permisos por sesión y conserva los datos al reiniciar. Alicia administra, Bruno participa, Carla empieza con lectura y reacciones y Diego no pertenece a la comunidad privada. La segunda revisión incorpora Guardar, Me gusta reversible, respuestas encadenadas y espacios separados para Inicio general y cada comunidad.
+La [simulación funcional](simulacion/README.md) permite abrir cuatro cuentas a la vez o usar pestañas separadas. Comparte publicaciones mediante un servidor local, aplica permisos por sesión y conserva los datos al reiniciar. Alicia administra, Bruno participa, Carla empieza con lectura y reacciones y Diego no pertenece a la comunidad privada. La segunda revisión incorpora Guardar, Me gusta reversible, respuestas encadenadas y espacios separados para Inicio general y cada comunidad. La ampliación añade publicación programada con gestión privada de pendientes y control de retrasos.
 
 Requisitos: Node.js 22 o posterior y Python 3 para la verificación documental. No hay dependencias de terceros que instalar. Desde la raíz del repositorio:
 
@@ -39,7 +39,7 @@ La [maqueta anterior sin servidor](prototipo/README.md) se conserva como anteced
 
 Las [notas de revisión del prototipo](NOTAS-DE-REVISION.md) acumulan observaciones, cambios implementados y asuntos pendientes, distinguiendo decisiones de propuestas todavía abiertas.
 
-1. [Especificación integral v0.21](ESPECIFICACION.md): primera pasada funcional y contraste comparado; reciprocidad y acreditación como mecanismos candidatos.
+1. [Especificación integral v0.22](ESPECIFICACION.md): primera pasada funcional y contraste comparado; reciprocidad y acreditación como mecanismos candidatos.
 2. [Decisiones, dudas y riesgos](DECISIONES-Y-DUDAS.md): qué está confirmado, qué se propone y qué exige ensayo.
 3. [Matriz de aceptación](MATRIZ-DE-ACEPTACION.md): 148 pruebas especificadas, ninguna ejecutada; incluye escenarios condicionados a adoptar reciprocidad.
 4. [Antecedentes y lecciones](ANTECEDENTES-Y-LECCIONES.md): fuentes, cobertura y límites de la investigación.
@@ -65,7 +65,7 @@ Los documentos de análisis conservan los antecedentes técnicos. La especificac
 
 ## Prototipo y comprobaciones
 
-La [simulación con varias cuentas](simulacion/README.md) incluye 22 pruebas HTTP y cuatro de conversaciones, además de las diez de la [maqueta anterior](prototipo/README.md). Se comprueban permisos por sesión, persistencia, audiencia y consentimiento, sin atribuir a esas pruebas garantías de una red distribuida. El [informe de resultados](RESULTADOS-DEL-PROTOTIPO.md) distingue estas comprobaciones de las pruebas de producto, que siguen sin ejecutarse.
+La [simulación con varias cuentas](simulacion/README.md) incluye 24 pruebas HTTP, cuatro de conversaciones y diez de programación, además de las diez de la [maqueta anterior](prototipo/README.md). Se comprueban permisos por sesión, persistencia, audiencia y consentimiento, sin atribuir a esas pruebas garantías de una red distribuida. El [informe de resultados](RESULTADOS-DEL-PROTOTIPO.md) distingue estas comprobaciones de las pruebas de producto, que siguen sin ejecutarse.
 
 El [contrato preliminar de datos y autoridad](CONTRATO-DE-DATOS-Y-AUTORIDAD.md) fija separaciones antes de elegir componentes. El [paquete de apertura](PREPARACION-DE-APERTURA.md) documenta el repositorio y las licencias adoptadas, y las condiciones de contribución.
 

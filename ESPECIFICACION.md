@@ -2,7 +2,7 @@
 title: Spartakos — Especificación integral
 lang: es-ES
 license: CC-BY-SA-4.0
-version: 0.21
+version: 0.22
 date: 2026-10-23
 status: Diseño funcional y simulador local multicuenta; sin red distribuida ni laboratorio estructural
 ---
@@ -250,7 +250,7 @@ Permisos de lectura no equivalen a indexación pública, descarga masiva o uso p
 
 El [diseño funcional de publicaciones, audiencias y conversaciones](FUNCIONAL-03-PUBLICACIONES-Y-CONVERSACIONES.md) desarrolla editor común, permisos de respuesta, contexto, difusión y tratamiento de versiones. Las propuestas de citas, redistribución e historial de edición se mantienen pendientes de revisión; no se asume viralidad como objetivo. Una señal de acuerdo no se reinterpreta como apoyo a un texto modificado posteriormente.
 
-Primera versión: texto, enlaces, imágenes, respuestas en hilos, edición, retirada, guardados privados, seguimiento y notificaciones. Perfil y comunidades comparten un editor coherente. Se propone posponer vídeo alojado y mensajería instantánea hasta dimensionar recursos; vídeos mediante enlace no se presentan como alojados.
+Primera versión: texto, enlaces, imágenes, respuestas en hilos, edición, retirada, guardados privados, seguimiento y notificaciones. Se incorpora publicación programada por fecha y hora, con zona explícita, gestión privada de pendientes, margen de retraso y comprobación de permisos al ejecutar. Las condiciones adicionales se estudian en [Publicaciones y conversaciones, sección 10](FUNCIONAL-03-PUBLICACIONES-Y-CONVERSACIONES.md); no se consideran implementadas. Perfil y comunidades comparten un editor coherente. Se propone posponer vídeo alojado y mensajería instantánea hasta dimensionar recursos; vídeos mediante enlace no se presentan como alojados.
 
 La especificación completa incluye adjuntos audiovisuales, pero su admisión depende de cuota y fase. El diseño de datos y exportación debe permitirlos sin cambiar identidad de objetos.
 

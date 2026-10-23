@@ -3,7 +3,7 @@ title: Spartakos — Notas de revisión del prototipo
 lang: es-ES
 license: CC-BY-SA-4.0
 date: 2026-10-23
-status: N01–N04 implementadas en la segunda revisión local; validación de producto pendiente
+status: N01–N06 implementadas en el simulador; validación de producto pendiente
 ---
 
 # Notas de revisión del prototipo
@@ -51,3 +51,11 @@ La reacción debe respetar la audiencia de la publicación: en una comunidad pri
 El primer prototipo ha sido probado en una revisión inicial. Esto no equivale a una validación con una muestra de participantes ni a completar los criterios de producto.
 
 **Estado:** implementado: Me gusta reversible, independiente de Guardar y limitado por audiencia. Sin recuento destacado, ranking, reputación ni avisos. La escala de «Coincido» queda como antecedente descartado, no como alternativa activa. La presentación final sigue pendiente de validación.
+
+## N05. Audiencia sin elección redundante de destino
+
+Inicio general y comunidades privadas muestran una indicación fija. Solo una comunidad con alternativas reales muestra el selector Audiencia. El nombre de la comunidad identifica el destino. La pérdida de permisos conserva el borrador bloqueado, sin conversión a público. **Estado:** implementado y comprobado en el editor de comunidad privada.
+
+## N06. Publicación programada
+
+**Decisión:** fecha, hora, zona horaria y gestión privada de pendientes como alcance inicial. Margen explícito de retraso; permisos y audiencia se verifican al ejecutar. **Estado:** implementado en el servidor local y cliente. Las condiciones adicionales quedan propuestas y pendientes; véase la sección 10 de [Publicaciones y conversaciones](FUNCIONAL-03-PUBLICACIONES-Y-CONVERSACIONES.md).
