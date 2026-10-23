@@ -1,0 +1,14 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: AGPL-3.0-or-later -->
+<html lang="es-ES">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Spartakos · Laboratorio de cuentas</title><link rel="stylesheet" href="/estilos.css"></head>
+<body>
+  <header class="laboratory"><h1>Spartakos · Laboratorio local</h1><p>Cuatro sesiones independientes sobre los mismos datos. Cada panel actúa únicamente con los permisos de su cuenta.</p><p class="warning">Cuentas ficticias de acceso libre. Datos locales sin cifrado. No introducir información personal.</p><p>Los cambios se conservan al reiniciar el servidor. <a href="/cliente" target="_blank" rel="noopener">Abrir otro cliente en una pestaña</a> · <a href="https://github.com/JLPalmes/spartakos">Código y documentación</a></p></header>
+  <main class="accounts-grid" aria-label="Sesiones simultáneas">
+    <section><h2>Alicia · Administración</h2><a href="/cliente?cuenta=alicia&amp;panel=alicia-tab" target="_blank" rel="noopener">Abrir Alicia en otra pestaña</a><iframe title="Sesión de Alicia" src="/cliente?cuenta=alicia&amp;panel=alicia"></iframe></section>
+    <section><h2>Bruno · Participación</h2><a href="/cliente?cuenta=bruno&amp;panel=bruno-tab" target="_blank" rel="noopener">Abrir Bruno en otra pestaña</a><iframe title="Sesión de Bruno" src="/cliente?cuenta=bruno&amp;panel=bruno"></iframe></section>
+    <section><h2>Carla · Lectura</h2><a href="/cliente?cuenta=carla&amp;panel=carla-tab" target="_blank" rel="noopener">Abrir Carla en otra pestaña</a><iframe title="Sesión de Carla" src="/cliente?cuenta=carla&amp;panel=carla"></iframe></section>
+    <section><h2>Diego · Sin acceso al cuaderno privado</h2><a href="/cliente?cuenta=diego&amp;panel=diego-tab" target="_blank" rel="noopener">Abrir Diego en otra pestaña</a><iframe title="Sesión de Diego" src="/cliente?cuenta=diego&amp;panel=diego"></iframe></section>
+  </main>
+</body>
+</html>

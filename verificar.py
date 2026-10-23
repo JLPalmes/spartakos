@@ -44,12 +44,13 @@ for filename, expected in hashes.items():
 if (ROOT / 'LICENSE').read_bytes() != (ROOT / 'LICENSES' / 'AGPL-3.0-or-later.txt').read_bytes():
     errors.append('LICENSE y su copia AGPL difieren')
 
-for path in (ROOT / 'prototipo').iterdir():
+for path in [*(ROOT / 'prototipo').iterdir(), *(ROOT / 'simulacion').iterdir()]:
     if path.suffix in {'.mjs', '.html', '.css'}:
         if 'SPDX-License-Identifier: AGPL-3.0-or-later' not in path.read_text(encoding='utf-8')[:200]:
             errors.append(f'{path.relative_to(ROOT)}: falta identificador SPDX')
-if '<html lang="es-ES">' not in (ROOT / 'prototipo' / 'index.html').read_text(encoding='utf-8'):
-    errors.append('El prototipo no declara idioma es-ES')
+for path in [ROOT / 'prototipo' / 'index.html', ROOT / 'simulacion' / 'index.html', ROOT / 'simulacion' / 'cliente.html']:
+    if '<html lang="es-ES">' not in path.read_text(encoding='utf-8'):
+        errors.append(f'{path.relative_to(ROOT)}: falta idioma es-ES')
 
 if errors:
     for error in errors:

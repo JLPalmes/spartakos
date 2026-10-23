@@ -1,0 +1,17 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: AGPL-3.0-or-later -->
+<html lang="es-ES">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Spartakos · Cliente de simulación</title><link rel="stylesheet" href="/estilos.css"></head>
+<body class="client">
+  <header class="client-header"><strong>Spartakos</strong><span id="identity">Conectando…</span></header>
+  <section id="login" hidden><h1>Elige una cuenta ficticia</h1><label for="account">Cuenta</label><select id="account"></select><button id="enter">Entrar en la simulación</button></section>
+  <div id="session" hidden>
+    <nav aria-label="Secciones"><button data-page="inicio" aria-pressed="true">Inicio</button><button data-page="interes" aria-pressed="false">Mi interés</button><button data-page="comunidad" aria-pressed="false">Comunidades</button><button data-page="cuenta" aria-pressed="false">Mi cuenta</button></nav>
+    <section id="composer"><h1>Comparte una idea</h1><form id="publish"><label for="audience">Quién podrá leer</label><select id="audience"><option value="public">Todo el mundo</option></select><p id="audience-help" class="hint">Publicación pública.</p><label for="text">Tu publicación</label><textarea id="text" maxlength="3000" required></textarea><button type="submit">Publicar</button></form></section>
+    <main id="content"></main>
+  </div>
+  <p id="status" role="status" aria-live="polite"></p>
+  <footer>Simulación local · <a href="https://github.com/JLPalmes/spartakos/blob/main/LICENSE">AGPL-3.0-or-later</a> · <a href="https://github.com/JLPalmes/spartakos/tree/prototipo-local-multicuenta/simulacion">Código fuente de esta versión</a> · Sin garantías de producción</footer>
+  <script type="module" src="/cliente.mjs"></script>
+</body>
+</html>

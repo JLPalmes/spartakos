@@ -2,9 +2,9 @@
 title: Spartakos — Especificación integral
 lang: es-ES
 license: CC-BY-SA-4.0
-version: 0.19
+version: 0.20
 date: 2026-10-22
-status: Diseño funcional y maqueta local comprobada; sin aplicación de red ni laboratorio estructural
+status: Diseño funcional y simulador local multicuenta; sin red distribuida ni laboratorio estructural
 ---
 
 # Spartakos
@@ -15,7 +15,7 @@ Nombre provisional de la red: **Spartakos**.
 
 Esta especificación consolida el trabajo exploratorio y organiza una propuesta de producto, arquitectura, gobierno, operación y desarrollo. Su cobertura temática no implica que el diseño funcional esté completo. El análisis se amplía por bloques antes de seleccionar componentes o ejecutar el laboratorio. Las decisiones técnicas anteriores permanecen como candidatas documentales.
 
-Las expresiones «debe» y «no debe» describen el comportamiento exigido por esta propuesta. Las decisiones provisionales pueden modificarse en la revisión. Ninguna cifra de capacidad es una prestación ya medida. No existe todavía una aplicación operativa ni un presupuesto de despliegue.
+Las expresiones «debe» y «no debe» describen el comportamiento exigido por esta propuesta. Las decisiones provisionales pueden modificarse en la revisión. Ninguna cifra de capacidad es una prestación ya medida. Existe un simulador local experimental; no hay red distribuida operativa ni presupuesto de despliegue.
 
 La especificación vigente prevalece sobre los documentos exploratorios. Los anexos detallan pruebas, decisiones y antecedentes. PROPUESTA.md es un borrador histórico y no constituye la Constitución del proyecto.
 
@@ -50,7 +50,7 @@ No se promete almacenamiento infinito, eliminación de cualquier copia externa, 
 
 La [síntesis funcional](REVISION-FUNCIONAL.md) reúne diez bloques de comportamiento y sus decisiones pendientes. Se ha completado una primera pasada documental; la revisión funcional y las pruebas de recorridos preceden a la selección definitiva de componentes y a la ejecución del laboratorio. Los análisis técnicos previos permanecen como candidatos, no como decisiones de implementación.
 
-Existe una [maqueta descartable](prototipo/README.md), con [diez pruebas locales del modelo y comprobaciones en navegador](RESULTADOS-DEL-PROTOTIPO.md). No equivalen a validación con participantes, autorización real ni cumplimiento de los criterios de producto.
+Existen una [maqueta descartable](prototipo/README.md) y un [simulador con servidor local y sesiones independientes](simulacion/README.md), con [diez pruebas del modelo anterior y catorce pruebas HTTP](RESULTADOS-DEL-PROTOTIPO.md). No equivalen a validación con participantes, autorización real ni cumplimiento de los criterios de producto.
 
 ### 0.4 Contraste con antecedentes e incentivos
 
