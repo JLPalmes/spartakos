@@ -2,7 +2,7 @@
 title: Spartakos — Prototipo local con varias cuentas
 lang: es-ES
 license: CC-BY-SA-4.0
-version: 0.6
+version: 0.7
 date: 2026-10-23
 status: Laboratorio funcional de un solo servidor; identidades ficticias
 ---
@@ -47,7 +47,7 @@ Los clientes consultan cambios aproximadamente cada segundo y medio mientras est
 
 ## Persistencia y escenarios separados
 
-El servidor guarda datos ficticios en `resultados-locales/simulador/estado.json`, excluido del repositorio. Las escrituras se serializan y reemplazan el archivo de forma atómica. Reiniciar conserva publicaciones, roles, consentimientos, guardados y reacciones. La actualización del esquema anterior conserva los datos existentes; los borradores solo viven en la pestaña y se pierden al recargar. Las sesiones caducan al detener el proceso; volver a entrar no elimina los datos.
+El servidor guarda datos ficticios en `resultados-locales/simulador/estado.json`, excluido del repositorio. Las escrituras se serializan y reemplazan el archivo de forma atómica. Reiniciar conserva publicaciones, roles, consentimientos, guardados y reacciones. La actualización del esquema anterior conserva los datos existentes; los borradores guardados explícitamente se conservan; las ediciones sin guardar y respuestas en curso solo viven en la pestaña. Las sesiones caducan al detener el proceso; volver a entrar no elimina los datos.
 
 Para otro escenario, usar otra carpeta y otro puerto:
 
@@ -66,7 +66,7 @@ python3 verificar.py
 node --test prototipo/modelo.test.mjs simulacion/*.test.mjs
 ```
 
-Hay 67 pruebas: diez de la maqueta anterior, 28 HTTP, cuatro de selección y recorrido de conversaciones, diez de programación, siete de citas y límites y ocho de recuentos horarios. Cubren separación entre sesiones, permisos, audiencia, consentimiento, revocación, privacidad de guardados, persistencia, exportación, escrituras simultáneas, reacciones reversibles, migración de datos y lectura de historiales con 2.001 mensajes (no creación de nuevos hilos de esa profundidad), límite de tres niveles, citas, avisos y su privacidad. Estas pruebas no constituyen una auditoría de seguridad ni ejecutan la matriz completa A01–A148.
+Hay 75 pruebas: diez de la maqueta anterior, 30 HTTP, cuatro de selección y recorrido de conversaciones, diez de programación, siete de citas y límites, ocho de recuentos horarios y seis de borradores. Cubren separación entre sesiones, permisos, audiencia, consentimiento, revocación, privacidad de guardados, persistencia, exportación, escrituras simultáneas, reacciones reversibles, migración de datos y lectura de historiales con 2.001 mensajes (no creación de nuevos hilos de esa profundidad), límite de tres niveles, citas, avisos y su privacidad. Estas pruebas no constituyen una auditoría de seguridad ni ejecutan la matriz completa A01–A148.
 
 Código bajo AGPL-3.0-or-later y documentación bajo CC-BY-SA-4.0, según el [mapa de licencias](../LICENCIAS.md). La [maqueta anterior](../prototipo/README.md) se conserva como antecedente descartable.
 
@@ -95,3 +95,11 @@ El servidor actualiza los totales en cortes comunes de cada hora UTC en punto, a
 Marcar o retirar el check cambia inmediatamente la elección propia; su efecto en el total espera al próximo corte. Las reacciones hechas justo a la hora del corte entran en el siguiente, incluso si el cálculo se ejecuta con retraso. Tras instalar o actualizar aparece Recuento pendiente hasta el primer corte posterior; no se reconstruyen recuentos históricos sin evidencia. Una publicación nueva espera también a su primer corte.
 
 Si el servidor se detiene, la última instantánea conserva su fecha. Al volver calcula el último corte alcanzado con los cambios guardados y mantiene las restricciones de acceso. Sigue siendo un laboratorio local, sin garantías de disponibilidad ni anonimato frente al proveedor o inferencias en grupos pequeños.
+
+## Borradores recuperables
+
+Escribe y pulsa Guardar borrador. La acción envía el texto al servidor local, que puede leerlo; escribir por sí solo no lo envía. Borradores permite retomar texto, comunidad, audiencia y cita después de recargar o volver a entrar. No publica ni programa al guardar o abrir. El editor indica si hay cambios sin guardar.
+
+En dos pestañas, un conflicto no sobrescribe: conserva el texto y ofrece Guardar como copia. Si pierdes permiso para publicar, puedes seguir guardando el pendiente en el mismo destino, pero no publicarlo ni cambiarlo automáticamente a público. Al publicar o programar, el servidor controla versión y marca el borrador como utilizado junto con el resultado. Las versiones utilizadas quedan consultables como referencia y la exportación incluye solo las propias.
+
+Por ahora se guardan publicaciones iniciales de texto, no respuestas ni la selección tentativa de fecha. Programar confirma fecha y hora por separado. Las ediciones sin guardar se pierden al recargar. No se implementa todavía eliminación de borradores ni historial completo de versiones.

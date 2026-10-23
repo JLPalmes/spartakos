@@ -12,7 +12,7 @@ export const accounts = [
   {id:'diego', name:'Diego', description:'No pertenece a la comunidad privada'},
 ];
 export function initialData(now=Date.now()) {
-  return {schema:5,likeBatch:{baselineAt:new Date(now).toISOString(),updatedAt:null,generatedAt:null,counts:{},changes:[]},seenQuotes:{}, revision:0, nextId:3,likes:{},scheduled:[],nextScheduleId:1,
+  return {schema:6,drafts:[],nextDraftId:1,likeBatch:{baselineAt:new Date(now).toISOString(),updatedAt:null,generatedAt:null,counts:{},changes:[]},seenQuotes:{}, revision:0, nextId:3,likes:{},scheduled:[],nextScheduleId:1,
     communities:[{id:'cuaderno',name:'Cuaderno compartido',visibility:'private',
       members:{alicia:'admin',bruno:'contributor',carla:'reader'},
       protected:['alicia','bruno','carla'],proposal:null,proposalVersion:0}],
@@ -22,12 +22,14 @@ export function initialData(now=Date.now()) {
     ],saved:Object.fromEntries(accounts.map(a=>[a.id,[]]))};
 }
 export function migrateData(original,now=Date.now()) {
-  if(![1,2,3,4,5].includes(original.schema))throw Error('Versión de datos no compatible.');
+  if(![1,2,3,4,5,6].includes(original.schema))throw Error('Versión de datos no compatible.');
   const data=structuredClone(original);
   if(data.schema===1){data.schema=2;data.likes={};}
   if(data.schema===2){data.schema=3;data.scheduled=[];data.nextScheduleId=1;}
   if(data.schema===3){data.schema=4;data.seenQuotes={};}
   if(data.schema===4){data.schema=5;data.likeBatch={baselineAt:new Date(now).toISOString(),updatedAt:null,generatedAt:null,counts:Object.fromEntries(Object.entries(data.likes??{}).map(([id,actors])=>[id,actors.length])),changes:[]};}
+  if(data.schema===5){data.schema=6;data.drafts=[];data.nextDraftId=1;}
+  if(!Array.isArray(data.drafts)||!Number.isSafeInteger(data.nextDraftId))throw Error('Registro de borradores no válido.');
   if(!data.likeBatch||!Array.isArray(data.likeBatch.changes))throw Error('Registro de recuentos no válido.');
   if(!data.seenQuotes||typeof data.seenQuotes!=='object'||Array.isArray(data.seenQuotes))throw Error('Registro de avisos no válido.');
   if(!Array.isArray(data.scheduled)||!Number.isSafeInteger(data.nextScheduleId))throw Error('Registro de programación no válido.');
@@ -53,6 +55,7 @@ export function view(data, actor) {
       likeCount:data.likeBatch.updatedAt&&Date.parse(p.createdAt)<Date.parse(data.likeBatch.updatedAt)?data.likeBatch.counts[p.id]??0:null,
       likesUpdatedAt:data.likeBatch.updatedAt,likesGeneratedAt:data.likeBatch.generatedAt})),
     notices:quoteNotices(data,actor),
+    drafts:data.drafts.filter(d=>d.author===actor),
     scheduled:data.scheduled.filter(s=>s.author===actor),
     saved:data.saved[actor].filter(id=>posts.some(p=>p.id===id)),
     communities:data.communities.filter(c=>c.visibility==='public'||c.members[actor]).map(c=>({...c,role:c.members[actor]??null})),
@@ -67,7 +70,47 @@ export function command(original, actor, input, now=Date.now()) {
   if (!input || typeof input!=='object' || Array.isArray(input)) fail(400,'Acción no válida.');
   const data=structuredClone(original);
   let message='Cambios guardados.';
-  if(['schedule','edit-schedule','cancel-schedule','publish-schedule'].includes(input.type)) {
+  let sourceDraft=null;
+  if(['publish','schedule'].includes(input.type)&&input.draftId){
+    sourceDraft=data.drafts.find(d=>d.id===input.draftId&&d.author===actor);
+    if(!sourceDraft)fail(404,'Borrador no disponible.');
+    if(sourceDraft.status!=='draft'||sourceDraft.version!==input.draftVersion)fail(409,'El borrador ha cambiado o ya se ha utilizado. Se conserva tu texto; revisa la versión guardada.');
+    if((input.community??null)!==sourceDraft.community||input.parent)fail(400,'El borrador debe conservar su espacio de publicación.');
+  }
+  if(input.type==='save-draft'){
+    const text=typeof input.text==='string'?input.text:'';
+    if(!text.trim()||text.length>3000)fail(400,'Escribe entre 1 y 3000 caracteres para guardar el borrador.');
+    if(input.parent)fail(400,'Esta versión guarda borradores de publicaciones iniciales, no respuestas.');
+    let draft=null,source=null;
+    if(input.id||input.copyOf){
+      source=data.drafts.find(d=>d.id===(input.id??input.copyOf)&&d.author===actor);
+      if(!source)fail(404,'Borrador no disponible.');
+      if(input.id&&source.status!=='draft')fail(409,'El borrador ya se ha utilizado.');
+      if(input.id){draft=source;if(draft.version!==input.version)fail(409,'Hay otra versión guardada. Tu texto se conserva; puedes guardarlo como copia.');}
+      if((input.community??null)!==source.community)fail(400,'Conserva el espacio del borrador original.');
+    }
+    const community=input.community??null,audience=input.audience;
+    let destinationName='Inicio general';
+    if(community){
+      const c=data.communities.find(c=>c.id===community);
+      const retained=source&&source.community===community&&source.audience===audience;
+      if(!retained)findCommunity(data,actor,community);
+      if(!['members','public'].includes(audience)||(!retained&&c?.visibility==='private'&&audience!=='members'))fail(400,'Audiencia no válida para este borrador.');
+      destinationName=source?.destinationName??c?.name??'Comunidad no disponible';
+    }else if(audience!=='public')fail(400,'El borrador general debe mantener audiencia pública.');
+    const quote=input.quote??null;
+    if(quote&&quote!==source?.quote){
+      const target=data.posts.find(p=>p.id===quote);
+      if(!target||!canRead(data,actor,target))fail(404,'Publicación citada no disponible.');
+      if(target.audience!=='public'&&(community!==target.community||audience!=='members'))fail(403,'La cita debe conservar su audiencia restringida.');
+    }
+    // Una cita conservada tampoco puede ampliar audiencia tras abrirse la comunidad.
+    if(quote){const target=data.posts.find(p=>p.id===quote);if(target&&target.audience!=='public'&&(community!==target.community||audience!=='members'))fail(403,'La cita debe conservar su audiencia restringida.');}
+    const values={text,community,audience,quote,destinationName,updatedAt:new Date(now).toISOString()};
+    if(draft){Object.assign(draft,values);draft.version++;}
+    else data.drafts.push({id:`d${data.nextDraftId++}`,author:actor,version:1,status:'draft',createdAt:new Date(now).toISOString(),...values});
+    message='Borrador guardado en el servidor. Solo tú lo ves; no está publicado ni programado.';
+  }else if(['schedule','edit-schedule','cancel-schedule','publish-schedule'].includes(input.type)) {
     let item;
     if(input.type!=='schedule'){
       item=data.scheduled.find(s=>s.id===input.id&&s.author===actor);
@@ -179,6 +222,13 @@ export function command(original, actor, input, now=Date.now()) {
       message='Baja aplicada. Se cancela la propuesta y se conserva la protección frente a una apertura elusiva.';
     }
   } else fail(400,'Acción desconocida.');
+  if(sourceDraft){
+    const stored=data.drafts.find(d=>d.id===sourceDraft.id);
+    const publication=input.type==='publish'?data.posts.at(-1):data.scheduled.at(-1).publication;
+    Object.assign(stored,{text:publication.text,audience:publication.audience,quote:publication.quote??null});
+    stored.status=input.type==='publish'?'published':'scheduled';stored.version++;stored.updatedAt=new Date(now).toISOString();
+    if(input.type==='publish')stored.postId=data.posts.at(-1).id;else stored.scheduleId=data.scheduled.at(-1).id;
+  }
   data.revision++;
   return {data,message};
 }

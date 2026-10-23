@@ -6,13 +6,15 @@ const params=new URLSearchParams(location.search);
 const storageKey=`spartakos-lab:${params.get('panel')??'principal'}`;
 const esc=text=>String(text).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let token=sessionStorage.getItem(storageKey),state=null,page='inicio',selectedCommunity=null,busy=false,connectionLost=false;
+let activeDraftId=null;
+const loadedDrafts=new Map();
 const drafts=new Map(),replyDrafts=new Map(),expandedReplies=new Set(),scheduleDrafts=new Map();
 const localZone=Intl.DateTimeFormat().resolvedOptions().timeZone;
 const dateLabel=(value,zone=localZone)=>new Intl.DateTimeFormat('es-ES',{dateStyle:'medium',timeStyle:'long',timeZone:zone}).format(new Date(value));
 function localInput(value){const d=new Date(value),pad=n=>String(n).padStart(2,'0');return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;}
 function instant(value){const d=new Date(value);if(!value||!Number.isFinite(d.getTime())||localInput(d)!==value+(value.length===16?':00':''))throw Error('Fecha u hora no válida en esta zona; revisa también los cambios de horario.');return d.toISOString();}
 const scopeKey=()=>page==='comunidad'&&selectedCommunity?`community:${selectedCommunity}`:'general';
-function currentDraft(){const key=scopeKey();if(!drafts.has(key)){const c=state?.communities.find(c=>c.id===selectedCommunity);drafts.set(key,{text:'',audience:key==='general'?'public':`${selectedCommunity}:${c?.visibility==='public'?'public':'members'}`});}return drafts.get(key);}
+function currentDraft(){const saved=loadedDrafts.get(activeDraftId);if(saved&&((page==='inicio'&&!saved.community)||(page==='comunidad'&&selectedCommunity===saved.community)))return saved;const key=scopeKey();if(!drafts.has(key)){const c=state?.communities.find(c=>c.id===selectedCommunity);drafts.set(key,{text:'',audience:key==='general'?'public':`${selectedCommunity}:${c?.visibility==='public'?'public':'members'}`});}return drafts.get(key);}
 function status(text,error=false){$('status').textContent=text;$('status').className=error?'error':'';}
 async function api(url,{method='GET',body}={}){
   const response=await fetch(url,{method,headers:{...(token?{Authorization:`Bearer ${token}`}:{ }),...(body?{'Content-Type':'application/json'}:{})},...(body?{body:JSON.stringify(body)}:{})});
@@ -27,16 +29,16 @@ async function enter(account){
     token=null;
     const result=await api('/api/sessions',{method:'POST',body:{account}});
     token=result.token;sessionStorage.setItem(storageKey,token);state=await api('/api/state');
-    drafts.clear();replyDrafts.clear();expandedReplies.clear();scheduleDrafts.clear();page='inicio';selectedCommunity=null;
+    drafts.clear();loadedDrafts.clear();activeDraftId=null;replyDrafts.clear();expandedReplies.clear();scheduleDrafts.clear();page='inicio';selectedCommunity=null;
     $('login').hidden=true;$('session').hidden=false;render();status('Sesión ficticia abierta.');
   }catch(error){status(error.message,true);}
 }
 async function send(input){
   if(busy)return false;
-  busy=true;document.querySelectorAll('button[type=submit]').forEach(b=>b.disabled=true);
+  busy=true;document.querySelectorAll('textarea').forEach(t=>t.readOnly=true);document.querySelectorAll('button[type=submit]').forEach(b=>b.disabled=true);
   try{const result=await api('/api/commands',{method:'POST',body:input});state=result.state;render();status(result.message);return true;}
   catch(error){status(error.message,true);if(error.status===401)showLogin();return false;}
-  finally{busy=false;document.querySelectorAll('button[type=submit]').forEach(b=>b.disabled=false);updatePublishDisabled();}
+  finally{busy=false;document.querySelectorAll('textarea').forEach(t=>t.readOnly=false);document.querySelectorAll('button[type=submit]').forEach(b=>b.disabled=false);updatePublishDisabled();}
 }
 function mayReply(p){const c=state.communities.find(c=>c.id===p.community);return replyDepth(state.posts,p.id)<2&&(!p.community||['admin','contributor','commenter'].includes(c?.role));}
 function mayQuote(p){const c=state.communities.find(c=>c.id===p.community);return p.audience==='public'||['admin','contributor'].includes(c?.role);}
@@ -88,7 +90,7 @@ function destinationAvailable(){
   const [id,mode]=audience.split(':');
   return id===selectedCommunity&&state?.communities.some(c=>c.id===id&&['admin','contributor'].includes(c.role)&&(mode==='members'||(mode==='public'&&c.visibility==='public')));
 }
-function updatePublishDisabled(){const disabled=busy||!destinationAvailable();$('publish').querySelector('button[type=submit]').disabled=disabled;$('schedule-toggle').disabled=disabled;$('schedule-confirm').disabled=disabled;}
+function updatePublishDisabled(){const disabled=busy||!destinationAvailable();$('publish').querySelector('button[type=submit]').disabled=disabled;$('schedule-toggle').disabled=disabled;$('schedule-confirm').disabled=disabled;$('save-draft').disabled=busy;$('save-draft-copy').disabled=busy;}
 function composer(){
   const draft=currentDraft(),c=state.communities.find(c=>c.id===selectedCommunity);
   const inCommunity=page==='comunidad'&&selectedCommunity;
@@ -112,7 +114,8 @@ function composer(){
   $('schedule-zone').textContent=`Zona horaria: ${localZone}. La fecha se fija como un instante; un cambio posterior de zona no la desplaza.`;
   schedulePreview();
   if($('text').value!==draft.text)$('text').value=draft.text;
-  $('audience-help').textContent=!destinationAvailable()?'Ya no puedes publicar en el destino elegido. El borrador se conserva; no se cambia a público.':draft.audience.endsWith(':members')?'Solo integrantes. El operador puede leer el contenido; no hay cifrado de extremo a extremo.':inCommunity?'Publicación pública dentro de esta comunidad. No aparecerá en Inicio general.':'Publicación pública en el espacio general, fuera de las comunidades.';
+  draftStatus();
+  $('audience-help').textContent=!destinationAvailable()?`Destino conservado: ${draft.destinationName??c?.name??'comunidad'} · ${draft.audience.endsWith(':members')?'Solo integrantes':'Público'}. Ya no puedes publicar aquí; el borrador no se cambia de destino.`:draft.audience.endsWith(':members')?'Solo integrantes. El operador puede leer el contenido; no hay cifrado de extremo a extremo.':inCommunity?'Publicación pública dentro de esta comunidad. No aparecerá en Inicio general.':'Publicación pública en el espacio general, fuera de las comunidades.';
   updatePublishDisabled();
 }
 function render(){
@@ -130,6 +133,11 @@ function render(){
   }else if(page==='guardados'){
     $('context').innerHTML='<h1>Guardados</h1><p>Tu colección privada. Guardar no expresa Me gusta ni avisa al autor.</p>';
     $('content').innerHTML=state.posts.filter(p=>state.saved.includes(p.id)).map(p=>postMarkup(p,{savedView:true})).join('')||'<p>No has guardado publicaciones.</p>';
+  }else if(page==='borradores'){
+    $('context').innerHTML='<h1>Borradores</h1><p>Guardados en el servidor y visibles solo para ti. Retomarlos no publica ni programa nada.</p>';
+    const saved=state.drafts??[];
+    const cards=list=>list.slice().reverse().map(d=>`<article class="post"><p>${esc(d.destinationName)} · ${d.audience==='members'?'Solo integrantes':'Público al publicar'}</p><p class="post-text">${esc(d.text)}</p><p class="hint">Guardado: ${esc(dateLabel(d.updatedAt))}${d.quote?' · Con cita':''}</p>${d.status==='draft'?`<button data-load-draft="${d.id}">Retomar borrador</button>`:`<p>${d.status==='published'?'Ya publicado':'Transferido a Programadas'}. Se conserva esta versión como referencia.</p>`}</article>`).join('');
+    $('content').innerHTML=(cards(saved.filter(d=>d.status==='draft'))||'<p>No tienes borradores pendientes.</p>')+(saved.some(d=>d.status!=='draft')?`<details data-panel="used-drafts"><summary>Borradores ya utilizados</summary>${cards(saved.filter(d=>d.status!=='draft'))}</details>`:'');
   }else if(page==='avisos'){
     $('context').innerHTML='<h1>Avisos</h1><p>Citas a tus publicaciones, dentro de su audiencia. Sin correos ni avisos externos.</p>';
     $('content').innerHTML=(state.notices??[]).slice().reverse().map(n=>`<article class="post"><p>${esc(n.authorName)} ha citado una publicación tuya. ${n.read?'Leído':'Sin leer'}</p><button data-notice="${n.id}" data-post="${n.post}">Ver publicación con cita</button></article>`).join('')||'<p>No tienes avisos de citas.</p>';
@@ -137,7 +145,7 @@ function render(){
     $('context').innerHTML='<h1>Programadas</h1><p>Solo tú ves estas publicaciones pendientes. Revisa aquí los bloqueos y vencimientos; no se reactivan automáticamente.</p>';
     $('content').innerHTML=scheduledContent();
   }else if(page==='comunidad'){
-    $('context').innerHTML=selectedCommunity?`<button id="all-communities">Todas las comunidades</button><h1>${esc(c?.name??'Comunidad no disponible')}</h1>${c?`<p>${c.visibility==='private'?'Privada · Solo integrantes · Operador con acceso':'Pública · El historial anterior puede seguir restringido'}</p>`:''}`:'<h1>Comunidades</h1><p>Entra en una comunidad para leer y publicar en su propio espacio.</p>';
+    $('context').innerHTML=selectedCommunity?`<button id="all-communities">Todas las comunidades</button><h1>${esc(c?.name??currentDraft().destinationName??'Comunidad no disponible')}</h1>${c?`<p>${c.visibility==='private'?'Privada · Solo integrantes · Operador con acceso':'Pública · El historial anterior puede seguir restringido'}</p>`:''}`:'<h1>Comunidades</h1><p>Entra en una comunidad para leer y publicar en su propio espacio.</p>';
     $('content').innerHTML=communityContent();
   }else{
     $('context').innerHTML='<h1>Mi cuenta</h1>';
@@ -164,7 +172,24 @@ function scheduledContent(){
     return `<article class="post"><h2>${labels[s.status]}</h2><p>${esc(contextLabel(s.publication))}</p><p>${esc(dateLabel(s.publishAt,s.timeZone))} · ${esc(s.timeZone)} · Margen: ${s.lateMinutes} minutos</p><p class="post-text">${esc(s.publication.text)}</p>${s.reason?`<p class="notice">${esc(s.reason)}</p>`:''}${active?`<details data-panel="schedule-${s.id}"><summary>Editar fecha o contenido</summary><form data-edit-schedule="${s.id}" data-version="${s.version}"><p>Destino y audiencia se conservan. Las fechas del editor se muestran en ${esc(localZone)}.</p><label for="scheduled-text-${s.id}">Texto</label><textarea id="scheduled-text-${s.id}" name="text" required maxlength="3000">${esc(d.text)}</textarea><label for="scheduled-at-${s.id}">Nueva fecha y hora</label><input id="scheduled-at-${s.id}" name="at" type="datetime-local" step="1" value="${esc(d.at)}" required><label for="scheduled-late-${s.id}">Margen de retraso</label><select id="scheduled-late-${s.id}" name="late">${[[5,'5 minutos'],[15,'15 minutos'],[60,'1 hora'],[1440,'24 horas']].map(([v,l])=>`<option value="${v}" ${Number(d.late)===v?'selected':''}>${l}</option>`).join('')}</select><button type="submit">Guardar y programar</button></form></details><div class="actions"><button data-publish-schedule="${s.id}" data-version="${s.version}">Publicar ahora</button><button data-cancel-schedule="${s.id}" data-version="${s.version}">Cancelar programación</button></div>`:''}</article>`;
   }).join('')||'<p>No tienes publicaciones programadas.</p>';
 }
+function draftStatus(){
+  const draft=currentDraft(),stored=draft.id?(state.drafts??[]).find(d=>d.id===draft.id):null;
+  const conflict=Boolean(stored&&(stored.version!==draft.version||stored.status!=='draft'));
+  $('new-composition').hidden=!draft.id;
+  $('save-draft-copy').hidden=!conflict;
+  const clean=stored&&stored.version===draft.version&&stored.text===draft.text&&(stored.community?`${stored.community}:${stored.audience}`:'public')===draft.audience&&(stored.quote??null)===(draft.quote??null);
+  $('draft-status').textContent=conflict?'Hay otra versión guardada. Se conserva lo que estás escribiendo; puedes guardarlo como copia.':clean?`Borrador guardado: ${dateLabel(stored.updatedAt)}.`:draft.text?'Cambios sin guardar. Usa Guardar borrador para recuperarlos tras recargar.':'El texto sin guardar solo se conserva en esta pestaña.';
+}
+function draftReference(draft){return draft.id?{draftId:draft.id,draftVersion:draft.version}:{};}
+function finishComposition(draft,key){
+  if(draft.id){loadedDrafts.delete(draft.id);activeDraftId=null;}else{const local=drafts.get(key);if(local){local.text='';delete local.quote;local.scheduling=false;local.publishAt='';}}
+}
 function bindActions(){
+  document.querySelectorAll('[data-load-draft]').forEach(b=>b.onclick=()=>{
+    const stored=state.drafts.find(d=>d.id===b.dataset.loadDraft&&d.status==='draft');if(!stored)return;
+    if(!loadedDrafts.has(stored.id))loadedDrafts.set(stored.id,{...stored,audience:stored.community?`${stored.community}:${stored.audience}`:'public'});
+    activeDraftId=stored.id;selectedCommunity=stored.community;page=stored.community?'comunidad':'inicio';render();status('Borrador recuperado. Conserva su destino; no se publica automáticamente.');
+  });
   if($('remove-quote'))$('remove-quote').onclick=()=>{delete currentDraft().quote;render();};
   document.querySelectorAll('[data-notice]').forEach(b=>b.onclick=async()=>{if(await send({type:'read-notice',id:b.dataset.notice}))openConversation(b.dataset.post);});
   document.querySelectorAll('[data-quote]').forEach(b=>b.onclick=()=>{
@@ -210,6 +235,19 @@ function bindActions(){
     try{const data=await api('/api/export');const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));const link=document.createElement('a');link.href=url;link.download=`spartakos-${state.user.id}-simulacion.json`;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}catch(error){status(error.message,true);}
   };
 }
+async function saveDraft(copy=false){
+  const draft=currentDraft(),key=scopeKey(),[community,audience]=draft.audience.split(':');
+  const input={type:'save-draft',text:draft.text,quote:draft.quote??null,...(key==='general'?{audience:'public'}:{community,audience}),...(draft.id?(copy?{copyOf:draft.id}:{id:draft.id,version:draft.version}):{})};
+  if(await send(input)){
+    const saved=draft.id&&!copy?state.drafts.find(d=>d.id===draft.id):state.drafts.at(-1);
+    const loaded={...saved,audience:saved.community?`${saved.community}:${saved.audience}`:'public'};
+    loadedDrafts.set(saved.id,loaded);activeDraftId=saved.id;
+    if(!draft.id){draft.text='';delete draft.quote;}
+    render();
+  }
+}
+$('save-draft').onclick=()=>saveDraft();$('save-draft-copy').onclick=()=>saveDraft(true);
+$('new-composition').onclick=()=>{activeDraftId=null;render();status('El borrador anterior sigue en Borradores; los cambios sin guardar permanecen en esta pestaña.');};
 $('schedule-toggle').onclick=()=>{currentDraft().scheduling=!currentDraft().scheduling;composer();};
 $('schedule-at').oninput=()=>{currentDraft().publishAt=$('schedule-at').value;schedulePreview();};
 $('schedule-late').onchange=()=>{currentDraft().lateMinutes=Number($('schedule-late').value);};
@@ -217,17 +255,17 @@ $('schedule-confirm').onclick=async()=>{
   if(!destinationAvailable())return status('El destino ya no permite publicar.',true);
   try{
     const draft=currentDraft(),key=scopeKey(),[community,audience]=draft.audience.split(':');
-    const input={type:'schedule',text:draft.text,quote:draft.quote??null,publishAt:instant(draft.publishAt),timeZone:localZone,lateMinutes:draft.lateMinutes??15,...(key==='general'?{audience:'public'}:{community,audience})};
-    if(await send(input)){draft.text='';delete draft.quote;draft.scheduling=false;draft.publishAt='';page='programadas';render();}
+    const input={type:'schedule',...draftReference(draft),text:draft.text,quote:draft.quote??null,publishAt:instant(draft.publishAt),timeZone:localZone,lateMinutes:draft.lateMinutes??15,...(key==='general'?{audience:'public'}:{community,audience})};
+    if(await send(input)){finishComposition(draft,key);page='programadas';render();}
   }catch(error){status(error.message,true);}
 };
-$('text').oninput=()=>{currentDraft().text=$('text').value;};
+$('text').oninput=()=>{currentDraft().text=$('text').value;draftStatus();};
 $('audience').onchange=()=>{currentDraft().audience=$('audience').value;composer();};
 $('publish').onsubmit=async e=>{
   e.preventDefault();if(!destinationAvailable())return status('El destino perdió permisos. El borrador no se publica en otro espacio.',true);
   const draft=currentDraft(),[community,audience]=draft.audience.split(':'),key=scopeKey();
-  const input={type:'publish',text:draft.text,quote:draft.quote??null,...(key==='general'?{audience:'public'}:{community,audience})};
-  if(await send(input)){drafts.get(key).text='';delete drafts.get(key).quote;render();}
+  const input={type:'publish',...draftReference(draft),text:draft.text,quote:draft.quote??null,...(key==='general'?{audience:'public'}:{community,audience})};
+  if(await send(input)){finishComposition(draft,key);render();}
 };
 document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>{page=b.dataset.page;if(page==='comunidad')selectedCommunity=null;render();status('');});
 $('enter').onclick=()=>enter($('account').value);

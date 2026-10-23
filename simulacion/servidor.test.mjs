@@ -195,7 +195,7 @@ test('los datos de la primera versión migran sin perder publicaciones ni guarda
   assert.equal(state.revision,7);assert.equal(state.posts.length,2);assert.deepEqual(state.saved,['p1']);
   assert(state.posts.every(p=>p.likedByMe===false&&!Object.hasOwn(p,'likes')));
   const persisted=JSON.parse(await readFile(path.join(f.directory,'estado.json'),'utf8'));
-  assert.equal(persisted.schema,5);assert.deepEqual(persisted.posts,legacy.posts);
+  assert.equal(persisted.schema,6);assert.deepEqual(persisted.posts,legacy.posts);
 });
 test('las reacciones persisten y la exportación solo atribuye las propias',async t=>{
   const f=await fixture(t);
@@ -206,7 +206,7 @@ test('las reacciones persisten y la exportación solo atribuye las propias',asyn
   assert.equal(state.posts.find(p=>p.id==='p2').likedByMe,true);
   const exported=(await f.request('/api/export',{token})).data;
   assert.deepEqual(exported.liked,['p2']);assert.deepEqual(exported.saved,[]);
-  assert.equal(exported.format,'spartakos-local-simulation-v4');
+  assert.equal(exported.format,'spartakos-local-simulation-v5');
 });
 test('abrir la comunidad no publica las reacciones de su historial restringido',async t=>{
   const f=await fixture(t);
@@ -298,4 +298,27 @@ test('el temporizador publica el corte horario sin cliente y lo conserva al rein
  assert.equal(post.likeCount,1);assert(!Object.hasOwn(post,'likes'));
  now=Date.parse('2030-01-01T14:00:01Z');await new Promise(r=>setTimeout(r,1200));
  post=(await f.request('/api/state',{token})).data.posts.find(p=>p.id==='p1');assert.equal(post.likeCount,2);
+});
+test('borradores propios persisten, se exportan y no salen en otras cuentas',async t=>{
+ const f=await fixture(t);
+ const r=await f.cmd('bruno',{type:'save-draft',text:'Texto privado no publicado',community:'cuaderno',audience:'members',quote:'p2'});
+ assert.equal(r.status,200);assert.equal(r.data.state.posts.length,2);
+ for(const actor of ['alicia','carla','diego']){
+  const state=(await f.request('/api/state',{token:f.tokens[actor]})).data;assert.deepEqual(state.drafts,[]);
+  assert(!JSON.stringify(state).includes('Texto privado no publicado'));
+  assert.equal((await f.cmd(actor,{type:'save-draft',id:'d1',version:1,text:'Intrusión',audience:'public'})).status,404);
+ }
+ await f.restart();const token=await f.login('bruno');
+ const state=(await f.request('/api/state',{token})).data;assert.equal(state.drafts[0].text,'Texto privado no publicado');assert.equal(state.drafts[0].quote,'p2');
+ assert.equal((await f.request('/api/export',{token})).data.drafts.length,1);
+});
+test('HTTP conserva un borrador tras revocar y revalida al publicarlo sin duplicados',async t=>{
+ const f=await fixture(t);const draft={text:'Pendiente',community:'cuaderno',audience:'members'};
+ await f.cmd('bruno',{...draft,type:'save-draft'});
+ await f.cmd('alicia',{type:'set-role',community:'cuaderno',member:'bruno',role:'reader'});
+ const publication={...draft,type:'publish',draftId:'d1',draftVersion:1};
+ assert.equal((await f.cmd('bruno',publication)).status,403);
+ assert.equal((await f.request('/api/state',{token:f.tokens.bruno})).data.drafts[0].status,'draft');
+ await f.cmd('alicia',{type:'set-role',community:'cuaderno',member:'bruno',role:'contributor'});
+ assert.equal((await f.cmd('bruno',publication)).status,200);assert.equal((await f.cmd('bruno',publication)).status,409);
 });

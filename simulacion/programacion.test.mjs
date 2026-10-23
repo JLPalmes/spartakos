@@ -51,7 +51,7 @@ test('abrir una comunidad no amplía la audiencia programada',()=>{
 });
 test('migración de versiones anteriores preserva datos y no borra programaciones al reiniciar',()=>{
  for(const version of [1,2]){const old=initialData();old.schema=version;delete old.scheduled;delete old.nextScheduleId;if(version===1)delete old.likes;
- const data=migrateData(old);assert.equal(data.schema,5);assert.deepEqual(data.posts,old.posts);assert.deepEqual(data.scheduled,[]);}
+ const data=migrateData(old);assert.equal(data.schema,6);assert.deepEqual(data.posts,old.posts);assert.deepEqual(data.scheduled,[]);}
  const scheduled=make();assert.deepEqual(migrateData(scheduled),scheduled);
 });
 test('un bloqueo puede reprogramarse con nueva fecha; no se ejecuta el intento anterior',()=>{
