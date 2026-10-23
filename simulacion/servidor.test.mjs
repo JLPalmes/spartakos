@@ -145,19 +145,21 @@ test('Me gusta es reversible, idempotente y separado de Guardar',async t=>{
   const f=await fixture(t);
   for(let i=0;i<2;i++)assert.equal((await f.cmd('bruno',{type:'like',post:'p1',active:true,actor:'alicia'})).status,200);
   let s=(await f.request('/api/state',{token:f.tokens.alicia})).data;
-  assert.deepEqual(s.posts.find(p=>p.id==='p1').likes,[{id:'bruno',name:'Bruno'}]);
+  assert.equal(s.posts.find(p=>p.id==='p1').likedByMe,false);
+  assert.equal((await f.request('/api/state',{token:f.tokens.bruno})).data.posts.find(p=>p.id==='p1').likedByMe,true);
   assert.deepEqual(s.saved,[]);
   assert.deepEqual((await f.request('/api/state',{token:f.tokens.bruno})).data.saved,[]);
   await f.cmd('bruno',{type:'save',post:'p1'});
   await f.cmd('bruno',{type:'like',post:'p1',active:false});
   s=(await f.request('/api/state',{token:f.tokens.bruno})).data;
-  assert.deepEqual(s.posts.find(p=>p.id==='p1').likes,[]);assert.deepEqual(s.saved,['p1']);
+  assert.equal(s.posts.find(p=>p.id==='p1').likedByMe,false);assert.deepEqual(s.saved,['p1']);
 });
 test('la reacción de una lectora permanece dentro de la audiencia privada',async t=>{
   const f=await fixture(t);
   assert.equal((await f.cmd('carla',{type:'like',post:'p2',active:true})).status,200);
   const a=(await f.request('/api/state',{token:f.tokens.alicia})).data;
-  assert.deepEqual(a.posts.find(p=>p.id==='p2').likes,[{id:'carla',name:'Carla'}]);
+  assert.equal(a.posts.find(p=>p.id==='p2').likedByMe,false);
+  assert.equal((await f.request('/api/state',{token:f.tokens.carla})).data.posts.find(p=>p.id==='p2').likedByMe,true);
   const d=(await f.request('/api/state',{token:f.tokens.diego})).data;
   assert(!d.posts.some(p=>p.id==='p2'));
   assert(!JSON.stringify(d).includes('Cuaderno compartido'));
@@ -191,7 +193,7 @@ test('los datos de la primera versión migran sin perder publicaciones ni guarda
   await f.restart(legacy);
   const token=await f.login('bruno');const state=(await f.request('/api/state',{token})).data;
   assert.equal(state.revision,7);assert.equal(state.posts.length,2);assert.deepEqual(state.saved,['p1']);
-  assert(state.posts.every(p=>Array.isArray(p.likes)&&p.likes.length===0));
+  assert(state.posts.every(p=>p.likedByMe===false&&!Object.hasOwn(p,'likes')));
   const persisted=JSON.parse(await readFile(path.join(f.directory,'estado.json'),'utf8'));
   assert.equal(persisted.schema,4);assert.deepEqual(persisted.posts,legacy.posts);
 });
@@ -201,7 +203,7 @@ test('las reacciones persisten y la exportación solo atribuye las propias',asyn
   await f.cmd('alicia',{type:'like',post:'p1',active:true});
   await f.restart();const token=await f.login('bruno');
   const state=(await f.request('/api/state',{token})).data;
-  assert.deepEqual(state.posts.find(p=>p.id==='p2').likes,[{id:'bruno',name:'Bruno'}]);
+  assert.equal(state.posts.find(p=>p.id==='p2').likedByMe,true);
   const exported=(await f.request('/api/export',{token})).data;
   assert.deepEqual(exported.liked,['p2']);assert.deepEqual(exported.saved,[]);
   assert.equal(exported.format,'spartakos-local-simulation-v4');
@@ -220,7 +222,7 @@ test('Me gusta exige una intención explícita y no admite valores ambiguos',asy
   const f=await fixture(t);
   for(const active of [undefined,'true',1,null])assert.equal((await f.cmd('bruno',{type:'like',post:'p1',active})).status,400);
   const s=(await f.request('/api/state',{token:f.tokens.bruno})).data;
-  assert.equal(s.revision,0);assert.deepEqual(s.posts.find(p=>p.id==='p1').likes,[]);
+  assert.equal(s.revision,0);assert.equal(s.posts.find(p=>p.id==='p1').likedByMe,false);
 });
 
 test('el servidor publica sin cliente abierto, persiste y no repite tras reinicio',async t=>{
@@ -262,4 +264,22 @@ test('avisos de cita persisten y no se reciben ni se marcan desde otra cuenta',a
  assert.equal((await f.cmd('bruno',{type:'read-notice',id:'p3'})).status,200);
  await f.restart();const token=await f.login('bruno');
  const state=(await f.request('/api/state',{token})).data;assert.equal(state.notices[0].read,true);
+});
+
+test('la API no entrega identidades ni cantidades de Me gusta a otros usuarios',async t=>{
+ const f=await fixture(t);
+ await f.cmd('carla',{type:'like',post:'p1',active:true});
+ await f.cmd('bruno',{type:'like',post:'p1',active:true});
+ for(const actor of ['alicia','bruno','carla','diego']){
+  const state=(await f.request('/api/state',{token:f.tokens[actor]})).data;
+  const post=state.posts.find(p=>p.id==='p1');
+  assert.equal(post.likedByMe,['bruno','carla'].includes(actor));
+  assert(!Object.hasOwn(post,'likes'));assert(!Object.hasOwn(post,'likeCount'));
+  const exported=(await f.request('/api/export',{token:f.tokens[actor]})).data;
+  assert.deepEqual(exported.liked,['bruno','carla'].includes(actor)?['p1']:[]);
+  assert.deepEqual(state.notices,[]);
+ }
+ const response=await f.cmd('alicia',{type:'save',post:'p1'});
+ assert.equal(response.data.state.posts.find(p=>p.id==='p1').likedByMe,false);
+ assert(!Object.hasOwn(response.data.state.posts.find(p=>p.id==='p1'),'likes'));
 });

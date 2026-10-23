@@ -42,21 +42,20 @@ function mayReply(p){const c=state.communities.find(c=>c.id===p.community);retur
 function mayQuote(p){const c=state.communities.find(c=>c.id===p.community);return p.audience==='public'||['admin','contributor'].includes(c?.role);}
 function contextLabel(p){const c=state.communities.find(c=>c.id===p.community);return `${p.community?c?.name??'Comunidad':'General'} · ${p.audience==='public'?'Público':'Solo integrantes · Operador con acceso'}`;}
 function postMarkup(p,{depth=0,savedView=false}={}){
-  const saved=state.saved.includes(p.id),likes=p.likes??[],liked=likes.some(a=>a.id===state.user.id);
+  const saved=state.saved.includes(p.id),liked=p.likedByMe===true;
   const parent=state.posts.find(q=>q.id===p.parent);
   const replyTo=p.parent?`<p class="reply-to">En respuesta a ${parent?`<button data-context="${parent.id}">${esc(parent.authorName)}</button>`:'otro mensaje de esta conversación'}</p>`:'';
   return `<article id="post-${p.id}" tabindex="-1" class="post ${depth?`reply depth-${Math.min(depth,3)}`:''}">
     <div class="meta">${esc(p.authorName)} · ${esc(contextLabel(p))}</div>${replyTo}
     ${p.quote?quoteMarkup(p.quote):''}<p class="post-text">${esc(p.text)}</p>
     <div class="actions">
-      <button id="like-${p.id}" data-like="${p.id}" aria-pressed="${liked}">${liked?'Te gusta':'Me gusta'}</button>
+      <button class="approval" id="like-${p.id}" data-like="${p.id}" aria-pressed="${liked}" title="${liked?'Retirar':'Añadir'} Me gusta · Identidad oculta para otros usuarios"><span class="approval-mark" aria-hidden="true">✓</span> Me gusta${liked?' · Marcado':''}</button>
       <button id="save-${p.id}" data-save="${p.id}" aria-pressed="${saved}">${saved?'Guardado · Privado':'Guardar · Privado'}</button>
       ${mayReply(p)?`<button id="respond-${p.id}" data-reply="${p.id}" aria-expanded="${expandedReplies.has(p.id)}">Responder</button>`:''}
       ${mayQuote(p)?`<button data-quote="${p.id}">Citar en una publicación</button>`:''}
       ${savedView?`<button data-context="${p.id}">Ver en conversación</button>`:''}
     </div>
     ${replyDepth(state.posts,p.id)>=2?'<p class="hint">Último nivel de respuestas. Para continuar, inicia una publicación con cita.</p>':''}
-    ${likes.length?`<details class="reactions"><summary>Reacciones</summary><p>A ${esc(likes.map(a=>a.name).join(', '))} les gusta esta publicación. Visible para su audiencia.</p></details>`:''}
     ${mayReply(p)?`<form class="reply-form" data-parent="${p.id}" ${expandedReplies.has(p.id)?'':'hidden'}><label for="reply-${p.id}">Responder a ${esc(p.authorName)} · Misma audiencia</label><textarea id="reply-${p.id}" maxlength="3000" required>${esc(replyDrafts.get(p.id)??'')}</textarea><button type="submit">Enviar respuesta</button></form>`:''}
   </article>`;
 }
@@ -141,7 +140,7 @@ function render(){
     $('content').innerHTML=communityContent();
   }else{
     $('context').innerHTML='<h1>Mi cuenta</h1>';
-    $('content').innerHTML=`<p>Actúas como ${esc(state.user.name)}. Tus guardados son privados; tus Me gusta respetan la audiencia de cada publicación.</p><button id="export">Exportar mis aportaciones ficticias</button><p>Esta exportación no es un perfil portable de producción.</p><button id="logout">Cerrar esta sesión</button>`;
+    $('content').innerHTML=`<p>Actúas como ${esc(state.user.name)}. Tus guardados son privados; tus Me gusta no muestran tu identidad a otros usuarios. No se publican listas ni recuentos. El servidor local conserva tu elección para permitir retirarla; no hay anonimato frente al proveedor.</p><button id="export">Exportar mis aportaciones ficticias</button><p>Esta exportación no es un perfil portable de producción.</p><button id="logout">Cerrar esta sesión</button>`;
   }
   composer();bindActions();
   for(const panel of panels){const details=document.querySelector(`details[data-panel="${panel}"]`);if(details)details.open=true;}
@@ -186,7 +185,7 @@ function bindActions(){
     form.onsubmit=async e=>{e.preventDefault();try{const d=capture(),s=state.scheduled.find(s=>s.id===id);if(await send({type:'edit-schedule',id,version:Number(form.dataset.version),...s.publication,text:d.text,publishAt:instant(d.at),timeZone:localZone,lateMinutes:Number(d.late)})){scheduleDrafts.delete(id);render();}}catch(error){status(error.message,true);}};
   });
   document.querySelectorAll('[data-save]').forEach(b=>b.onclick=()=>send({type:'save',post:b.dataset.save}));
-  document.querySelectorAll('[data-like]').forEach(b=>b.onclick=()=>send({type:'like',post:b.dataset.like,active:!(state.posts.find(p=>p.id===b.dataset.like)?.likes??[]).some(a=>a.id===state.user.id)}));
+  document.querySelectorAll('[data-like]').forEach(b=>b.onclick=()=>send({type:'like',post:b.dataset.like,active:state.posts.find(p=>p.id===b.dataset.like)?.likedByMe!==true}));
   document.querySelectorAll('[data-enter-community]').forEach(b=>b.onclick=()=>{selectedCommunity=b.dataset.community;page='comunidad';render();status('');});
   if($('all-communities'))$('all-communities').onclick=()=>{selectedCommunity=null;render();};
   document.querySelectorAll('[data-context]').forEach(b=>b.onclick=()=>openConversation(b.dataset.context));

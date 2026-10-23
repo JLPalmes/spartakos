@@ -47,7 +47,7 @@ export function view(data, actor) {
   const posts=data.posts.filter(p=>canRead(data,actor,p));
   return {revision:data.revision,user:accounts.find(a=>a.id===actor),
     posts:posts.map(p=>({...p,authorName:accounts.find(a=>a.id===p.author)?.name??p.author,
-      likes:(data.likes?.[p.id]??[]).map(id=>({id,name:accounts.find(a=>a.id===id)?.name??id}))})),
+      likedByMe:(data.likes?.[p.id]??[]).includes(actor)})),
     notices:quoteNotices(data,actor),
     scheduled:data.scheduled.filter(s=>s.author===actor),
     saved:data.saved[actor].filter(id=>posts.some(p=>p.id===id)),
@@ -137,7 +137,7 @@ export function command(original, actor, input, now=Date.now()) {
     data.likes??={};
     const current=data.likes[post.id]??[];
     data.likes[post.id]=input.active?[...new Set([...current,actor])]:current.filter(id=>id!==actor);
-    message=input.active?'Me gusta añadido para la audiencia de esta publicación.':'Me gusta retirado.';
+    message=input.active?'Me gusta guardado. Tu elección no se muestra a otras personas.':'Me gusta retirado.';
   } else if (['propose','consent','open','remove','set-role'].includes(input.type)) {
     const c=findCommunity(data,actor,input.community,{protectedAccess:input.type==='consent'});
     if (input.type==='propose') {
