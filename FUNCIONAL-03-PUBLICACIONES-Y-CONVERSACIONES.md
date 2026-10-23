@@ -2,7 +2,7 @@
 title: Spartakos — Publicaciones, audiencias y conversaciones
 lang: es-ES
 license: CC-BY-SA-4.0
-version: 0.6
+version: 0.7
 date: 2026-10-23
 status: Diseño funcional propuesto; decisiones pendientes identificadas
 ---
@@ -167,4 +167,10 @@ Los borradores tienen versión. Una pestaña con una versión obsoleta no puede 
 
 Publicar o programar desde un borrador comprueba versión, propiedad, estado y permisos en el servidor. La transición se guarda junto con el resultado: el borrador pasa a Ya publicado o Transferido a Programadas y un reintento no lo ejecuta otra vez. La versión utilizada queda consultable como referencia. Cancelar una programación se gestiona en Programadas; no reactiva silenciosamente el borrador original. La exportación incluye solo los borradores propios.
 
-Alcance del simulador: publicaciones iniciales de texto, con o sin cita. No se guarda la selección tentativa de fecha al guardar un borrador; la fecha se confirma en Programar. Las respuestas en curso siguen en memoria de la pestaña. Las ediciones no guardadas se pierden al recargar y no se anuncia recuperación de texto anterior a esta función. Quedan pendientes recuperación de respuestas, eliminación con política de retención, historial de versiones completo y pruebas con participantes. El guardado no sustituye copias independientes ni un servicio de alta disponibilidad.
+Alcance del simulador: publicaciones iniciales de texto, con o sin cita. No se guarda la selección tentativa de fecha al guardar un borrador; la fecha se confirma en Programar. Las respuestas en curso siguen en memoria de la pestaña. Las ediciones no guardadas se pierden al recargar y no se anuncia recuperación de texto anterior a esta función. Quedan pendientes recuperación de respuestas, borrado definitivo con política de retención, historial de versiones completo y pruebas con participantes. El guardado no sustituye copias independientes ni un servicio de alta disponibilidad.
+
+### 12.1 Papelera recuperable de borradores
+
+Mover a papelera aparta el borrador de los pendientes y conserva contenido, destino, audiencia, cita y estado anterior. Restaurar devuelve ese estado sin publicar, programar ni conceder permisos. Ambas acciones comprueban propiedad y versión; una acción obsoleta no sobrescribe otra. La papelera es privada por cuenta y persiste tras reiniciar.
+
+Mover la referencia de un borrador ya publicado o transferido a Programadas no retira la publicación ni cancela su envío. Restaurarla tampoco permite volver a ejecutarla. No hay vaciado automático ni purga definitiva; esta función no se presenta como borrado efectivo de datos. La política de retención, copias y borrado irreversible sigue pendiente de diseño antes de producción.

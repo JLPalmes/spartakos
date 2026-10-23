@@ -3,7 +3,7 @@ title: Spartakos — Notas de revisión del prototipo
 lang: es-ES
 license: CC-BY-SA-4.0
 date: 2026-10-23
-status: N01–N10 implementadas en el simulador; validación de producto pendiente
+status: N01–N10 implementadas; N11 en estudio; validación de producto pendiente
 ---
 
 # Notas de revisión del prototipo
@@ -74,4 +74,18 @@ Inicio general y comunidades privadas muestran una indicación fija. Solo una co
 
 ## N10. Borradores recuperables y guardado explícito
 
-**Criterio de implementación:** cerrar la pérdida de texto al recargar mediante Guardar borrador, sin enviar el editor automáticamente al servidor. **Estado:** implementado para publicaciones iniciales con texto y cita. Borradores es privado por cuenta, conserva contexto y permite recuperación, actualización con versión y copia ante conflictos. Publicar o programar consume una sola vez el pendiente y revalida permisos. Se mantienen como limitaciones explícitas las respuestas no recuperables y las ediciones sin guardar.
+**Criterio de implementación:** cerrar la pérdida de texto al recargar mediante Guardar borrador, sin enviar el editor automáticamente al servidor. **Estado:** implementado para publicaciones iniciales con texto y cita. Borradores es privado por cuenta, conserva contexto y permite recuperación, actualización con versión, copia ante conflictos y papelera recuperable. Publicar o programar consume una sola vez el pendiente y revalida permisos. Se mantienen como limitaciones explícitas las respuestas no recuperables y las ediciones sin guardar.
+
+## N11. Estadísticas útiles para personas, comunidades y sistema
+
+**Nota de diseño:** contemplar estadísticas personales y comunitarias y la posibilidad de estadísticas globales visibles para todos. Se registra la orientación, sin aprobar todavía indicadores concretos, captación de datos ni publicación de información privada. **Estado:** pendiente de diseño y validación; no implementado.
+
+Se distinguen tres ámbitos, con ejemplos candidatos:
+
+| Ámbito | Utilidad propuesta | Visibilidad y límites |
+| --- | --- | --- |
+| Personal | Uso de almacenamiento y cuota, estado de copias y exportaciones, publicaciones, borradores y programaciones propias | Privado para su titular; no convertirlo en puntuación personal ni objetivo de actividad |
+| Comunidad | Recursos disponibles, publicaciones por periodo, conversaciones pendientes y carga de moderación | Separar lo público, lo accesible a integrantes y lo reservado a responsables; sin clasificaciones de personas |
+| Sistema | Disponibilidad agregada, capacidad ofrecida y comprometida, incidencias y cobertura de servicios participantes | Propuesta de panel público; solo datos autorizados y verificables, con alcance y fecha, sin revelar comunidades privadas ni detalles operativos sensibles |
+
+El diseño se desarrolla en la sección 12 de [Inicio, búsqueda y descubrimiento](FUNCIONAL-05-INICIO-BUSQUEDA-Y-DESCUBRIMIENTO.md). No se presupone medir lecturas individuales, seguimiento entre dispositivos ni actividad personal de terceros. Las estadísticas no pueden convertirse en una vía alternativa para consultar identidades de Me gusta, totales en directo o información fuera de la audiencia autorizada.

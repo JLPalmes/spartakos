@@ -39,7 +39,7 @@ La [maqueta anterior sin servidor](prototipo/README.md) se conserva como anteced
 
 Las [notas de revisión del prototipo](NOTAS-DE-REVISION.md) acumulan observaciones, cambios implementados y asuntos pendientes, distinguiendo decisiones de propuestas todavía abiertas.
 
-1. [Especificación integral v0.26](ESPECIFICACION.md): primera pasada funcional y contraste comparado; reciprocidad y acreditación como mecanismos candidatos.
+1. [Especificación integral v0.27](ESPECIFICACION.md): primera pasada funcional y contraste comparado; reciprocidad y acreditación como mecanismos candidatos.
 2. [Decisiones, dudas y riesgos](DECISIONES-Y-DUDAS.md): qué está confirmado, qué se propone y qué exige ensayo.
 3. [Matriz de aceptación](MATRIZ-DE-ACEPTACION.md): 148 pruebas especificadas, ninguna ejecutada; incluye escenarios condicionados a adoptar reciprocidad.
 4. [Antecedentes y lecciones](ANTECEDENTES-Y-LECCIONES.md): fuentes, cobertura y límites de la investigación.
@@ -65,11 +65,13 @@ Los documentos de análisis conservan los antecedentes técnicos. La especificac
 
 ## Prototipo y comprobaciones
 
-La [simulación con varias cuentas](simulacion/README.md) incluye 30 pruebas HTTP, cuatro de conversaciones, diez de programación, siete de citas y niveles, ocho de recuentos horarios y seis de borradores, además de las diez de la [maqueta anterior](prototipo/README.md). Se comprueban permisos por sesión, persistencia, audiencia y consentimiento, sin atribuir a esas pruebas garantías de una red distribuida. El [informe de resultados](RESULTADOS-DEL-PROTOTIPO.md) distingue estas comprobaciones de las pruebas de producto, que siguen sin ejecutarse.
+La [simulación con varias cuentas](simulacion/README.md) incluye 31 pruebas HTTP, cuatro de conversaciones, diez de programación, siete de citas y niveles, ocho de recuentos horarios y ocho de borradores, además de las diez de la [maqueta anterior](prototipo/README.md). Se comprueban permisos por sesión, persistencia, audiencia y consentimiento, sin atribuir a esas pruebas garantías de una red distribuida. El [informe de resultados](RESULTADOS-DEL-PROTOTIPO.md) distingue estas comprobaciones de las pruebas de producto, que siguen sin ejecutarse.
 
 El [contrato preliminar de datos y autoridad](CONTRATO-DE-DATOS-Y-AUTORIDAD.md) fija separaciones antes de elegir componentes. El [paquete de apertura](PREPARACION-DE-APERTURA.md) documenta el repositorio y las licencias adoptadas, y las condiciones de contribución.
 
 ## Continuación preparada
+
+El [registro de revisión](REVISION-PARA-EL-LUNES.md) reúne el estado de los bloques en curso, sus comprobaciones y los pendientes de revisión.
 
 La [resolución propuesta de los 29 pendientes](RESOLUCION-DE-PENDIENTES.md) concreta recomendaciones, alternativas y dependencias. Se complementa con el [gobierno de la acreditación](GOBIERNO-DE-LA-ACREDITACION.md), el [programa de operadores voluntarios](OPERACION-Y-VOLUNTARIADO.md) y el [protocolo de validación](VALIDACION-Y-PUERTAS-DE-AVANCE.md). Son propuestas listas para revisar, sin ratificación implícita.
 

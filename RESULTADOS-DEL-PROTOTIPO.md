@@ -2,9 +2,9 @@
 title: Spartakos — Resultados de la primera comprobación del prototipo
 lang: es-ES
 license: CC-BY-SA-4.0
-version: 0.8
+version: 0.9
 date: 2026-10-23
-status: 75 pruebas automáticas superadas; borradores recuperables y privados por cuenta
+status: 78 pruebas automáticas superadas; borradores con papelera recuperable
 ---
 
 # Primera comprobación del prototipo
@@ -105,3 +105,9 @@ Resultado: **75 pruebas automáticas superadas, 0 fallos**: diez del modelo ante
 En navegador con datos sintéticos: Bruno guardó una publicación restringida con cita, recargó y la recuperó en la misma comunidad. Dos pestañas editaron el mismo borrador: el guardado obsoleto se rechazó conservando su texto y Guardar como copia mantuvo ambas variantes. Alicia no vio borradores de Bruno. Tras revocar publicación, el editor de Bruno deshabilitó Publicar, mantuvo Solo integrantes y permitió seguir guardando.
 
 La función no recupera texto anterior que nunca se hubiera guardado, respuestas en curso ni ediciones sin guardar tras recargar. El almacenamiento local es legible por el operador y no tiene cifrado de extremo a extremo. Las pruebas de producto y usabilidad con participantes siguen pendientes.
+
+## 13. Papelera recuperable de borradores
+
+Resultado: **78 pruebas automáticas superadas, 0 fallos**: diez del modelo anterior, 31 HTTP, cuatro de conversaciones, diez de programación, siete de citas, ocho de recuentos y ocho de borradores. Se comprueba que mover y restaurar exige propiedad y versión, conserva contenido y audiencia, persiste al reiniciar y no repite una publicación ya ejecutada. No hay purga ni vaciado automático.
+
+En navegador con datos sintéticos se guardó un borrador, se movió a Papelera de borradores y se restauró. Retomar recuperó el texto original sin publicarlo ni programarlo. El borrado definitivo y su política de copias siguen pendientes.
