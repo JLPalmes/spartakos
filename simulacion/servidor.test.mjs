@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtemp,rm,readFile} from 'node:fs/promises';
+import {mkdtemp,rm,readFile,writeFile} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import {request as httpRequest} from 'node:http';
 import {createSimulationServer} from './servidor.mjs';
+import {initialData} from './dominio.mjs';
 
 async function fixture(t){
   const directory=await mkdtemp(path.join(os.tmpdir(),'spartakos-http-'));
@@ -21,7 +22,7 @@ async function fixture(t){
   async function login(account){const r=await request('/api/sessions',{method:'POST',body:{account}});assert.equal(r.status,201);return r.data.token;}
   const tokens=Object.fromEntries(await Promise.all(['alicia','bruno','carla','diego'].map(async actor=>[actor,await login(actor)])));
   const foreignHost=()=>new Promise((resolve,reject)=>{const req=httpRequest(`${url}/api/state`,{headers:{Host:'otro.example',Authorization:`Bearer ${tokens.alicia}`}},response=>{response.resume();resolve(response.statusCode);});req.on('error',reject);req.end();});
-  return {request,login,tokens,directory,foreignHost,restart:async()=>{await stop();await start();},cmd:(actor,body)=>request('/api/commands',{method:'POST',token:tokens[actor],body})};
+  return {request,login,tokens,directory,foreignHost,restart:async seed=>{await stop();if(seed)await writeFile(path.join(directory,'estado.json'),JSON.stringify(seed));await start();},cmd:(actor,body)=>request('/api/commands',{method:'POST',token:tokens[actor],body})};
 }
 test('las sesiones son independientes y el contenido privado no sale hacia Diego',async t=>{
   const f=await fixture(t);
@@ -139,4 +140,85 @@ test('se rechazan orígenes y hosts ajenos y no se sirven archivos de datos',asy
   assert.equal(await f.foreignHost(),403);
   assert.equal((await f.request('/estado.json',{token:f.tokens.alicia})).status,404);
   assert.equal((await f.request('/api/commands',{method:'POST',token:f.tokens.alicia,body:{type:'publish',audience:'public',text:'x'.repeat(17000)}})).status,413);
+});
+test('Me gusta es reversible, idempotente y separado de Guardar',async t=>{
+  const f=await fixture(t);
+  for(let i=0;i<2;i++)assert.equal((await f.cmd('bruno',{type:'like',post:'p1',active:true,actor:'alicia'})).status,200);
+  let s=(await f.request('/api/state',{token:f.tokens.alicia})).data;
+  assert.deepEqual(s.posts.find(p=>p.id==='p1').likes,[{id:'bruno',name:'Bruno'}]);
+  assert.deepEqual(s.saved,[]);
+  assert.deepEqual((await f.request('/api/state',{token:f.tokens.bruno})).data.saved,[]);
+  await f.cmd('bruno',{type:'save',post:'p1'});
+  await f.cmd('bruno',{type:'like',post:'p1',active:false});
+  s=(await f.request('/api/state',{token:f.tokens.bruno})).data;
+  assert.deepEqual(s.posts.find(p=>p.id==='p1').likes,[]);assert.deepEqual(s.saved,['p1']);
+});
+test('la reacción de una lectora permanece dentro de la audiencia privada',async t=>{
+  const f=await fixture(t);
+  assert.equal((await f.cmd('carla',{type:'like',post:'p2',active:true})).status,200);
+  const a=(await f.request('/api/state',{token:f.tokens.alicia})).data;
+  assert.deepEqual(a.posts.find(p=>p.id==='p2').likes,[{id:'carla',name:'Carla'}]);
+  const d=(await f.request('/api/state',{token:f.tokens.diego})).data;
+  assert(!d.posts.some(p=>p.id==='p2'));
+  assert(!JSON.stringify(d).includes('Cuaderno compartido'));
+  assert.equal((await f.cmd('diego',{type:'like',post:'p2',active:true})).status,404);
+  assert.equal((await f.cmd('diego',{type:'like',post:'inexistente',active:true})).status,404);
+});
+test('responder a una respuesta hereda comunidad y audiencia sin ampliación',async t=>{
+  const f=await fixture(t);
+  const r=await f.cmd('bruno',{type:'publish',parent:'p2',text:'Primera respuesta'});
+  const parent=r.data.state.posts.at(-1).id;
+  const r2=await f.cmd('alicia',{type:'publish',parent,audience:'public',community:null,text:'Respuesta a Bruno'});
+  const child=r2.data.state.posts.at(-1);
+  assert.equal(child.parent,parent);assert.equal(child.community,'cuaderno');assert.equal(child.audience,'members');
+  assert.equal((await f.cmd('carla',{type:'publish',parent:child.id,text:'No puedo comentar'})).status,403);
+  assert.equal((await f.cmd('diego',{type:'publish',parent:child.id,text:'No puedo acceder'})).status,404);
+  assert(!(await f.request('/api/state',{token:f.tokens.diego})).data.posts.some(p=>[parent,child.id].includes(p.id)));
+});
+test('una respuesta guardada conserva referencias para volver a su conversación',async t=>{
+  const f=await fixture(t);
+  const r=await f.cmd('bruno',{type:'publish',parent:'p2',text:'Respuesta guardable'});
+  const id=r.data.state.posts.at(-1).id;
+  await f.cmd('carla',{type:'save',post:id});
+  const state=(await f.request('/api/state',{token:f.tokens.carla})).data;
+  assert.deepEqual(state.saved,[id]);assert.equal(state.posts.find(p=>p.id===id).parent,'p2');
+  assert(state.posts.some(p=>p.id==='p2'));
+  assert.deepEqual((await f.request('/api/state',{token:f.tokens.bruno})).data.saved,[]);
+});
+test('los datos de la primera versión migran sin perder publicaciones ni guardados',async t=>{
+  const f=await fixture(t);
+  const legacy=initialData();legacy.schema=1;delete legacy.likes;legacy.saved.bruno=['p1'];legacy.revision=7;
+  await f.restart(legacy);
+  const token=await f.login('bruno');const state=(await f.request('/api/state',{token})).data;
+  assert.equal(state.revision,7);assert.equal(state.posts.length,2);assert.deepEqual(state.saved,['p1']);
+  assert(state.posts.every(p=>Array.isArray(p.likes)&&p.likes.length===0));
+  const persisted=JSON.parse(await readFile(path.join(f.directory,'estado.json'),'utf8'));
+  assert.equal(persisted.schema,2);assert.deepEqual(persisted.posts,legacy.posts);
+});
+test('las reacciones persisten y la exportación solo atribuye las propias',async t=>{
+  const f=await fixture(t);
+  await f.cmd('bruno',{type:'like',post:'p2',active:true});
+  await f.cmd('alicia',{type:'like',post:'p1',active:true});
+  await f.restart();const token=await f.login('bruno');
+  const state=(await f.request('/api/state',{token})).data;
+  assert.deepEqual(state.posts.find(p=>p.id==='p2').likes,[{id:'bruno',name:'Bruno'}]);
+  const exported=(await f.request('/api/export',{token})).data;
+  assert.deepEqual(exported.liked,['p2']);assert.deepEqual(exported.saved,[]);
+  assert.equal(exported.format,'spartakos-local-simulation-v2');
+});
+test('abrir la comunidad no publica las reacciones de su historial restringido',async t=>{
+  const f=await fixture(t);
+  await f.cmd('carla',{type:'like',post:'p2',active:true});
+  await f.cmd('alicia',{type:'propose',community:'cuaderno'});
+  for(const actor of ['alicia','bruno','carla'])await f.cmd(actor,{type:'consent',community:'cuaderno',version:1,accept:true});
+  await f.cmd('alicia',{type:'open',community:'cuaderno',version:1});
+  const d=(await f.request('/api/state',{token:f.tokens.diego})).data;
+  assert(d.communities.some(c=>c.id==='cuaderno'));assert(!d.posts.some(p=>p.id==='p2'));
+  assert.equal((await f.cmd('diego',{type:'like',post:'p2',active:true})).status,404);
+});
+test('Me gusta exige una intención explícita y no admite valores ambiguos',async t=>{
+  const f=await fixture(t);
+  for(const active of [undefined,'true',1,null])assert.equal((await f.cmd('bruno',{type:'like',post:'p1',active})).status,400);
+  const s=(await f.request('/api/state',{token:f.tokens.bruno})).data;
+  assert.equal(s.revision,0);assert.deepEqual(s.posts.find(p=>p.id==='p1').likes,[]);
 });

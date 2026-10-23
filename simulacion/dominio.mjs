@@ -11,7 +11,7 @@ export const accounts = [
   {id:'diego', name:'Diego', description:'No pertenece a la comunidad privada'},
 ];
 export function initialData() {
-  return {schema:1, revision:0, nextId:3,
+  return {schema:2, revision:0, nextId:3,likes:{},
     communities:[{id:'cuaderno',name:'Cuaderno compartido',visibility:'private',
       members:{alicia:'admin',bruno:'contributor',carla:'reader'},
       protected:['alicia','bruno','carla'],proposal:null,proposalVersion:0}],
@@ -19,6 +19,13 @@ export function initialData() {
       {id:'p1',author:'bruno',text:'¿Qué libro os gustaría comentar esta semana?',audience:'public',community:null,parent:null,createdAt:'2026-10-22T09:00:00.000Z'},
       {id:'p2',author:'alicia',text:'Este cuaderno es privado. Podemos preparar aquí nuestras ideas.',audience:'members',community:'cuaderno',parent:null,createdAt:'2026-10-22T09:10:00.000Z'},
     ],saved:Object.fromEntries(accounts.map(a=>[a.id,[]]))};
+}
+export function migrateData(original) {
+  if(![1,2].includes(original.schema))throw Error('Versión de datos no compatible.');
+  const data=structuredClone(original);
+  if(data.schema===1){data.schema=2;data.likes={};}
+  if(!data.likes || typeof data.likes!=='object' || Array.isArray(data.likes))throw Error('Registro de reacciones no válido.');
+  return data;
 }
 export function canRead(data, actor, post) {
   if (post.audience==='public') return true;
@@ -34,7 +41,8 @@ function admin(c, actor) { if (c.members[actor]!=='admin') fail(403,'Esta acció
 export function view(data, actor) {
   const posts=data.posts.filter(p=>canRead(data,actor,p));
   return {revision:data.revision,user:accounts.find(a=>a.id===actor),
-    posts:posts.map(p=>({...p,authorName:accounts.find(a=>a.id===p.author)?.name??p.author})),
+    posts:posts.map(p=>({...p,authorName:accounts.find(a=>a.id===p.author)?.name??p.author,
+      likes:(data.likes?.[p.id]??[]).map(id=>({id,name:accounts.find(a=>a.id===id)?.name??id}))})),
     saved:data.saved[actor].filter(id=>posts.some(p=>p.id===id)),
     communities:data.communities.filter(c=>c.visibility==='public'||c.members[actor]).map(c=>({...c,role:c.members[actor]??null})),
     formerProposals:data.communities.filter(c=>!c.members[actor]&&c.proposal&&c.protected.includes(actor)).map(c=>({id:c.id,name:c.name,proposal:c.proposal})),
@@ -72,7 +80,15 @@ export function command(original, actor, input) {
     if (!post || !canRead(data,actor,post)) fail(404,'Publicación no disponible.');
     const saved=data.saved[actor];
     data.saved[actor]=saved.includes(post.id)?saved.filter(id=>id!==post.id):[...saved,post.id];
-    message='Interés privado actualizado. No se comunica al autor.';
+    message='Guardados actualizados. No se comunica al autor.';
+  } else if(input.type==='like') {
+    const post=data.posts.find(p=>p.id===input.post);
+    if(!post || !canRead(data,actor,post))fail(404,'Publicación no disponible.');
+    if(typeof input.active!=='boolean')fail(400,'Indica si quieres añadir o retirar Me gusta.');
+    data.likes??={};
+    const current=data.likes[post.id]??[];
+    data.likes[post.id]=input.active?[...new Set([...current,actor])]:current.filter(id=>id!==actor);
+    message=input.active?'Me gusta añadido para la audiencia de esta publicación.':'Me gusta retirado.';
   } else if (['propose','consent','open','remove','set-role'].includes(input.type)) {
     const c=findCommunity(data,actor,input.community,{protectedAccess:input.type==='consent'});
     if (input.type==='propose') {

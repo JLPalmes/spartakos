@@ -4,20 +4,25 @@ import {randomBytes} from 'node:crypto';
 import {readFile,writeFile,mkdir,rename} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath,pathToFileURL} from 'node:url';
-import {initialData,accounts,view,command,RuleError} from './dominio.mjs';
+import {initialData,migrateData,accounts,view,canRead,command,RuleError} from './dominio.mjs';
 
 const here=path.dirname(fileURLToPath(import.meta.url));
 const assets=new Map([
   ['/',['index.html','text/html; charset=utf-8']],
   ['/cliente',['cliente.html','text/html; charset=utf-8']],
   ['/cliente.mjs',['cliente.mjs','text/javascript; charset=utf-8']],
+  ['/conversaciones.mjs',['conversaciones.mjs','text/javascript; charset=utf-8']],
+  ['/conversaciones.mjs',['conversaciones.mjs','text/javascript; charset=utf-8']],
   ['/estilos.css',['estilos.css','text/css; charset=utf-8']],
 ]);
 export async function createSimulationServer({directory=path.join(here,'../resultados-locales/simulador')}={}) {
   await mkdir(directory,{recursive:true,mode:0o700});
   const filename=path.join(directory,'estado.json');
   let data;
-  try {data=JSON.parse(await readFile(filename,'utf8'));if(data.schema!==1)throw Error('Versión de datos no compatible.');}
+  try {
+    const original=JSON.parse(await readFile(filename,'utf8'));data=migrateData(original);
+    if(original.schema!==data.schema){await writeFile(`${filename}.tmp`,JSON.stringify(data,null,2),{mode:0o600});await rename(`${filename}.tmp`,filename);}
+  }
   catch(error){if(error.code!=='ENOENT')throw error;data=initialData();await writeFile(filename,JSON.stringify(data,null,2),{mode:0o600});}
   const sessions=new Map();
   let queue=Promise.resolve();
@@ -54,7 +59,7 @@ export async function createSimulationServer({directory=path.join(here,'../resul
       const actor=sessions.get(token);
       if(!actor)throw new RuleError(401,'Abre una sesión ficticia para continuar.');
       if(req.method==='GET'&&url.pathname==='/api/state')return json(res,200,view(data,actor));
-      if(req.method==='GET'&&url.pathname==='/api/export')return json(res,200,{format:'spartakos-local-simulation-v1',lang:'es-ES',user:actor,posts:data.posts.filter(p=>p.author===actor),saved:[...view(data,actor).saved],notice:'Archivo de simulación; no incluye identidad portable ni claves.'});
+      if(req.method==='GET'&&url.pathname==='/api/export')return json(res,200,{format:'spartakos-local-simulation-v2',lang:'es-ES',user:actor,posts:data.posts.filter(p=>p.author===actor),saved:[...view(data,actor).saved],liked:data.posts.filter(p=>canRead(data,actor,p)&&(data.likes[p.id]??[]).includes(actor)).map(p=>p.id),notice:'Archivo de simulación; no incluye identidad portable ni claves.'});
       if(req.method==='DELETE'&&url.pathname==='/api/session'){sessions.delete(token);return json(res,200,{message:'Sesión cerrada.'});}
       if(req.method==='POST'&&url.pathname==='/api/commands'){
         const input=await body(req);

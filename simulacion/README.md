@@ -2,8 +2,8 @@
 title: Spartakos — Prototipo local con varias cuentas
 lang: es-ES
 license: CC-BY-SA-4.0
-version: 0.1
-date: 2026-10-22
+version: 0.2
+date: 2026-10-23
 status: Laboratorio funcional de un solo servidor; identidades ficticias
 ---
 
@@ -25,27 +25,29 @@ Abrir `http://127.0.0.1:8787`. La pantalla muestra cuatro clientes a la vez. Los
 | --- | --- |
 | Alicia | Administración: puede publicar, cambiar permisos y proponer apertura |
 | Bruno | Puede leer, comentar e iniciar publicaciones |
-| Carla | Solo lectura; conserva su consentimiento individual para una apertura |
+| Carla | Lectura y reacciones, sin comentarios ni publicaciones; conserva su consentimiento individual para una apertura |
 | Diego | No pertenece a la comunidad; no recibe su contenido privado |
 
 Todas las cuentas pueden publicar en el espacio público. Que Carla no pueda publicar en una comunidad no limita su cuenta fuera de ella. Alicia puede cambiar el permiso de Bruno o Carla entre lectura, comentarios y publicación. La sustitución de la administración queda fuera de esta versión.
 
 ## Recorridos para probar
 
-1. Desde Bruno, seleccionar «Cuaderno compartido · Solo integrantes» y publicar. Alicia y Carla lo reciben; Diego no.
-2. Guardar una publicación desde Carla y abrir «Mi interés» en otras cuentas: el guardado no se comparte.
-3. En Alicia, abrir «Comunidades → Permisos de participación» y dar a Carla permiso para leer y comentar. Carla podrá responder, sin iniciar temas en la comunidad.
+1. Desde Bruno, entrar en «Comunidades → Cuaderno compartido» y publicar con destino «Solo integrantes». Alicia y Carla lo reciben; Diego no. Inicio general contiene únicamente conversaciones generales, incluso cuando una comunidad permita publicaciones públicas.
+2. Guardar una publicación desde Carla y abrir «Guardados» en otras cuentas: el guardado no se comparte. «Ver en conversación» permite recuperar su contexto, también cuando es una respuesta.
+3. En Alicia, entrar en Cuaderno compartido y abrir «Permisos de participación» y dar a Carla permiso para leer y comentar. Carla podrá responder, sin iniciar temas en la comunidad.
 4. Preparar un borrador privado en Bruno y retirarle permiso de publicación desde Alicia. El cliente conserva texto y destino; bloquea el envío hasta una elección explícita. Nunca cambia automáticamente a público.
 5. Proponer apertura desde Alicia. Cada cuenta del censo debe consentir desde su sesión. Una mayoría es insuficiente y una negativa cierra la propuesta.
 6. Si hay unanimidad, abrir para publicaciones futuras. El historial anterior y los borradores restringidos conservan su audiencia. Las respuestas a publicaciones antiguas conservan también esa audiencia.
 7. Probar una baja de membresía. Se cancela la propuesta vigente y permanece la protección para impedir una apertura elusiva. Una persona retirada puede decidir sobre la propuesta que la afecta sin volver a recibir el historial privado.
-8. Exportar desde «Mi cuenta»: incluye aportaciones propias y referencias a guardados autorizados, no sesiones ni aportaciones privadas ajenas.
+8. Responder a una respuesta desde Bruno o Alicia: cada mensaje identifica a quién responde, conserva su audiencia y permite continuar el hilo sin aumentar indefinidamente el sangrado.
+9. Dar y retirar «Me gusta». Es independiente de Guardar. Las reacciones son visibles solo para quienes pueden leer la publicación; no generan reputación, ordenación ni avisos. Carla puede reaccionar aunque no pueda comentar.
+10. Exportar desde «Mi cuenta»: incluye aportaciones propias y referencias autorizadas a guardados y reacciones propias, no sesiones ni aportaciones privadas ajenas.
 
 Los clientes consultan cambios aproximadamente cada segundo y medio mientras están visibles. La actualización conserva el borrador principal, las respuestas en curso y su foco. Una interrupción informa del estado sin presentar un envío fallido como guardado.
 
 ## Persistencia y escenarios separados
 
-El servidor guarda datos ficticios en `resultados-locales/simulador/estado.json`, excluido del repositorio. Las escrituras se serializan y reemplazan el archivo de forma atómica. Reiniciar conserva publicaciones, roles, consentimientos y guardados. Las sesiones caducan al detener el proceso; volver a entrar no elimina los datos.
+El servidor guarda datos ficticios en `resultados-locales/simulador/estado.json`, excluido del repositorio. Las escrituras se serializan y reemplazan el archivo de forma atómica. Reiniciar conserva publicaciones, roles, consentimientos, guardados y reacciones. La actualización del esquema anterior conserva los datos existentes; los borradores solo viven en la pestaña y se pierden al recargar. Las sesiones caducan al detener el proceso; volver a entrar no elimina los datos.
 
 Para otro escenario, usar otra carpeta y otro puerto:
 
@@ -61,9 +63,9 @@ El servidor escucha exclusivamente en `127.0.0.1`. No abrirlo a Internet ni util
 
 ```sh
 python3 verificar.py
-node --test prototipo/modelo.test.mjs simulacion/servidor.test.mjs
+node --test prototipo/modelo.test.mjs simulacion/*.test.mjs
 ```
 
-Hay diez pruebas de la maqueta anterior y catorce pruebas HTTP de este servidor: separación entre sesiones, permisos, audiencia, consentimiento, revocación, privacidad de guardados, persistencia, exportación y escrituras simultáneas. Estas pruebas no constituyen una auditoría de seguridad ni ejecutan la matriz completa A01–A148.
+Hay 36 pruebas: diez de la maqueta anterior, 22 HTTP y cuatro de selección y recorrido de conversaciones. Cubren separación entre sesiones, permisos, audiencia, consentimiento, revocación, privacidad de guardados, persistencia, exportación, escrituras simultáneas, reacciones reversibles, migración de datos y conversaciones con 2.001 mensajes. Estas pruebas no constituyen una auditoría de seguridad ni ejecutan la matriz completa A01–A148.
 
 Código bajo AGPL-3.0-or-later y documentación bajo CC-BY-SA-4.0, según el [mapa de licencias](../LICENCIAS.md). La [maqueta anterior](../prototipo/README.md) se conserva como antecedente descartable.

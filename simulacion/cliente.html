@@ -6,12 +6,13 @@
   <header class="client-header"><strong>Spartakos</strong><span id="identity">Conectando…</span></header>
   <section id="login" hidden><h1>Elige una cuenta ficticia</h1><label for="account">Cuenta</label><select id="account"></select><button id="enter">Entrar en la simulación</button></section>
   <div id="session" hidden>
-    <nav aria-label="Secciones"><button data-page="inicio" aria-pressed="true">Inicio</button><button data-page="interes" aria-pressed="false">Mi interés</button><button data-page="comunidad" aria-pressed="false">Comunidades</button><button data-page="cuenta" aria-pressed="false">Mi cuenta</button></nav>
-    <section id="composer"><h1>Comparte una idea</h1><form id="publish"><label for="audience">Quién podrá leer</label><select id="audience"><option value="public">Todo el mundo</option></select><p id="audience-help" class="hint">Publicación pública.</p><label for="text">Tu publicación</label><textarea id="text" maxlength="3000" required></textarea><button type="submit">Publicar</button></form></section>
-    <main id="content"></main>
+    <nav aria-label="Secciones"><button data-page="inicio" aria-pressed="true">Inicio general</button><button data-page="guardados" aria-pressed="false">Guardados</button><button data-page="comunidad" aria-pressed="false">Comunidades</button><button data-page="cuenta" aria-pressed="false">Mi cuenta</button></nav>
+    <main><section id="context"></section>
+    <section id="composer"><h2>Comparte una idea</h2><form id="publish"><label for="audience">Destino y audiencia</label><select id="audience"><option value="public">General · Público</option></select><p id="audience-help" class="hint">Publicación pública.</p><label for="text">Tu publicación</label><textarea id="text" maxlength="3000" required></textarea><button type="submit">Publicar</button></form></section>
+    <section id="content"></section></main>
   </div>
   <p id="status" role="status" aria-live="polite"></p>
-  <footer>Simulación local · <a href="https://github.com/JLPalmes/spartakos/blob/main/LICENSE">AGPL-3.0-or-later</a> · <a href="https://github.com/JLPalmes/spartakos/tree/prototipo-local-multicuenta/simulacion">Código fuente de esta versión</a> · Sin garantías de producción</footer>
+  <footer>Simulación local · <a href="https://github.com/JLPalmes/spartakos/blob/main/LICENSE">AGPL-3.0-or-later</a> · <a href="https://github.com/JLPalmes/spartakos/tree/prototipo-segunda-revision/simulacion">Código fuente de esta versión</a> · Sin garantías de producción</footer>
   <script type="module" src="/cliente.mjs"></script>
 </body>
 </html>
