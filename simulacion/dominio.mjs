@@ -11,8 +11,8 @@ export const accounts = [
   {id:'carla', name:'Carla', description:'Puede leer; no comentar ni publicar en ella'},
   {id:'diego', name:'Diego', description:'No pertenece a la comunidad privada'},
 ];
-export function initialData() {
-  return {schema:4,seenQuotes:{}, revision:0, nextId:3,likes:{},scheduled:[],nextScheduleId:1,
+export function initialData(now=Date.now()) {
+  return {schema:5,likeBatch:{baselineAt:new Date(now).toISOString(),updatedAt:null,generatedAt:null,counts:{},changes:[]},seenQuotes:{}, revision:0, nextId:3,likes:{},scheduled:[],nextScheduleId:1,
     communities:[{id:'cuaderno',name:'Cuaderno compartido',visibility:'private',
       members:{alicia:'admin',bruno:'contributor',carla:'reader'},
       protected:['alicia','bruno','carla'],proposal:null,proposalVersion:0}],
@@ -21,12 +21,14 @@ export function initialData() {
       {id:'p2',author:'alicia',text:'Este cuaderno es privado. Podemos preparar aquí nuestras ideas.',audience:'members',community:'cuaderno',parent:null,createdAt:'2026-10-22T09:10:00.000Z'},
     ],saved:Object.fromEntries(accounts.map(a=>[a.id,[]]))};
 }
-export function migrateData(original) {
-  if(![1,2,3,4].includes(original.schema))throw Error('Versión de datos no compatible.');
+export function migrateData(original,now=Date.now()) {
+  if(![1,2,3,4,5].includes(original.schema))throw Error('Versión de datos no compatible.');
   const data=structuredClone(original);
   if(data.schema===1){data.schema=2;data.likes={};}
   if(data.schema===2){data.schema=3;data.scheduled=[];data.nextScheduleId=1;}
   if(data.schema===3){data.schema=4;data.seenQuotes={};}
+  if(data.schema===4){data.schema=5;data.likeBatch={baselineAt:new Date(now).toISOString(),updatedAt:null,generatedAt:null,counts:Object.fromEntries(Object.entries(data.likes??{}).map(([id,actors])=>[id,actors.length])),changes:[]};}
+  if(!data.likeBatch||!Array.isArray(data.likeBatch.changes))throw Error('Registro de recuentos no válido.');
   if(!data.seenQuotes||typeof data.seenQuotes!=='object'||Array.isArray(data.seenQuotes))throw Error('Registro de avisos no válido.');
   if(!Array.isArray(data.scheduled)||!Number.isSafeInteger(data.nextScheduleId))throw Error('Registro de programación no válido.');
   if(!data.likes || typeof data.likes!=='object' || Array.isArray(data.likes))throw Error('Registro de reacciones no válido.');
@@ -47,7 +49,9 @@ export function view(data, actor) {
   const posts=data.posts.filter(p=>canRead(data,actor,p));
   return {revision:data.revision,user:accounts.find(a=>a.id===actor),
     posts:posts.map(p=>({...p,authorName:accounts.find(a=>a.id===p.author)?.name??p.author,
-      likedByMe:(data.likes?.[p.id]??[]).includes(actor)})),
+      likedByMe:(data.likes?.[p.id]??[]).includes(actor),
+      likeCount:data.likeBatch.updatedAt&&Date.parse(p.createdAt)<Date.parse(data.likeBatch.updatedAt)?data.likeBatch.counts[p.id]??0:null,
+      likesUpdatedAt:data.likeBatch.updatedAt,likesGeneratedAt:data.likeBatch.generatedAt})),
     notices:quoteNotices(data,actor),
     scheduled:data.scheduled.filter(s=>s.author===actor),
     saved:data.saved[actor].filter(id=>posts.some(p=>p.id===id)),
@@ -136,6 +140,7 @@ export function command(original, actor, input, now=Date.now()) {
     if(typeof input.active!=='boolean')fail(400,'Indica si quieres añadir o retirar Me gusta.');
     data.likes??={};
     const current=data.likes[post.id]??[];
+    if(current.includes(actor)!==input.active)data.likeBatch.changes.push({post:post.id,delta:input.active?1:-1,at:Math.max(now,Date.parse(data.likeBatch.updatedAt??data.likeBatch.baselineAt))});
     data.likes[post.id]=input.active?[...new Set([...current,actor])]:current.filter(id=>id!==actor);
     message=input.active?'Me gusta guardado. Tu elección no se muestra a otras personas.':'Me gusta retirado.';
   } else if (['propose','consent','open','remove','set-role'].includes(input.type)) {
@@ -196,4 +201,16 @@ export function runDue(original,now=Date.now()) {
   }
   if(changed)data.revision++;
   return {data,changed};
+}
+
+// Cortes comunes UTC: [corte anterior, corte actual). No entrega cambios intermedios.
+export function refreshLikeCounts(original,now=Date.now()) {
+  const cutoff=Math.floor(now/3600000)*3600000,batch=original.likeBatch;
+  if(cutoff<Date.parse(batch.baselineAt)||(batch.updatedAt&&cutoff<=Date.parse(batch.updatedAt)))return {data:original,changed:false};
+  const data=structuredClone(original),next=data.likeBatch;
+  for(const event of next.changes.filter(e=>e.at<cutoff))next.counts[event.post]=(next.counts[event.post]??0)+event.delta;
+  next.changes=next.changes.filter(e=>e.at>=cutoff);
+  next.updatedAt=new Date(cutoff).toISOString();next.generatedAt=new Date(now).toISOString();
+  data.revision++;
+  return {data,changed:true};
 }

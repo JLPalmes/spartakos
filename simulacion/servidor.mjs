@@ -4,7 +4,7 @@ import {randomBytes} from 'node:crypto';
 import {readFile,writeFile,mkdir,rename} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath,pathToFileURL} from 'node:url';
-import {initialData,migrateData,accounts,view,canRead,command,runDue,RuleError} from './dominio.mjs';
+import {initialData,migrateData,accounts,view,canRead,command,runDue,refreshLikeCounts,RuleError} from './dominio.mjs';
 
 const here=path.dirname(fileURLToPath(import.meta.url));
 const assets=new Map([
@@ -14,15 +14,15 @@ const assets=new Map([
   ['/conversaciones.mjs',['conversaciones.mjs','text/javascript; charset=utf-8']],
   ['/estilos.css',['estilos.css','text/css; charset=utf-8']],
 ]);
-export async function createSimulationServer({directory=path.join(here,'../resultados-locales/simulador')}={}) {
+export async function createSimulationServer({directory=path.join(here,'../resultados-locales/simulador'),clock=Date.now}={}) {
   await mkdir(directory,{recursive:true,mode:0o700});
   const filename=path.join(directory,'estado.json');
   let data;
   try {
-    const original=JSON.parse(await readFile(filename,'utf8'));data=migrateData(original);
+    const original=JSON.parse(await readFile(filename,'utf8'));data=migrateData(original,clock());
     if(original.schema!==data.schema){await writeFile(`${filename}.tmp`,JSON.stringify(data,null,2),{mode:0o600});await rename(`${filename}.tmp`,filename);}
   }
-  catch(error){if(error.code!=='ENOENT')throw error;data=initialData();await writeFile(filename,JSON.stringify(data,null,2),{mode:0o600});}
+  catch(error){if(error.code!=='ENOENT')throw error;data=initialData(clock());await writeFile(filename,JSON.stringify(data,null,2),{mode:0o600});}
   const sessions=new Map();
   let queue=Promise.resolve();
   function json(res,status,body){res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});res.end(JSON.stringify(body));}
@@ -38,8 +38,8 @@ export async function createSimulationServer({directory=path.join(here,'../resul
     await rename(`${filename}.tmp`,filename);data=next;
   }
   const tick=()=>{
-    const task=queue.then(async()=>{const result=runDue(data);if(result.changed)await persist(result.data);});
-    queue=task.catch(()=>{console.error('No se pudo guardar una ejecución programada; se reintentará.');});
+    const task=queue.then(async()=>{const now=clock(),due=runDue(data,now),counts=refreshLikeCounts(due.data,now);if(due.changed||counts.changed)await persist(counts.data);});
+    queue=task.catch(()=>{console.error('No se pudo guardar una actualización automática; se reintentará.');});
     return queue;
   };
   let timer;
@@ -73,7 +73,7 @@ export async function createSimulationServer({directory=path.join(here,'../resul
       if(req.method==='POST'&&url.pathname==='/api/commands'){
         const input=await body(req);
         const task=queue.then(async()=>{
-          const result=command(data,actor,input);
+          const result=command(data,actor,input,clock());
           await persist(result.data);
           return {message:result.message,state:view(data,actor)};
         });

@@ -8,10 +8,10 @@ import {request as httpRequest} from 'node:http';
 import {createSimulationServer} from './servidor.mjs';
 import {initialData} from './dominio.mjs';
 
-async function fixture(t){
+async function fixture(t,{clock}={}){
   const directory=await mkdtemp(path.join(os.tmpdir(),'spartakos-http-'));
   let server,url;
-  async function start(){server=await createSimulationServer({directory});await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));url=`http://127.0.0.1:${server.address().port}`;}
+  async function start(){server=await createSimulationServer({directory,clock});await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));url=`http://127.0.0.1:${server.address().port}`;}
   async function stop(){server.closeAllConnections();await new Promise(resolve=>server.close(resolve));}
   await start();
   t.after(async()=>{await stop();await rm(directory,{recursive:true,force:true});});
@@ -195,7 +195,7 @@ test('los datos de la primera versión migran sin perder publicaciones ni guarda
   assert.equal(state.revision,7);assert.equal(state.posts.length,2);assert.deepEqual(state.saved,['p1']);
   assert(state.posts.every(p=>p.likedByMe===false&&!Object.hasOwn(p,'likes')));
   const persisted=JSON.parse(await readFile(path.join(f.directory,'estado.json'),'utf8'));
-  assert.equal(persisted.schema,4);assert.deepEqual(persisted.posts,legacy.posts);
+  assert.equal(persisted.schema,5);assert.deepEqual(persisted.posts,legacy.posts);
 });
 test('las reacciones persisten y la exportación solo atribuye las propias',async t=>{
   const f=await fixture(t);
@@ -266,7 +266,7 @@ test('avisos de cita persisten y no se reciben ni se marcan desde otra cuenta',a
  const state=(await f.request('/api/state',{token})).data;assert.equal(state.notices[0].read,true);
 });
 
-test('la API no entrega identidades ni cantidades de Me gusta a otros usuarios',async t=>{
+test('la API no entrega identidades ni cantidades en directo de Me gusta a otros usuarios',async t=>{
  const f=await fixture(t);
  await f.cmd('carla',{type:'like',post:'p1',active:true});
  await f.cmd('bruno',{type:'like',post:'p1',active:true});
@@ -274,7 +274,7 @@ test('la API no entrega identidades ni cantidades de Me gusta a otros usuarios',
   const state=(await f.request('/api/state',{token:f.tokens[actor]})).data;
   const post=state.posts.find(p=>p.id==='p1');
   assert.equal(post.likedByMe,['bruno','carla'].includes(actor));
-  assert(!Object.hasOwn(post,'likes'));assert(!Object.hasOwn(post,'likeCount'));
+  assert(!Object.hasOwn(post,'likes'));assert.equal(post.likeCount,null);
   const exported=(await f.request('/api/export',{token:f.tokens[actor]})).data;
   assert.deepEqual(exported.liked,['bruno','carla'].includes(actor)?['p1']:[]);
   assert.deepEqual(state.notices,[]);
@@ -282,4 +282,20 @@ test('la API no entrega identidades ni cantidades de Me gusta a otros usuarios',
  const response=await f.cmd('alicia',{type:'save',post:'p1'});
  assert.equal(response.data.state.posts.find(p=>p.id==='p1').likedByMe,false);
  assert(!Object.hasOwn(response.data.state.posts.find(p=>p.id==='p1'),'likes'));
+});
+test('el temporizador publica el corte horario sin cliente y lo conserva al reiniciar',async t=>{
+ let now=Date.parse('2030-01-01T12:30:00Z');const f=await fixture(t,{clock:()=>now});
+ await f.cmd('bruno',{type:'like',post:'p1',active:true});
+ assert.equal((await f.request('/api/state',{token:f.tokens.alicia})).data.posts.find(p=>p.id==='p1').likeCount,null);
+ now=Date.parse('2030-01-01T13:00:02Z');
+ // La reacción posterior al corte no se debe incluir aunque el temporizador aún no haya ejecutado.
+ await f.cmd('carla',{type:'like',post:'p1',active:true});
+ await new Promise(r=>setTimeout(r,1200));
+ const disk=JSON.parse(await readFile(path.join(f.directory,'estado.json'),'utf8'));
+ assert.equal(disk.likeBatch.counts.p1,1);assert.equal(disk.likeBatch.updatedAt,'2030-01-01T13:00:00.000Z');
+ await f.restart();const token=await f.login('alicia');
+ let post=(await f.request('/api/state',{token})).data.posts.find(p=>p.id==='p1');
+ assert.equal(post.likeCount,1);assert(!Object.hasOwn(post,'likes'));
+ now=Date.parse('2030-01-01T14:00:01Z');await new Promise(r=>setTimeout(r,1200));
+ post=(await f.request('/api/state',{token})).data.posts.find(p=>p.id==='p1');assert.equal(post.likeCount,2);
 });

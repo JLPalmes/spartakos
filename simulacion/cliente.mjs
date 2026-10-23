@@ -55,6 +55,7 @@ function postMarkup(p,{depth=0,savedView=false}={}){
       ${mayQuote(p)?`<button data-quote="${p.id}">Citar en una publicación</button>`:''}
       ${savedView?`<button data-context="${p.id}">Ver en conversación</button>`:''}
     </div>
+    <p class="hint approval-count">${p.likeCount===null||p.likeCount===undefined?'Recuento pendiente del próximo corte horario.':`${p.likeCount} ${p.likeCount===1?'aprobación':'aprobaciones'} · <time datetime="${esc(p.likesUpdatedAt)}" title="${esc(`Corte: ${dateLabel(p.likesUpdatedAt)}. Calculado: ${dateLabel(p.likesGeneratedAt)} (${localZone}).`)}">Recuento a las ${esc(new Intl.DateTimeFormat('es-ES',{hour:'2-digit',minute:'2-digit',timeZone:localZone}).format(new Date(p.likesUpdatedAt)))} · ${esc(new Intl.DateTimeFormat('es-ES',{day:'2-digit',month:'2-digit',timeZone:localZone}).format(new Date(p.likesUpdatedAt)))}</time>`}</p>
     ${replyDepth(state.posts,p.id)>=2?'<p class="hint">Último nivel de respuestas. Para continuar, inicia una publicación con cita.</p>':''}
     ${mayReply(p)?`<form class="reply-form" data-parent="${p.id}" ${expandedReplies.has(p.id)?'':'hidden'}><label for="reply-${p.id}">Responder a ${esc(p.authorName)} · Misma audiencia</label><textarea id="reply-${p.id}" maxlength="3000" required>${esc(replyDrafts.get(p.id)??'')}</textarea><button type="submit">Enviar respuesta</button></form>`:''}
   </article>`;
@@ -140,7 +141,7 @@ function render(){
     $('content').innerHTML=communityContent();
   }else{
     $('context').innerHTML='<h1>Mi cuenta</h1>';
-    $('content').innerHTML=`<p>Actúas como ${esc(state.user.name)}. Tus guardados son privados; tus Me gusta no muestran tu identidad a otros usuarios. No se publican listas ni recuentos. El servidor local conserva tu elección para permitir retirarla; no hay anonimato frente al proveedor.</p><button id="export">Exportar mis aportaciones ficticias</button><p>Esta exportación no es un perfil portable de producción.</p><button id="logout">Cerrar esta sesión</button>`;
+    $('content').innerHTML=`<p>Actúas como ${esc(state.user.name)}. Tus guardados son privados; tus Me gusta no muestran tu identidad a otros usuarios. No se publican identidades. Los recuentos se actualizan por cortes horarios comunes; tu elección propia se muestra al instante. El servidor local conserva tu elección para permitir retirarla; no hay anonimato frente al proveedor.</p><button id="export">Exportar mis aportaciones ficticias</button><p>Esta exportación no es un perfil portable de producción.</p><button id="logout">Cerrar esta sesión</button>`;
   }
   composer();bindActions();
   for(const panel of panels){const details=document.querySelector(`details[data-panel="${panel}"]`);if(details)details.open=true;}
