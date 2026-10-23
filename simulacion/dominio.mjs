@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+import {replyDepth} from './conversaciones.mjs';
 // Reglas de un laboratorio local con identidades ficticias; no protocolo distribuido.
 export class RuleError extends Error {
   constructor(status, message) { super(message); this.status = status; }
@@ -11,7 +12,7 @@ export const accounts = [
   {id:'diego', name:'Diego', description:'No pertenece a la comunidad privada'},
 ];
 export function initialData() {
-  return {schema:3, revision:0, nextId:3,likes:{},scheduled:[],nextScheduleId:1,
+  return {schema:4,seenQuotes:{}, revision:0, nextId:3,likes:{},scheduled:[],nextScheduleId:1,
     communities:[{id:'cuaderno',name:'Cuaderno compartido',visibility:'private',
       members:{alicia:'admin',bruno:'contributor',carla:'reader'},
       protected:['alicia','bruno','carla'],proposal:null,proposalVersion:0}],
@@ -21,10 +22,12 @@ export function initialData() {
     ],saved:Object.fromEntries(accounts.map(a=>[a.id,[]]))};
 }
 export function migrateData(original) {
-  if(![1,2,3].includes(original.schema))throw Error('Versión de datos no compatible.');
+  if(![1,2,3,4].includes(original.schema))throw Error('Versión de datos no compatible.');
   const data=structuredClone(original);
   if(data.schema===1){data.schema=2;data.likes={};}
   if(data.schema===2){data.schema=3;data.scheduled=[];data.nextScheduleId=1;}
+  if(data.schema===3){data.schema=4;data.seenQuotes={};}
+  if(!data.seenQuotes||typeof data.seenQuotes!=='object'||Array.isArray(data.seenQuotes))throw Error('Registro de avisos no válido.');
   if(!Array.isArray(data.scheduled)||!Number.isSafeInteger(data.nextScheduleId))throw Error('Registro de programación no válido.');
   if(!data.likes || typeof data.likes!=='object' || Array.isArray(data.likes))throw Error('Registro de reacciones no válido.');
   return data;
@@ -45,11 +48,15 @@ export function view(data, actor) {
   return {revision:data.revision,user:accounts.find(a=>a.id===actor),
     posts:posts.map(p=>({...p,authorName:accounts.find(a=>a.id===p.author)?.name??p.author,
       likes:(data.likes?.[p.id]??[]).map(id=>({id,name:accounts.find(a=>a.id===id)?.name??id}))})),
+    notices:quoteNotices(data,actor),
     scheduled:data.scheduled.filter(s=>s.author===actor),
     saved:data.saved[actor].filter(id=>posts.some(p=>p.id===id)),
     communities:data.communities.filter(c=>c.visibility==='public'||c.members[actor]).map(c=>({...c,role:c.members[actor]??null})),
     formerProposals:data.communities.filter(c=>!c.members[actor]&&c.proposal&&c.protected.includes(actor)).map(c=>({id:c.id,name:c.name,proposal:c.proposal})),
   };
+}
+function quoteNotices(data,actor){
+  return data.posts.filter(p=>p.quote&&p.author!==actor&&canRead(data,actor,p)&&data.posts.some(q=>q.id===p.quote&&q.author===actor&&canRead(data,actor,q))).map(p=>({id:p.id,post:p.id,quoted:p.quote,authorName:accounts.find(a=>a.id===p.author)?.name??p.author,read:(data.seenQuotes[actor]??[]).includes(p.id)}));
 }
 export function command(original, actor, input, now=Date.now()) {
   if (!accounts.some(a=>a.id===actor)) fail(401,'Sesión no válida.');
@@ -73,12 +80,12 @@ export function command(original, actor, input, now=Date.now()) {
     }else{
       if(input.parent)fail(400,'Esta versión programa publicaciones iniciales, no respuestas.');
       // Valida texto, destino y permisos usando exactamente las reglas de publicación.
-      const checked=command(data,actor,{type:'publish',text:input.text,community:input.community,audience:input.audience},now).data.posts.at(-1);
+      const checked=command(data,actor,{type:'publish',text:input.text,community:input.community,audience:input.audience,quote:input.quote},now).data.posts.at(-1);
       const due=typeof input.publishAt==='string'&&/(Z|[+-]\d{2}:\d{2})$/.test(input.publishAt)?Date.parse(input.publishAt):NaN;
       if(!Number.isFinite(due)||due<=now)fail(400,'Elige una fecha y hora futuras con zona horaria.');
       try{if(typeof input.timeZone!=='string')throw Error();new Intl.DateTimeFormat('es-ES',{timeZone:input.timeZone}).format(due);}catch{fail(400,'Zona horaria no válida.');}
       if(![5,15,60,1440].includes(input.lateMinutes))fail(400,'Elige un margen de retraso de 5, 15, 60 o 1440 minutos.');
-      const values={publication:{text:checked.text,community:checked.community,audience:checked.audience},publishAt:new Date(due).toISOString(),timeZone:input.timeZone,lateMinutes:input.lateMinutes,status:'pending',reason:null};
+      const values={publication:{text:checked.text,community:checked.community,audience:checked.audience,quote:checked.quote??null},publishAt:new Date(due).toISOString(),timeZone:input.timeZone,lateMinutes:input.lateMinutes,status:'pending',reason:null};
       if(item){Object.assign(item,values);item.version++;}
       else data.scheduled.push({id:`s${data.nextScheduleId++}`,author:actor,version:1,createdAt:new Date(now).toISOString(),...values});
       message='Programación guardada. El servidor publicará si conserva permisos y está dentro del margen autorizado.';
@@ -86,7 +93,8 @@ export function command(original, actor, input, now=Date.now()) {
   } else if (input.type==='publish') {
     const text=typeof input.text==='string'?input.text.trim():'';
     if (!text || text.length>3000) fail(400,'Escribe entre 1 y 3000 caracteres.');
-    let audience='public',community=null,parent=null;
+    let audience='public',community=null,parent=null,quote=null;
+    if(input.parent&&input.quote)fail(400,'Una cita inicia una publicación propia, no una respuesta anidada.');
     if (input.parent) {
       const target=data.posts.find(p=>p.id===input.parent);
       if (!target || !canRead(data,actor,target)) fail(404,'Publicación no disponible.');
@@ -103,8 +111,19 @@ export function command(original, actor, input, now=Date.now()) {
       const permitted=parent?['admin','contributor','commenter']:['admin','contributor'];
       if (!permitted.includes(c.members[actor])) fail(403,parent?'No tienes permiso para comentar aquí.':'No tienes permiso para iniciar publicaciones aquí.');
     }
-    data.posts.push({id:`p${data.nextId++}`,author:actor,text,audience,community,parent,createdAt:new Date(now).toISOString()});
-    message=parent?'Respuesta publicada.':'Publicación guardada.';
+    if(parent&&replyDepth(data.posts,parent)>=2)fail(409,'Se ha alcanzado el límite de tres niveles. Puedes continuar citando en una publicación propia.');
+    if(input.quote){
+      const target=data.posts.find(p=>p.id===input.quote);
+      if(!target||!canRead(data,actor,target))fail(404,'Publicación no disponible.');
+      if(target.audience!=='public'&&(audience!=='members'||community!==target.community))fail(403,'Una cita privada debe conservar la comunidad y la audiencia restringida.');
+      quote=target.id;
+    }
+    data.posts.push({id:`p${data.nextId++}`,author:actor,text,audience,community,parent,quote,createdAt:new Date(now).toISOString()});
+    message=parent?'Respuesta publicada.':quote?'Publicación con cita guardada. El autor citado dispone de un aviso en la aplicación.':'Publicación guardada.';
+  } else if(input.type==='read-notice'){
+    if(!quoteNotices(data,actor).some(n=>n.id===input.id))fail(404,'Aviso no disponible.');
+    data.seenQuotes[actor]=[...new Set([...(data.seenQuotes[actor]??[]),input.id])];
+    message='Aviso marcado como leído.';
   } else if (input.type==='save') {
     const post=data.posts.find(p=>p.id===input.post);
     if (!post || !canRead(data,actor,post)) fail(404,'Publicación no disponible.');

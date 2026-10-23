@@ -27,3 +27,15 @@ export function conversationRows(posts,rootId) {
   }
   return rows;
 }
+// La publicación inicial tiene profundidad 0; solo se crean respuestas de profundidad 1 y 2.
+export function replyDepth(posts,id) {
+  const byId=new Map(posts.map(p=>[p.id,p])),visited=new Set();
+  let current=byId.get(id),depth=0;
+  while(current){
+    if(visited.has(current.id))return Infinity;
+    visited.add(current.id);
+    if(!current.parent)return depth;
+    current=byId.get(current.parent);depth++;
+  }
+  return Infinity;
+}

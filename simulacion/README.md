@@ -2,7 +2,7 @@
 title: Spartakos — Prototipo local con varias cuentas
 lang: es-ES
 license: CC-BY-SA-4.0
-version: 0.3
+version: 0.4
 date: 2026-10-23
 status: Laboratorio funcional de un solo servidor; identidades ficticias
 ---
@@ -39,7 +39,7 @@ Todas las cuentas pueden publicar en el espacio público. Que Carla no pueda pub
 5. Proponer apertura desde Alicia. Cada cuenta del censo debe consentir desde su sesión. Una mayoría es insuficiente y una negativa cierra la propuesta.
 6. Si hay unanimidad, abrir para publicaciones futuras. El historial anterior y los borradores restringidos conservan su audiencia. Las respuestas a publicaciones antiguas conservan también esa audiencia.
 7. Probar una baja de membresía. Se cancela la propuesta vigente y permanece la protección para impedir una apertura elusiva. Una persona retirada puede decidir sobre la propuesta que la afecta sin volver a recibir el historial privado.
-8. Responder a una respuesta desde Bruno o Alicia: cada mensaje identifica a quién responde, conserva su audiencia y permite continuar el hilo sin aumentar indefinidamente el sangrado.
+8. Responder a una respuesta desde Bruno o Alicia: cada mensaje identifica a quién responde y conserva su audiencia. El máximo es de tres niveles contando la publicación inicial; después se continúa mediante Citar en una publicación.
 9. Dar y retirar «Me gusta». Es independiente de Guardar. Las reacciones son visibles solo para quienes pueden leer la publicación; no generan reputación, ordenación ni avisos. Carla puede reaccionar aunque no pueda comentar.
 10. Exportar desde «Mi cuenta»: incluye aportaciones propias y referencias autorizadas a guardados y reacciones propias, no sesiones ni aportaciones privadas ajenas.
 
@@ -66,7 +66,7 @@ python3 verificar.py
 node --test prototipo/modelo.test.mjs simulacion/*.test.mjs
 ```
 
-Hay 48 pruebas: diez de la maqueta anterior, 24 HTTP, cuatro de selección y recorrido de conversaciones y diez de programación. Cubren separación entre sesiones, permisos, audiencia, consentimiento, revocación, privacidad de guardados, persistencia, exportación, escrituras simultáneas, reacciones reversibles, migración de datos y conversaciones con 2.001 mensajes. Estas pruebas no constituyen una auditoría de seguridad ni ejecutan la matriz completa A01–A148.
+Hay 57 pruebas: diez de la maqueta anterior, 26 HTTP, cuatro de selección y recorrido de conversaciones, diez de programación y siete de citas y límites. Cubren separación entre sesiones, permisos, audiencia, consentimiento, revocación, privacidad de guardados, persistencia, exportación, escrituras simultáneas, reacciones reversibles, migración de datos y lectura de historiales con 2.001 mensajes (no creación de nuevos hilos de esa profundidad), límite de tres niveles, citas, avisos y su privacidad. Estas pruebas no constituyen una auditoría de seguridad ni ejecutan la matriz completa A01–A148.
 
 Código bajo AGPL-3.0-or-later y documentación bajo CC-BY-SA-4.0, según el [mapa de licencias](../LICENCIAS.md). La [maqueta anterior](../prototipo/README.md) se conserva como antecedente descartable.
 
@@ -77,3 +77,9 @@ El editor muestra una audiencia fija en Inicio general y en comunidades privadas
 Programadas permite editar contenido y fecha, cancelar o publicar ahora. Los cambios conservan destino y audiencia. Otros usuarios no reciben estos pendientes. El servidor comprueba cada segundo y funciona aunque se cierre el cliente; debe seguir ejecutándose en el ordenador. Después de reiniciarse conserva pendientes y estados. Si vuelve fuera del margen, el envío vence. Si pierde permisos, se bloquea y exige revisión; restaurar permisos no lo reactiva solo.
 
 Solo se programan publicaciones iniciales de texto. Los condicionales (aprobación, secuencias, intervalos y confirmación) quedan [estudiados como propuestas](../FUNCIONAL-03-PUBLICACIONES-Y-CONVERSACIONES.md), sin ejecución en el prototipo. La exportación contiene programaciones propias, pero no se puede importarlas para activar otro servidor.
+
+## Tres niveles y citas
+
+Publicación → respuesta → respuesta a respuesta. El tercer nivel ofrece Citar en una publicación en lugar de Responder, si hay permiso para iniciar publicaciones. La cita conserva referencia y atribución; crea otro hilo y deja un aviso al autor citado en Avisos. El aviso puede abrirse y marcarse leído; no hay correo ni aviso externo. Las autocitas no generan aviso.
+
+Una cita privada no sale de su comunidad ni se convierte en pública. Las citas programadas avisan únicamente al publicarse. Se conserva el historial anterior, aunque sea más profundo, sin permitir nuevas respuestas desde el tercer nivel.

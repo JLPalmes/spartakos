@@ -193,7 +193,7 @@ test('los datos de la primera versión migran sin perder publicaciones ni guarda
   assert.equal(state.revision,7);assert.equal(state.posts.length,2);assert.deepEqual(state.saved,['p1']);
   assert(state.posts.every(p=>Array.isArray(p.likes)&&p.likes.length===0));
   const persisted=JSON.parse(await readFile(path.join(f.directory,'estado.json'),'utf8'));
-  assert.equal(persisted.schema,3);assert.deepEqual(persisted.posts,legacy.posts);
+  assert.equal(persisted.schema,4);assert.deepEqual(persisted.posts,legacy.posts);
 });
 test('las reacciones persisten y la exportación solo atribuye las propias',async t=>{
   const f=await fixture(t);
@@ -204,7 +204,7 @@ test('las reacciones persisten y la exportación solo atribuye las propias',asyn
   assert.deepEqual(state.posts.find(p=>p.id==='p2').likes,[{id:'bruno',name:'Bruno'}]);
   const exported=(await f.request('/api/export',{token})).data;
   assert.deepEqual(exported.liked,['p2']);assert.deepEqual(exported.saved,[]);
-  assert.equal(exported.format,'spartakos-local-simulation-v3');
+  assert.equal(exported.format,'spartakos-local-simulation-v4');
 });
 test('abrir la comunidad no publica las reacciones de su historial restringido',async t=>{
   const f=await fixture(t);
@@ -245,4 +245,21 @@ test('acciones sobre programación ajena no revelan su existencia',async t=>{
  for(const type of ['edit-schedule','cancel-schedule','publish-schedule'])assert.equal((await f.cmd('diego',{type,id:'s1',version:1})).status,404);
  const state=(await f.request('/api/state',{token:f.tokens.diego})).data;
  assert(!JSON.stringify(state).includes('Pendiente privada'));
+});
+test('HTTP impide cuarto nivel aunque el cliente envíe una solicitud manual',async t=>{
+ const f=await fixture(t);
+ for(const parent of ['p2','p3'])assert.equal((await f.cmd('bruno',{type:'publish',parent,text:'Respuesta'})).status,200);
+ assert.equal((await f.cmd('bruno',{type:'publish',parent:'p4',text:'Exceso'})).status,409);
+ const r=await f.cmd('alicia',{type:'publish',quote:'p4',text:'Continúo aquí',community:'cuaderno',audience:'members'});
+ assert.equal(r.status,200);assert.equal(r.data.state.posts.at(-1).parent,null);
+ const b=(await f.request('/api/state',{token:f.tokens.bruno})).data;
+ assert.equal(b.notices.length,1);assert.equal(b.notices[0].quoted,'p4');
+});
+test('avisos de cita persisten y no se reciben ni se marcan desde otra cuenta',async t=>{
+ const f=await fixture(t);
+ await f.cmd('alicia',{type:'publish',quote:'p1',text:'Cita pública',audience:'public'});
+ assert.equal((await f.cmd('diego',{type:'read-notice',id:'p3'})).status,404);
+ assert.equal((await f.cmd('bruno',{type:'read-notice',id:'p3'})).status,200);
+ await f.restart();const token=await f.login('bruno');
+ const state=(await f.request('/api/state',{token})).data;assert.equal(state.notices[0].read,true);
 });

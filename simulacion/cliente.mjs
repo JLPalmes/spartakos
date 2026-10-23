@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-import {feedRoots,rootFor,conversationRows} from './conversaciones.mjs';
+import {feedRoots,rootFor,conversationRows,replyDepth} from './conversaciones.mjs';
 
 const $=id=>document.getElementById(id);
 const params=new URLSearchParams(location.search);
@@ -38,7 +38,8 @@ async function send(input){
   catch(error){status(error.message,true);if(error.status===401)showLogin();return false;}
   finally{busy=false;document.querySelectorAll('button[type=submit]').forEach(b=>b.disabled=false);updatePublishDisabled();}
 }
-function mayReply(p){const c=state.communities.find(c=>c.id===p.community);return !p.community||['admin','contributor','commenter'].includes(c?.role);}
+function mayReply(p){const c=state.communities.find(c=>c.id===p.community);return replyDepth(state.posts,p.id)<2&&(!p.community||['admin','contributor','commenter'].includes(c?.role));}
+function mayQuote(p){const c=state.communities.find(c=>c.id===p.community);return p.audience==='public'||['admin','contributor'].includes(c?.role);}
 function contextLabel(p){const c=state.communities.find(c=>c.id===p.community);return `${p.community?c?.name??'Comunidad':'General'} · ${p.audience==='public'?'Público':'Solo integrantes · Operador con acceso'}`;}
 function postMarkup(p,{depth=0,savedView=false}={}){
   const saved=state.saved.includes(p.id),likes=p.likes??[],liked=likes.some(a=>a.id===state.user.id);
@@ -46,17 +47,20 @@ function postMarkup(p,{depth=0,savedView=false}={}){
   const replyTo=p.parent?`<p class="reply-to">En respuesta a ${parent?`<button data-context="${parent.id}">${esc(parent.authorName)}</button>`:'otro mensaje de esta conversación'}</p>`:'';
   return `<article id="post-${p.id}" tabindex="-1" class="post ${depth?`reply depth-${Math.min(depth,3)}`:''}">
     <div class="meta">${esc(p.authorName)} · ${esc(contextLabel(p))}</div>${replyTo}
-    <p class="post-text">${esc(p.text)}</p>
+    ${p.quote?quoteMarkup(p.quote):''}<p class="post-text">${esc(p.text)}</p>
     <div class="actions">
       <button id="like-${p.id}" data-like="${p.id}" aria-pressed="${liked}">${liked?'Te gusta':'Me gusta'}</button>
       <button id="save-${p.id}" data-save="${p.id}" aria-pressed="${saved}">${saved?'Guardado · Privado':'Guardar · Privado'}</button>
       ${mayReply(p)?`<button id="respond-${p.id}" data-reply="${p.id}" aria-expanded="${expandedReplies.has(p.id)}">Responder</button>`:''}
+      ${mayQuote(p)?`<button data-quote="${p.id}">Citar en una publicación</button>`:''}
       ${savedView?`<button data-context="${p.id}">Ver en conversación</button>`:''}
     </div>
+    ${replyDepth(state.posts,p.id)>=2?'<p class="hint">Último nivel de respuestas. Para continuar, inicia una publicación con cita.</p>':''}
     ${likes.length?`<details class="reactions"><summary>Reacciones</summary><p>A ${esc(likes.map(a=>a.name).join(', '))} les gusta esta publicación. Visible para su audiencia.</p></details>`:''}
     ${mayReply(p)?`<form class="reply-form" data-parent="${p.id}" ${expandedReplies.has(p.id)?'':'hidden'}><label for="reply-${p.id}">Responder a ${esc(p.authorName)} · Misma audiencia</label><textarea id="reply-${p.id}" maxlength="3000" required>${esc(replyDrafts.get(p.id)??'')}</textarea><button type="submit">Enviar respuesta</button></form>`:''}
   </article>`;
 }
+function quoteMarkup(id){const q=state.posts.find(p=>p.id===id);return q?`<blockquote><p>Cita a <button data-context="${q.id}">${esc(q.authorName)}</button></p><p>${esc(q.text.slice(0,300))}${q.text.length>300?'…':''}</p></blockquote>`:'<p>Cita no disponible.</p>';}
 function timeline(community){
   const roots=feedRoots(state.posts,community);
   return roots.length?roots.map(root=>`<section class="thread" aria-label="Conversación de ${esc(root.authorName)}">${conversationRows(state.posts,root.id).map(({post,depth})=>postMarkup(post,{depth})).join('')}</section>`).join(''):'<p class="empty">Todavía no hay publicaciones en este espacio.</p>';
@@ -97,7 +101,11 @@ function composer(){
   if(!options.some(o=>o.id===draft.audience))options.push({id:draft.audience,name:'Destino anterior sin permiso · Borrador protegido',disabled:true});
   $('audience').innerHTML=options.map(o=>`<option value="${o.id}" ${o.disabled?'disabled':''}>${esc(o.name)}</option>`).join('');
   $('audience').value=draft.audience;
-  const choose=options.length>1&&destinationAvailable();
+  const source=draft.quote?state.posts.find(p=>p.id===draft.quote):null;
+  const restrictedQuote=Boolean(source&&source.audience!=='public');
+  const choose=options.length>1&&destinationAvailable()&&!restrictedQuote;
+  $('quote-preview').hidden=!draft.quote;
+  $('quote-preview').innerHTML=draft.quote?`${source?`<p>Citarás a ${esc(source.authorName)}. Recibirá un aviso cuando se publique.</p>`:'<p>La publicación citada ya no está disponible. Retira la cita para continuar sin ella.</p>'}${quoteMarkup(draft.quote)}<button type="button" id="remove-quote">Retirar cita</button>`:'';
   $('audience').hidden=!choose;$('audience-label').hidden=!choose;
   $('schedule-options').hidden=!draft.scheduling;$('schedule-toggle').setAttribute('aria-expanded',String(Boolean(draft.scheduling)));
   $('schedule-at').value=draft.publishAt??'';$('schedule-late').value=String(draft.lateMinutes??15);
@@ -122,6 +130,9 @@ function render(){
   }else if(page==='guardados'){
     $('context').innerHTML='<h1>Guardados</h1><p>Tu colección privada. Guardar no expresa Me gusta ni avisa al autor.</p>';
     $('content').innerHTML=state.posts.filter(p=>state.saved.includes(p.id)).map(p=>postMarkup(p,{savedView:true})).join('')||'<p>No has guardado publicaciones.</p>';
+  }else if(page==='avisos'){
+    $('context').innerHTML='<h1>Avisos</h1><p>Citas a tus publicaciones, dentro de su audiencia. Sin correos ni avisos externos.</p>';
+    $('content').innerHTML=(state.notices??[]).slice().reverse().map(n=>`<article class="post"><p>${esc(n.authorName)} ha citado una publicación tuya. ${n.read?'Leído':'Sin leer'}</p><button data-notice="${n.id}" data-post="${n.post}">Ver publicación con cita</button></article>`).join('')||'<p>No tienes avisos de citas.</p>';
   }else if(page==='programadas'){
     $('context').innerHTML='<h1>Programadas</h1><p>Solo tú ves estas publicaciones pendientes. Revisa aquí los bloqueos y vencimientos; no se reactivan automáticamente.</p>';
     $('content').innerHTML=scheduledContent();
@@ -154,6 +165,19 @@ function scheduledContent(){
   }).join('')||'<p>No tienes publicaciones programadas.</p>';
 }
 function bindActions(){
+  if($('remove-quote'))$('remove-quote').onclick=()=>{delete currentDraft().quote;render();};
+  document.querySelectorAll('[data-notice]').forEach(b=>b.onclick=async()=>{if(await send({type:'read-notice',id:b.dataset.notice}))openConversation(b.dataset.post);});
+  document.querySelectorAll('[data-quote]').forEach(b=>b.onclick=()=>{
+    const source=state.posts.find(p=>p.id===b.dataset.quote);
+    if(!source)return;
+    const c=state.communities.find(c=>c.id===source.community);
+    // La cita pública puede salir a Inicio general; una privada conserva su espacio.
+    selectedCommunity=source.community&&['admin','contributor'].includes(c?.role)?source.community:null;
+    page=selectedCommunity?'comunidad':'inicio';
+    const draft=currentDraft();draft.quote=source.id;
+    if(source.audience!=='public')draft.audience=`${source.community}:members`;
+    render();$('text').focus();status('Escribe tu propia publicación. El autor citado recibirá un aviso al publicarla.');
+  });
   document.querySelectorAll('[data-cancel-schedule],[data-publish-schedule]').forEach(b=>b.onclick=()=>send({type:b.dataset.cancelSchedule?'cancel-schedule':'publish-schedule',id:b.dataset.cancelSchedule??b.dataset.publishSchedule,version:Number(b.dataset.version)}));
   document.querySelectorAll('[data-edit-schedule]').forEach(form=>{
     const id=form.dataset.editSchedule,fields={text:form.querySelector('[name=text]'),at:form.querySelector('[name=at]'),late:form.querySelector('[name=late]')};
@@ -193,8 +217,8 @@ $('schedule-confirm').onclick=async()=>{
   if(!destinationAvailable())return status('El destino ya no permite publicar.',true);
   try{
     const draft=currentDraft(),key=scopeKey(),[community,audience]=draft.audience.split(':');
-    const input={type:'schedule',text:draft.text,publishAt:instant(draft.publishAt),timeZone:localZone,lateMinutes:draft.lateMinutes??15,...(key==='general'?{audience:'public'}:{community,audience})};
-    if(await send(input)){draft.text='';draft.scheduling=false;draft.publishAt='';page='programadas';render();}
+    const input={type:'schedule',text:draft.text,quote:draft.quote??null,publishAt:instant(draft.publishAt),timeZone:localZone,lateMinutes:draft.lateMinutes??15,...(key==='general'?{audience:'public'}:{community,audience})};
+    if(await send(input)){draft.text='';delete draft.quote;draft.scheduling=false;draft.publishAt='';page='programadas';render();}
   }catch(error){status(error.message,true);}
 };
 $('text').oninput=()=>{currentDraft().text=$('text').value;};
@@ -202,8 +226,8 @@ $('audience').onchange=()=>{currentDraft().audience=$('audience').value;composer
 $('publish').onsubmit=async e=>{
   e.preventDefault();if(!destinationAvailable())return status('El destino perdió permisos. El borrador no se publica en otro espacio.',true);
   const draft=currentDraft(),[community,audience]=draft.audience.split(':'),key=scopeKey();
-  const input={type:'publish',text:draft.text,...(key==='general'?{audience:'public'}:{community,audience})};
-  if(await send(input)){drafts.get(key).text='';render();}
+  const input={type:'publish',text:draft.text,quote:draft.quote??null,...(key==='general'?{audience:'public'}:{community,audience})};
+  if(await send(input)){drafts.get(key).text='';delete drafts.get(key).quote;render();}
 };
 document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>{page=b.dataset.page;if(page==='comunidad')selectedCommunity=null;render();status('');});
 $('enter').onclick=()=>enter($('account').value);
