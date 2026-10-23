@@ -2,7 +2,7 @@
 title: Spartakos — Publicaciones, audiencias y conversaciones
 lang: es-ES
 license: CC-BY-SA-4.0
-version: 0.2
+version: 0.3
 date: 2026-10-23
 status: Diseño funcional propuesto; decisiones pendientes identificadas
 ---
@@ -36,7 +36,7 @@ Privacidad y cifrado son dimensiones distintas: un contenido restringido legible
 
 ## 3. Responder y leer una conversación
 
-Propuesta: hilo con respuesta a una publicación concreta y ramas que puedan plegarse. Mantener visible la relación de contexto sin anidación ilimitada que haga ilegible el móvil. Comparar orden cronológico y navegación por ramas, sin ordenar por coincidencias acumuladas.
+El hilo admite tres niveles en total: publicación inicial (nivel 1), respuesta (nivel 2) y respuesta a esa respuesta (nivel 3). No se permite responder al tercer nivel. Es un límite de creación aplicado en servidor, no solo un límite visual de sangrado. Mantener visible la relación de contexto; comparar navegación por ramas sin ordenar por reacciones acumuladas.
 
 Responder no aumenta la audiencia del contenido al que se responde. El lector accede a una respuesta solo cuando tiene acceso a su contexto y el permiso correspondiente; un enlace reenviado no concede acceso. La vista pública no revela títulos ni autores de ramas privadas.
 
@@ -54,7 +54,7 @@ No medir éxito por volumen de reacciones. Una pregunta resuelta con pocas inter
 
 ## 5. Difusión sin viralidad impuesta
 
-Separar enlace al original, recomendación a personas o espacios con acceso y cita contextualizada. Propuesta inicial: compartir enlace al original; posponer un botón de redistribución masiva sin contexto hasta justificar su utilidad y riesgos.
+Separar enlace al original, recomendación a personas o espacios con acceso y cita contextualizada. La continuación de un hilo que alcanza el tercer nivel se realiza mediante una publicación propia con cita y aviso al autor citado. No se introduce redistribución masiva sin contexto.
 
 En público puede permitirse cita con atribución, referencia y extensión limitada por diseño; no generar copias completas automáticamente. Permitir al autor limitar la función de cita/recomendación de la aplicación se estudia como control de producto, no garantía de impedir capturas, copias externas o conversación ajena.
 
@@ -144,3 +144,15 @@ Si se combinan condiciones, el diseño deberá expresar claramente si se exigen 
 ### 10.4 Estado de implementación
 
 Implementadas en el simulador: fecha y hora en la zona del cliente, margen de retraso, gestión privada de pendientes, edición con versión, cancelación, publicación inmediata, ejecución periódica por servidor, bloqueo por permisos y recuperación tras reinicio. La programación se limita a publicaciones iniciales de texto; respuestas programadas, adjuntos, revisores, secuencias, avisos externos y traslado entre proveedores quedan pendientes. El contenido pendiente es legible por el operador local; no hay cifrado de extremo a extremo.
+
+## 11. Continuación mediante cita y aviso
+
+Citar en una publicación abre el editor de una publicación propia, con referencia al mensaje concreto y atribución a su autor. Puede citarse cualquier nivel, incluido el tercero. La nueva publicación inicia otro hilo con su propio máximo de tres niveles. La cita no convierte al autor citado en coautor ni expresa su adhesión al nuevo texto. No se incrustan recursivamente cadenas de citas: el prototipo muestra únicamente el fragmento del mensaje directamente citado, con enlace a su contexto.
+
+El autor citado recibe un aviso en Avisos cuando se publica, no cuando se prepara un borrador o se programa. Puede abrir la publicación que lo cita y marcar el aviso como leído. La autocita no genera aviso. La primera implementación no envía correos, avisos externos ni contadores de popularidad. Las preferencias, el agrupado y las medidas frente a citas abusivas requieren desarrollo antes de producción.
+
+Una cita de contenido restringido debe permanecer en la misma comunidad y con audiencia de integrantes. Citar no permite publicar fuera ni eludir el permiso para iniciar temas. Una persona con permiso solo para comentar no obtiene permiso de publicación por alcanzar el límite. Las citas de contenido público pueden abrir una publicación general. El servidor verifica acceso al original y permisos de destino; el cliente conserva los borradores existentes y no copia el texto citado en el texto propio.
+
+El aviso solo se entrega si el citado puede leer el original y la publicación que lo cita. Si pierde acceso a la comunidad, el aviso privado deja de estar disponible. La programación de una cita revalida estas restricciones al ejecutarse y solo entonces genera el aviso. El fragmento se obtiene del original autorizado vigente; no representa una copia histórica inmutable. La edición y retirada del original deberán conservar los controles de privacidad y el contexto de versión previstos en este documento.
+
+El historial previo con más de tres niveles se conserva sin eliminar, aplanar ni reasignar autorías. No admite nuevas respuestas desde el tercer nivel en adelante; se puede continuar mediante cita conforme a permisos. Los recorridos de datos profundos se mantienen robustos para leer ese historial y rechazar ciclos o referencias rotas.

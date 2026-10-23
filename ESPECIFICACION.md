@@ -2,7 +2,7 @@
 title: Spartakos — Especificación integral
 lang: es-ES
 license: CC-BY-SA-4.0
-version: 0.22
+version: 0.23
 date: 2026-10-23
 status: Diseño funcional y simulador local multicuenta; sin red distribuida ni laboratorio estructural
 ---
@@ -258,7 +258,7 @@ No se exige amistad mutua para todo seguimiento. Las cuentas pueden aprobar segu
 
 No hay rachas, avisos de pérdida de posición, publicación obligatoria ni contadores destinados a presionar. Los contadores de actividad, si se muestran, pueden ocultarse; no se convierten en reputación temática.
 
-La interacción utiliza «Me gusta» sencillo y reversible, «Guardar» privado y seguimiento de conversación con significados separados. Se descarta el acuerdo graduado. Ninguna reacción se convierte automáticamente en verdad, reputación, privilegios o prioridad. Guardar no avisa al autor ni autoriza publicidad o recomendaciones externas. Las reacciones respetan la audiencia de la publicación. El simulador permite consultar quién reaccionó sin destacar recuentos ni generar avisos; la presentación definitiva requiere validación. Inicio general y cada comunidad tienen espacios separados, con destino y audiencia explícitos; las respuestas encadenadas conservan el contexto y la audiencia del mensaje al que responden.
+La interacción utiliza «Me gusta» sencillo y reversible, «Guardar» privado y seguimiento de conversación con significados separados. Se descarta el acuerdo graduado. Ninguna reacción se convierte automáticamente en verdad, reputación, privilegios o prioridad. Guardar no avisa al autor ni autoriza publicidad o recomendaciones externas. Las reacciones respetan la audiencia de la publicación. El simulador permite consultar quién reaccionó sin destacar recuentos ni generar avisos; la presentación definitiva requiere validación. Inicio general y cada comunidad tienen espacios separados, con destino y audiencia explícitos; las respuestas conservan el contexto y la audiencia del mensaje al que responden, con un máximo de tres niveles contando la publicación inicial. Para continuar, se crea una publicación propia con cita y aviso al autor citado, sin ampliar la audiencia de contenido restringido.
 
 ## 8. Libertad algorítmica y descubrimiento
 

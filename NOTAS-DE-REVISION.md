@@ -3,7 +3,7 @@ title: Spartakos — Notas de revisión del prototipo
 lang: es-ES
 license: CC-BY-SA-4.0
 date: 2026-10-23
-status: N01–N06 implementadas en el simulador; validación de producto pendiente
+status: N01–N07 implementadas en el simulador; validación de producto pendiente
 ---
 
 # Notas de revisión del prototipo
@@ -24,7 +24,7 @@ La acción sigue siendo privada: no expresa acuerdo, no avisa al autor y no gene
 
 **Limitación comprobada:** la interfaz actual ofrece «Responder» en publicaciones iniciales, pero no en sus respuestas. Solo presenta el primer nivel de respuestas. Aunque el servidor admite una referencia a otra respuesta como destino, la interfaz no permite crear ni recorrer correctamente una conversación de varios niveles.
 
-**Mejora propuesta:** permitir responder a una respuesta, mostrando a quién se responde y conservando el contexto de la conversación. Evitar que una profundidad creciente vuelva ilegible la pantalla; el límite visual de sangrado no debería impedir continuar la conversación.
+**Mejora propuesta:** permitir responder a una respuesta, mostrando a quién se responde y conservando el contexto de la conversación. Evitar que una profundidad creciente vuelva ilegible la pantalla; la revisión posterior N07 fija un máximo de tres niveles y continuación por cita.
 
 Las respuestas deben conservar la audiencia y comprobar los permisos de su contexto. Responder no puede ampliar acceso ni filtrar una conversación restringida. Debe poder localizarse una respuesta guardada dentro de su hilo.
 
@@ -59,3 +59,7 @@ Inicio general y comunidades privadas muestran una indicación fija. Solo una co
 ## N06. Publicación programada
 
 **Decisión:** fecha, hora, zona horaria y gestión privada de pendientes como alcance inicial. Margen explícito de retraso; permisos y audiencia se verifican al ejecutar. **Estado:** implementado en el servidor local y cliente. Las condiciones adicionales quedan propuestas y pendientes; véase la sección 10 de [Publicaciones y conversaciones](FUNCIONAL-03-PUBLICACIONES-Y-CONVERSACIONES.md).
+
+## N07. Tres niveles de conversación y continuación por cita
+
+**Decisión:** publicación inicial, respuesta y respuesta a respuesta. No se crea un cuarto nivel, ni siquiera mediante una petición directa al servidor. Desde el último nivel se continúa con una publicación propia que cita el mensaje y avisa a su autor. Se aplican los permisos para iniciar publicaciones y las restricciones de audiencia. **Estado:** implementado, incluidos aviso interno, marca de lectura, cita programada e historial anterior conservado. Sustituye la posibilidad de crear respuestas sin límite de profundidad descrita inicialmente en N02.

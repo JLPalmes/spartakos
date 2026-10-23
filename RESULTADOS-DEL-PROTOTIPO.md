@@ -2,9 +2,9 @@
 title: Spartakos — Resultados de la primera comprobación del prototipo
 lang: es-ES
 license: CC-BY-SA-4.0
-version: 0.4
+version: 0.5
 date: 2026-10-23
-status: 48 pruebas automáticas superadas; interacción y programación comprobadas en navegador
+status: 57 pruebas automáticas superadas; interacción, programación y citas comprobadas en navegador
 ---
 
 # Primera comprobación del prototipo
@@ -73,3 +73,11 @@ Se han superado **48 pruebas automáticas, 0 fallos**: diez del modelo anterior,
 En un escenario separado del contenido del usuario se comprobó en navegador: audiencia fija sin desplegable en comunidad privada; programación de texto privado con fecha, zona y margen visibles; aparición en Programadas; edición del texto pendiente; publicación inmediata y aparición de una sola publicación en el mismo espacio privado. La captura del ensayo utiliza únicamente contenido sintético.
 
 Las condiciones adicionales están documentadas como propuestas, no implementadas. El laboratorio necesita el proceso local encendido y no ofrece un servicio permanente ni ejecución distribuida. La matriz A01–A148 continúa sin ejecutarse como suite de producto.
+
+## 9. Límite de tres niveles, citas y avisos
+
+Resultado: **57 pruebas automáticas superadas, 0 fallos**: diez de modelo anterior, 26 HTTP, cuatro de conversaciones, diez de programación y siete de citas y niveles. Las nuevas comprobaciones rechazan el cuarto nivel en servidor, permiten iniciar otro hilo con cita y preservan privacidad y permisos; verifican avisos solo al autor citado, lectura y persistencia, ausencia de aviso al preparar o cancelar una cita programada, ejecución posterior, retirada de acceso y conservación del historial anterior. Los ensayos de recorridos profundos comprueban lectura robusta de datos anteriores, no autorización para crear hilos nuevos de profundidad ilimitada.
+
+En navegador con datos sintéticos: Bruno creó niveles segundo y tercero; el tercero no ofreció Responder y sí Citar en una publicación. Alicia citó ese mensaje y publicó un tema nuevo en la misma comunidad restringida. Bruno recibió el aviso correspondiente. La nueva publicación mostró atribución y referencia al mensaje citado, con Responder disponible como primer nivel de otro hilo.
+
+Se mantiene pendiente la validación con participantes, las preferencias de avisos y la protección frente a citas abusivas en un servicio real. Estas pruebas locales no ejecutan la matriz completa de producto.
