@@ -2,7 +2,7 @@
 title: Spartakos — Publicaciones, audiencias y conversaciones
 lang: es-ES
 license: CC-BY-SA-4.0
-version: 0.5
+version: 0.6
 date: 2026-10-23
 status: Diseño funcional propuesto; decisiones pendientes identificadas
 ---
@@ -156,3 +156,15 @@ Una cita de contenido restringido debe permanecer en la misma comunidad y con au
 El aviso solo se entrega si el citado puede leer el original y la publicación que lo cita. Si pierde acceso a la comunidad, el aviso privado deja de estar disponible. La programación de una cita revalida estas restricciones al ejecutarse y solo entonces genera el aviso. El fragmento se obtiene del original autorizado vigente; no representa una copia histórica inmutable. La edición y retirada del original deberán conservar los controles de privacidad y el contexto de versión previstos en este documento.
 
 El historial previo con más de tres niveles se conserva sin eliminar, aplanar ni reasignar autorías. No admite nuevas respuestas desde el tercer nivel en adelante; se puede continuar mediante cita conforme a permisos. Los recorridos de datos profundos se mantienen robustos para leer ese historial y rechazar ciclos o referencias rotas.
+
+## 12. Borradores recuperables
+
+Guardar borrador es una acción explícita distinta de Guardar una publicación ajena. No se envía texto al servidor mientras se escribe. El editor distingue cambios sin guardar y versión guardada, y Borradores permite retomar una publicación inicial después de recargar, cerrar el cliente o reiniciar el servidor. Se conserva texto, espacio, audiencia y referencia de cita. El contenido pendiente solo se entrega a su autor en la aplicación; el operador local puede leer el almacenamiento, que no tiene cifrado de extremo a extremo.
+
+Retomar abre el editor en el espacio original. Si se perdieron permisos o acceso, el texto sigue disponible para su autor y puede continuar guardándose, pero publicar o programar queda bloqueado. No se convierte en publicación general ni cambia automáticamente a público. Una cita privada sigue restringida incluso si la comunidad se abre. La interfaz no revela el contenido citado si ya no hay acceso; conserva su referencia para que el autor decida.
+
+Los borradores tienen versión. Una pestaña con una versión obsoleta no puede sobrescribir silenciosamente otra. Conserva el texto que estaba editando y ofrece Guardar como copia. También puede guardar una copia si otra pestaña ya publicó o programó el original; esa copia vuelve a ser pendiente y no se publica por sí misma. Cambiar de contexto no traslada el texto ni sustituye el borrador local de otro espacio.
+
+Publicar o programar desde un borrador comprueba versión, propiedad, estado y permisos en el servidor. La transición se guarda junto con el resultado: el borrador pasa a Ya publicado o Transferido a Programadas y un reintento no lo ejecuta otra vez. La versión utilizada queda consultable como referencia. Cancelar una programación se gestiona en Programadas; no reactiva silenciosamente el borrador original. La exportación incluye solo los borradores propios.
+
+Alcance del simulador: publicaciones iniciales de texto, con o sin cita. No se guarda la selección tentativa de fecha al guardar un borrador; la fecha se confirma en Programar. Las respuestas en curso siguen en memoria de la pestaña. Las ediciones no guardadas se pierden al recargar y no se anuncia recuperación de texto anterior a esta función. Quedan pendientes recuperación de respuestas, eliminación con política de retención, historial de versiones completo y pruebas con participantes. El guardado no sustituye copias independientes ni un servicio de alta disponibilidad.

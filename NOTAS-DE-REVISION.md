@@ -3,7 +3,7 @@ title: Spartakos — Notas de revisión del prototipo
 lang: es-ES
 license: CC-BY-SA-4.0
 date: 2026-10-23
-status: N01–N09 implementadas en el simulador; validación de producto pendiente
+status: N01–N10 implementadas en el simulador; validación de producto pendiente
 ---
 
 # Notas de revisión del prototipo
@@ -71,3 +71,7 @@ Inicio general y comunidades privadas muestran una indicación fija. Solo una co
 ## N09. Recuentos visibles por lotes horarios
 
 **Decisión:** mostrar el total agregado únicamente en cortes comunes, cada hora UTC en punto, con hora y fecha locales del corte. Se mantiene la elección propia inmediata, el check neutral y la ocultación de identidades. No hay avisos ni cuenta atrás. **Estado:** implementado en servidor, persistencia y cliente; altas y retiradas posteriores a un corte esperan al siguiente. El primer total espera al próximo corte tras actualizar. Sustituye la suspensión provisional de recuentos de N08. No garantiza anonimato en audiencias pequeñas.
+
+## N10. Borradores recuperables y guardado explícito
+
+**Criterio de implementación:** cerrar la pérdida de texto al recargar mediante Guardar borrador, sin enviar el editor automáticamente al servidor. **Estado:** implementado para publicaciones iniciales con texto y cita. Borradores es privado por cuenta, conserva contexto y permite recuperación, actualización con versión y copia ante conflictos. Publicar o programar consume una sola vez el pendiente y revalida permisos. Se mantienen como limitaciones explícitas las respuestas no recuperables y las ediciones sin guardar.

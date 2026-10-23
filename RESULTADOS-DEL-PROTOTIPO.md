@@ -2,9 +2,9 @@
 title: Spartakos — Resultados de la primera comprobación del prototipo
 lang: es-ES
 license: CC-BY-SA-4.0
-version: 0.7
+version: 0.8
 date: 2026-10-23
-status: 67 pruebas automáticas superadas; recuentos horarios sin identidades visibles
+status: 75 pruebas automáticas superadas; borradores recuperables y privados por cuenta
 ---
 
 # Primera comprobación del prototipo
@@ -97,3 +97,11 @@ Resultado: **67 pruebas automáticas superadas, 0 fallos**: diez de modelo anter
 La fecha del corte se distingue de la fecha del cálculo. Los datos locales anteriores conservan sus elecciones, con el primer total pendiente hasta el siguiente corte. Las cantidades se entregan solo a lectores autorizados; las identidades y cambios entre cortes permanecen fuera de la API. Los resultados anteriores sin recuentos corresponden a una etapa sustituida. No se ha ejecutado la matriz de producto ni una validación con participantes.
 
 En navegador con reloj de ensayo se observó: check propio inmediato con total pendiente; una aprobación en el corte de las 13:00; retirada inmediata del check sin variar ese total; cero aprobaciones en el corte de las 14:00. Alicia recibió el mismo total sin identidades. El escenario usa únicamente datos sintéticos y está separado del laboratorio habitual.
+
+## 12. Borradores recuperables
+
+Resultado: **75 pruebas automáticas superadas, 0 fallos**: diez del modelo anterior, 30 HTTP, cuatro de conversaciones, diez de programación, siete de citas, ocho de recuentos y seis de borradores. Se verifica separación entre cuentas, ausencia de publicación o avisos al guardar, texto íntegro, citas privadas, persistencia y exportación propia, migración, conflictos sin sobrescritura, copias y pérdida de permisos. Publicar o programar comprueba versión y consume el pendiente de forma atómica; una repetición se rechaza sin duplicar. Los errores de publicación o programación conservan el borrador pendiente.
+
+En navegador con datos sintéticos: Bruno guardó una publicación restringida con cita, recargó y la recuperó en la misma comunidad. Dos pestañas editaron el mismo borrador: el guardado obsoleto se rechazó conservando su texto y Guardar como copia mantuvo ambas variantes. Alicia no vio borradores de Bruno. Tras revocar publicación, el editor de Bruno deshabilitó Publicar, mantuvo Solo integrantes y permitió seguir guardando.
+
+La función no recupera texto anterior que nunca se hubiera guardado, respuestas en curso ni ediciones sin guardar tras recargar. El almacenamiento local es legible por el operador y no tiene cifrado de extremo a extremo. Las pruebas de producto y usabilidad con participantes siguen pendientes.
