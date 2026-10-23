@@ -3,7 +3,7 @@ title: Spartakos — Notas de revisión del prototipo
 lang: es-ES
 license: CC-BY-SA-4.0
 date: 2026-10-23
-status: N01–N08 implementadas en el simulador; validación de producto pendiente
+status: N01–N09 implementadas en el simulador; validación de producto pendiente
 ---
 
 # Notas de revisión del prototipo
@@ -67,3 +67,7 @@ Inicio general y comunidades privadas muestran una indicación fija. Solo una co
 ## N08. Me gusta sin identidad visible y check neutral
 
 **Decisión:** ocultar identidades al autor y otros usuarios, retirar Reacciones y posponer cualquier recuento. Botón con check verde, sin corazón ni animaciones, con texto y estado accesibles. **Estado:** implementado tanto en interfaz como en respuestas del servidor. El vínculo se conserva en el servidor para retirar la reacción; no supone anonimato frente al proveedor. Sustituye las presentaciones anteriores con lista de personas.
+
+## N09. Recuentos visibles por lotes horarios
+
+**Decisión:** mostrar el total agregado únicamente en cortes comunes, cada hora UTC en punto, con hora y fecha locales del corte. Se mantiene la elección propia inmediata, el check neutral y la ocultación de identidades. No hay avisos ni cuenta atrás. **Estado:** implementado en servidor, persistencia y cliente; altas y retiradas posteriores a un corte esperan al siguiente. El primer total espera al próximo corte tras actualizar. Sustituye la suspensión provisional de recuentos de N08. No garantiza anonimato en audiencias pequeñas.

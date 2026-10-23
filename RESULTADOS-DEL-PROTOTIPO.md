@@ -2,9 +2,9 @@
 title: Spartakos — Resultados de la primera comprobación del prototipo
 lang: es-ES
 license: CC-BY-SA-4.0
-version: 0.6
+version: 0.7
 date: 2026-10-23
-status: 58 pruebas automáticas superadas; identidades de reacciones ocultas en interfaz y API
+status: 67 pruebas automáticas superadas; recuentos horarios sin identidades visibles
 ---
 
 # Primera comprobación del prototipo
@@ -89,3 +89,11 @@ Resultado: **58 pruebas automáticas superadas, 0 fallos**: diez de modelo anter
 La interfaz elimina Reacciones y utiliza check verde, texto Me gusta, indicación Marcado y aria-pressed. Los resultados anteriores que describen listas visibles pertenecen a versiones sustituidas. No se promete anonimato frente al proveedor; sigue pendiente decidir sobre la utilidad de recuentos.
 
 En navegador se comprobó que Bruno puede marcar y retirar el check; Alicia no recibe ese estado ni una lista de personas. El botón comunica Marcado y aria-pressed solo en la cuenta que reacciona. La captura utiliza contenido sintético del laboratorio.
+
+## 11. Recuentos horarios
+
+Resultado: **67 pruebas automáticas superadas, 0 fallos**: diez de modelo anterior, 28 HTTP, cuatro de conversaciones, diez de programación, siete de citas y ocho de recuentos. Los nuevos casos verifican marca propia inmediata, totales congelados entre cortes, altas y retiradas, idempotencia, límite exacto del corte, cálculo tardío sin incluir cambios posteriores, migración sin recuentos históricos inventados, publicaciones posteriores al corte, privacidad, persistencia y reloj que retrocede. La prueba HTTP usa reloj inyectado para comprobar ejecución sin cliente, cierre y reinicio, y paso por dos horas sin esperar horas reales. No existe una ruta HTTP para cambiar el reloj del servicio.
+
+La fecha del corte se distingue de la fecha del cálculo. Los datos locales anteriores conservan sus elecciones, con el primer total pendiente hasta el siguiente corte. Las cantidades se entregan solo a lectores autorizados; las identidades y cambios entre cortes permanecen fuera de la API. Los resultados anteriores sin recuentos corresponden a una etapa sustituida. No se ha ejecutado la matriz de producto ni una validación con participantes.
+
+En navegador con reloj de ensayo se observó: check propio inmediato con total pendiente; una aprobación en el corte de las 13:00; retirada inmediata del check sin variar ese total; cero aprobaciones en el corte de las 14:00. Alicia recibió el mismo total sin identidades. El escenario usa únicamente datos sintéticos y está separado del laboratorio habitual.
