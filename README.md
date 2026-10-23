@@ -2,7 +2,7 @@
 title: Spartakos — Documentación del proyecto
 lang: es-ES
 license: CC-BY-SA-4.0
-date: 2026-10-22
+date: 2026-10-23
 ---
 
 # Spartakos
@@ -21,13 +21,13 @@ Para participar: [guía de contribución](CONTRIBUTING.md), [coordinación inici
 
 ## Prototipo con servidor local y varias cuentas
 
-La [simulación funcional](simulacion/README.md) permite abrir cuatro cuentas a la vez o usar pestañas separadas. Comparte publicaciones mediante un servidor local, aplica permisos por sesión y conserva los datos al reiniciar. Alicia administra, Bruno participa, Carla empieza con lectura y Diego no pertenece a la comunidad privada.
+La [simulación funcional](simulacion/README.md) permite abrir cuatro cuentas a la vez o usar pestañas separadas. Comparte publicaciones mediante un servidor local, aplica permisos por sesión y conserva los datos al reiniciar. Alicia administra, Bruno participa, Carla empieza con lectura y reacciones y Diego no pertenece a la comunidad privada. La segunda revisión incorpora Guardar, Me gusta reversible, respuestas encadenadas y espacios separados para Inicio general y cada comunidad.
 
 Requisitos: Node.js 22 o posterior y Python 3 para la verificación documental. No hay dependencias de terceros que instalar. Desde la raíz del repositorio:
 
 ```sh
 python3 verificar.py
-node --test prototipo/modelo.test.mjs simulacion/servidor.test.mjs
+node --test prototipo/modelo.test.mjs simulacion/*.test.mjs
 node simulacion/servidor.mjs
 ```
 
@@ -37,7 +37,9 @@ La [maqueta anterior sin servidor](prototipo/README.md) se conserva como anteced
 
 ## Lectura principal
 
-1. [Especificación integral v0.20](ESPECIFICACION.md): primera pasada funcional y contraste comparado; reciprocidad y acreditación como mecanismos candidatos.
+Las [notas de revisión del prototipo](NOTAS-DE-REVISION.md) acumulan observaciones, cambios implementados y asuntos pendientes, distinguiendo decisiones de propuestas todavía abiertas.
+
+1. [Especificación integral v0.21](ESPECIFICACION.md): primera pasada funcional y contraste comparado; reciprocidad y acreditación como mecanismos candidatos.
 2. [Decisiones, dudas y riesgos](DECISIONES-Y-DUDAS.md): qué está confirmado, qué se propone y qué exige ensayo.
 3. [Matriz de aceptación](MATRIZ-DE-ACEPTACION.md): 148 pruebas especificadas, ninguna ejecutada; incluye escenarios condicionados a adoptar reciprocidad.
 4. [Antecedentes y lecciones](ANTECEDENTES-Y-LECCIONES.md): fuentes, cobertura y límites de la investigación.
@@ -45,7 +47,7 @@ La [maqueta anterior sin servidor](prototipo/README.md) se conserva como anteced
 6. [Modelo mixto de privacidad](MODELO-MIXTO-DE-PRIVACIDAD.md): contenido público, espacios cifrados, claves y recuperación.
 7. [Primer ensayo estructural](ENSAYO-01-COMPONENTES-Y-VALIDACION.md): componentes candidatos, 15 casos reproducibles y criterios de descarte; no ejecutado.
 8. [Identidad, perfil y relaciones](FUNCIONAL-01-IDENTIDAD-PERFIL-Y-RELACIONES.md): primer bloque de diseño funcional, con alternativas pendientes.
-9. [Interacción útil y autonomía de atención](FUNCIONAL-02-INTERACCION-UTIL.md): acuerdo, interés privado y seguimiento sin diseño orientado a dependencia.
+9. [Interacción útil y autonomía de atención](FUNCIONAL-02-INTERACCION-UTIL.md): Me gusta, Guardar y seguimiento sin diseño orientado a dependencia.
 10. [Publicaciones, audiencias y conversaciones](FUNCIONAL-03-PUBLICACIONES-Y-CONVERSACIONES.md): editor, respuestas, difusión, edición y retirada.
 11. [Comunidades y permisos](FUNCIONAL-04-COMUNIDADES-Y-PERMISOS.md): plantillas, roles, participación, moderación local y continuidad.
 12. [Inicio, búsqueda y descubrimiento](FUNCIONAL-05-INICIO-BUSQUEDA-Y-DESCUBRIMIENTO.md): lectura, exploración, privacidad de consultas y avisos útiles.
@@ -63,7 +65,7 @@ Los documentos de análisis conservan los antecedentes técnicos. La especificac
 
 ## Prototipo y comprobaciones
 
-La [simulación con varias cuentas](simulacion/README.md) añade catorce pruebas HTTP a las diez de la [maqueta anterior](prototipo/README.md). Se comprueban permisos por sesión, persistencia, audiencia y consentimiento, sin atribuir a esas pruebas garantías de una red distribuida. El [informe de resultados](RESULTADOS-DEL-PROTOTIPO.md) distingue estas comprobaciones de las pruebas de producto, que siguen sin ejecutarse.
+La [simulación con varias cuentas](simulacion/README.md) incluye 22 pruebas HTTP y cuatro de conversaciones, además de las diez de la [maqueta anterior](prototipo/README.md). Se comprueban permisos por sesión, persistencia, audiencia y consentimiento, sin atribuir a esas pruebas garantías de una red distribuida. El [informe de resultados](RESULTADOS-DEL-PROTOTIPO.md) distingue estas comprobaciones de las pruebas de producto, que siguen sin ejecutarse.
 
 El [contrato preliminar de datos y autoridad](CONTRATO-DE-DATOS-Y-AUTORIDAD.md) fija separaciones antes de elegir componentes. El [paquete de apertura](PREPARACION-DE-APERTURA.md) documenta el repositorio y las licencias adoptadas, y las condiciones de contribución.
 

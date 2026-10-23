@@ -2,9 +2,9 @@
 title: Spartakos — Resultados de la primera comprobación del prototipo
 lang: es-ES
 license: CC-BY-SA-4.0
-version: 0.2
-date: 2026-10-22
-status: Diez pruebas de maqueta y catorce pruebas HTTP superadas; sin validación con participantes
+version: 0.3
+date: 2026-10-23
+status: 36 pruebas automáticas superadas; segunda revisión local comprobada en navegador
 ---
 
 # Primera comprobación del prototipo
@@ -55,3 +55,13 @@ También se comprobó en navegador la revocación de publicación a Bruno mientr
 Durante revisión se identificó el riesgo de ampliar sin querer la audiencia de un borrador al perder permisos o abrirse la comunidad. La audiencia se envía expresamente al servidor; el cliente mantiene el destino restringido o bloquea el envío cuando pierde permiso, sin cambiar a público. Hay pruebas de regresión para ambos casos.
 
 No se han ejecutado E01–E15 ni A01–A148 como suite de producto. El almacenamiento y el control de acceso corresponden a un único proceso local, con identidades ficticias de acceso libre. No prueban identidad soberana, distribución, cifrado ni usabilidad con participantes.
+
+## 7. Segunda revisión: interacción y espacios separados
+
+Ejecutado con Node.js v22.23.4: `node --test prototipo/modelo.test.mjs simulacion/*.test.mjs`. Resultado: **36 pruebas superadas, 0 fallos**: diez del modelo anterior, 22 HTTP y cuatro de selección y recorrido de conversaciones. Las ocho pruebas HTTP adicionales verifican reacciones reversibles e idempotentes, autoría por sesión, privacidad, respuesta a respuesta, guardado de respuestas, actualización del esquema anterior, persistencia, exportación propia, historial protegido y rechazo de parámetros inválidos. Las pruebas de conversación separan general y comunidades, recorren 2.001 mensajes y controlan ramas, referencias ausentes y ciclos.
+
+En un escenario desechable de navegador con cuatro cuentas se comprobó: borradores independientes para general y comunidad; una respuesta privada de Bruno y otra de Alicia a esa respuesta; acceso de Bruno desde Guardados al contexto de esa respuesta; Me gusta de Carla visible para la audiencia autorizada y retirada posterior; ausencia de respuestas y reacciones privadas en Diego. Carla conserva lectura y reacciones sin poder comentar. Los guardados de Bruno no aparecen en Carla.
+
+El estado local anterior se respaldó antes de actualizarlo. La migración añade el almacén de reacciones sin reiniciar publicaciones ni guardados. Los datos de ensayo del usuario y las capturas que los contengan no se incorporan al repositorio. Los borradores no persisten al recargar la pestaña.
+
+Estas comprobaciones siguen siendo de laboratorio: no ejecutan la matriz A01–A148 ni sustituyen pruebas de usabilidad, accesibilidad, seguridad o infraestructura distribuida.
