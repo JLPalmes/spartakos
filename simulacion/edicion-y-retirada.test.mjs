@@ -66,3 +66,31 @@ test('retirar una cita suprime su aviso, sin retirar el original citado',()=>{
  data=command(data,'alicia',{type:'withdraw-post',post:'p3',version:1}).data;
  assert.equal(view(data,'bruno').notices.length,0);assert.equal(data.posts[0].withdrawn,undefined);assert.equal(data.posts[2].quote,null);
 });
+test('retirar una fuente no consume el borrador privado ni permite publicarlo',()=>{
+ let data=command(initialData(),'alicia',{type:'save-draft',text:'Comentario pendiente',audience:'public',quote:'p1'}).data;
+ data=command(data,'bruno',{type:'withdraw-post',post:'p1',version:1}).data;
+ const before=structuredClone(data);
+ assert.throws(()=>command(data,'alicia',{type:'publish',draftId:'d1',draftVersion:1,text:'Comentario pendiente',audience:'public',quote:'p1'}),{status:409});
+ assert.deepEqual(data,before);assert.equal(view(data,'alicia').drafts[0].status,'draft');
+ for(const actor of ['bruno','carla','diego'])assert.deepEqual(view(data,actor).drafts,[]);
+});
+test('conflicto entre editar y retirar no pierde texto ni altera una retirada posterior',()=>{
+ let data=edit(initialData(),'Primera edición');
+ assert.throws(()=>command(data,'bruno',{type:'withdraw-post',post:'p1',version:1}),{status:409});
+ assert.equal(data.posts[0].text,'Primera edición');
+ data=command(data,'bruno',{type:'withdraw-post',post:'p1',version:2}).data;
+ const persisted=migrateData(JSON.parse(JSON.stringify(data)));
+ assert.throws(()=>edit(persisted,'Edición de otra pestaña',2),{status:409});
+ assert.equal(persisted.posts[0].text,'');assert.equal(persisted.posts[0].version,3);
+});
+test('retirada y recuperación de referencia no vuelven a publicar un borrador utilizado',()=>{
+ let data=command(initialData(),'bruno',{type:'save-draft',text:'Texto original',audience:'public'}).data;
+ data=command(data,'bruno',{type:'publish',draftId:'d1',draftVersion:1,text:'Texto original',audience:'public'}).data;
+ data=command(data,'bruno',{type:'withdraw-post',post:'p3',version:1}).data;
+ data=command(data,'bruno',{type:'trash-draft',id:'d1',version:2}).data;
+ data=command(data,'bruno',{type:'restore-draft',id:'d1',version:3}).data;
+ data=migrateData(JSON.parse(JSON.stringify(data)));
+ assert.equal(data.drafts[0].status,'published');assert.equal(data.posts[2].text,'');
+ assert.throws(()=>command(data,'bruno',{type:'publish',draftId:'d1',draftVersion:4,text:'Repetición',audience:'public'}),{status:409});
+ assert.equal(data.posts.length,3);assert.deepEqual(view(data,'alicia').drafts,[]);
+});
