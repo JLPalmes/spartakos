@@ -50,9 +50,15 @@ Añadidos tres escenarios sintéticos de regresión: un borrador conserva estado
 
 No se han modificado datos del laboratorio, comportamiento de producción ni configuración del servidor. Los controles de accesibilidad y el rescate persistente de ediciones siguen pendientes; no se presentan como verificados en este bloque. Los cambios se conservan en la rama de la propuesta #2, sin integrar en main.
 
+### Bloque 4 — 24 de octubre: catálogo propuesto de estadísticas
+
+El [diseño de estadísticas](DISENO-ESTADISTICAS.md) concreta fuentes, audiencias, actualización y conservación de una primera fase de gestión de recursos y pendientes. Propone excluir recuentos de comportamiento en grupos, sin atribuir anonimato a un umbral numérico. El panel público se limita como candidato a declaraciones voluntarias y fechadas de servicios, con cobertura y caducidad explícitas; no mide por sí mismo disponibilidad ni capacidad global.
+
+Diez casos de aceptación documentales quedan pendientes de ejecución si se aprueba desarrollar el catálogo. No se ha añadido captación, implementación ni acceso a datos del laboratorio. Verificación editorial de 48 documentos y diferencias sin errores; la batería funcional vigente sigue siendo de 91 pruebas, sin repetirla por este cambio exclusivamente documental. Catálogo enlazado en la documentación de la rama de #2 para revisión, no decisión ratificada.
+
 ### Siguiente bloque
 
-Concretar el catálogo mínimo y permisos de estadísticas según N11, con alcance local por proveedor, supresión de grupos pequeños y ausencia de seguimiento de lecturas. Mantener propuestas no ratificadas claramente marcadas. Revisar después accesibilidad del editor y conflictos visibles entre pestañas; no convertir texto rescatado en publicación ni borrador sin acción explícita.
+Revisar accesibilidad de controles del editor y conflictos visibles entre pestañas con escenarios sintéticos. No convertir texto rescatado en publicación ni borrador sin acción explícita. La implementación de estadísticas queda pendiente de revisión del catálogo; la automatización no lo aprueba.
 
 ### Disciplina de continuidad
 

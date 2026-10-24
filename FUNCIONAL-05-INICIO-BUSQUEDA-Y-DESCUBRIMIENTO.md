@@ -144,3 +144,5 @@ El panel público no debe exponer direcciones internas, ubicación precisa, topo
 - Presentación sobria y opcional: sin avisos de caída de popularidad, metas de actividad, puntuación de personas, privilegios ni optimización emocional.
 
 Pendientes antes de desarrollar: catálogo mínimo por ámbito; audiencias y roles; necesidad real de cada dato; políticas para grupos pequeños y consultas; retención y frecuencia; metodología distribuida, verificación y coste de operación. Validar con tareas concretas —comprobar espacio, continuidad o disponibilidad— y revisar si el beneficio compensa exposición y mantenimiento.
+
+El [catálogo mínimo propuesto](DISENO-ESTADISTICAS.md) concreta una primera fase de gestión personal y recursos, excluye inicialmente recuentos de comportamiento y describe un panel público de declaraciones de servicios con cobertura y caducidad explícitas. Incluye un guion de aceptación todavía sin ejecutar. No autoriza su implementación.
