@@ -68,7 +68,7 @@ export async function createSimulationServer({directory=path.join(here,'../resul
       const actor=sessions.get(token);
       if(!actor)throw new RuleError(401,'Abre una sesión ficticia para continuar.');
       if(req.method==='GET'&&url.pathname==='/api/state')return json(res,200,view(data,actor));
-      if(req.method==='GET'&&url.pathname==='/api/export')return json(res,200,{format:'spartakos-local-simulation-v5',lang:'es-ES',user:actor,drafts:view(data,actor).drafts,scheduled:view(data,actor).scheduled,posts:data.posts.filter(p=>p.author===actor),saved:[...view(data,actor).saved],liked:data.posts.filter(p=>canRead(data,actor,p)&&(data.likes[p.id]??[]).includes(actor)).map(p=>p.id),notice:'Archivo de simulación; no incluye identidad portable ni claves.'});
+      if(req.method==='GET'&&url.pathname==='/api/export')return json(res,200,{format:'spartakos-local-simulation-v6',lang:'es-ES',user:actor,drafts:view(data,actor).drafts,scheduled:view(data,actor).scheduled,posts:data.posts.filter(p=>p.author===actor),saved:[...view(data,actor).saved],liked:data.posts.filter(p=>canRead(data,actor,p)&&(data.likes[p.id]??[]).includes(actor)).map(p=>p.id),notice:'Archivo de simulación; no incluye identidad portable ni claves.'});
       if(req.method==='DELETE'&&url.pathname==='/api/session'){sessions.delete(token);return json(res,200,{message:'Sesión cerrada.'});}
       if(req.method==='POST'&&url.pathname==='/api/commands'){
         const input=await body(req);

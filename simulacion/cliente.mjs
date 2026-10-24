@@ -7,7 +7,7 @@ const storageKey=`spartakos-lab:${params.get('panel')??'principal'}`;
 const esc=text=>String(text).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let token=sessionStorage.getItem(storageKey),state=null,page='inicio',selectedCommunity=null,busy=false,connectionLost=false;
 let activeDraftId=null;
-const loadedDrafts=new Map();
+const loadedDrafts=new Map(),postEdits=new Map();
 const drafts=new Map(),replyDrafts=new Map(),expandedReplies=new Set(),scheduleDrafts=new Map();
 const localZone=Intl.DateTimeFormat().resolvedOptions().timeZone;
 const dateLabel=(value,zone=localZone)=>new Intl.DateTimeFormat('es-ES',{dateStyle:'medium',timeStyle:'long',timeZone:zone}).format(new Date(value));
@@ -29,7 +29,7 @@ async function enter(account){
     token=null;
     const result=await api('/api/sessions',{method:'POST',body:{account}});
     token=result.token;sessionStorage.setItem(storageKey,token);state=await api('/api/state');
-    drafts.clear();loadedDrafts.clear();activeDraftId=null;replyDrafts.clear();expandedReplies.clear();scheduleDrafts.clear();page='inicio';selectedCommunity=null;
+    drafts.clear();loadedDrafts.clear();postEdits.clear();activeDraftId=null;replyDrafts.clear();expandedReplies.clear();scheduleDrafts.clear();page='inicio';selectedCommunity=null;
     $('login').hidden=true;$('session').hidden=false;render();status('Sesión ficticia abierta.');
   }catch(error){status(error.message,true);}
 }
@@ -38,31 +38,39 @@ async function send(input){
   busy=true;document.querySelectorAll('textarea').forEach(t=>t.readOnly=true);document.querySelectorAll('button[type=submit]').forEach(b=>b.disabled=true);
   try{const result=await api('/api/commands',{method:'POST',body:input});state=result.state;render();status(result.message);return true;}
   catch(error){status(error.message,true);if(error.status===401)showLogin();return false;}
-  finally{busy=false;document.querySelectorAll('textarea').forEach(t=>t.readOnly=false);document.querySelectorAll('button[type=submit]').forEach(b=>b.disabled=false);updatePublishDisabled();}
+  finally{busy=false;document.querySelectorAll('textarea').forEach(t=>t.readOnly=t.hasAttribute('data-local-rescue'));document.querySelectorAll('button[type=submit]').forEach(b=>b.disabled=false);updatePublishDisabled();}
 }
-function mayReply(p){const c=state.communities.find(c=>c.id===p.community);return replyDepth(state.posts,p.id)<2&&(!p.community||['admin','contributor','commenter'].includes(c?.role));}
-function mayQuote(p){const c=state.communities.find(c=>c.id===p.community);return p.audience==='public'||['admin','contributor'].includes(c?.role);}
+function mayReply(p){const c=state.communities.find(c=>c.id===p.community);return !p.withdrawn&&replyDepth(state.posts,p.id)<2&&(!p.community||['admin','contributor','commenter'].includes(c?.role));}
+function mayQuote(p){const c=state.communities.find(c=>c.id===p.community);return !p.withdrawn&&(p.audience==='public'||['admin','contributor'].includes(c?.role));}
+function mayEdit(p){const c=state.communities.find(c=>c.id===p.community);return !p.withdrawn&&p.author===state.user.id&&(!p.community||(p.parent?['admin','contributor','commenter']:['admin','contributor']).includes(c?.role));}
 function contextLabel(p){const c=state.communities.find(c=>c.id===p.community);return `${p.community?c?.name??'Comunidad':'General'} · ${p.audience==='public'?'Público':'Solo integrantes · Operador con acceso'}`;}
+function editRescue(id){const edit=postEdits.get(id);return edit?`<p class="notice">Conservas una edición local sin guardar. Puedes copiarla antes de salir; no restaura ni publica el texto retirado.</p><label for="post-rescue-${id}">Edición local conservada</label><textarea id="post-rescue-${id}" data-local-rescue readonly>${esc(edit.text)}</textarea>`:'';}
 function postMarkup(p,{depth=0,savedView=false}={}){
   const saved=state.saved.includes(p.id),liked=p.likedByMe===true;
   const parent=state.posts.find(q=>q.id===p.parent);
-  const replyTo=p.parent?`<p class="reply-to">En respuesta a ${parent?`<button data-context="${parent.id}">${esc(parent.authorName)}</button>`:'otro mensaje de esta conversación'}</p>`:'';
+  const replyTo=p.parent?`<p class="reply-to">En respuesta a ${parent?`<button data-context="${parent.id}">${esc(parent.authorName)}</button>`:'otro mensaje de esta conversación'}${p.parentChanged?' · Responde a una versión anterior':''}</p>`:'';
+  if(p.withdrawn)return `<article id="post-${p.id}" tabindex="-1" class="post ${depth?`reply depth-${Math.min(depth,3)}`:''}"><div class="meta">${esc(p.authorName)} · ${esc(contextLabel(p))}</div>${replyTo}<p>Publicación retirada por su autor.</p><p class="hint">Se conserva el contexto de las respuestas independientes.</p>${p.author===state.user.id?editRescue(p.id):''}${savedView?`<button data-context="${p.id}">Ver en conversación</button>`:''}${saved?`<button data-save="${p.id}">Quitar de Guardados</button>`:''}</article>`;
+  const edit=postEdits.get(p.id);
   return `<article id="post-${p.id}" tabindex="-1" class="post ${depth?`reply depth-${Math.min(depth,3)}`:''}">
     <div class="meta">${esc(p.authorName)} · ${esc(contextLabel(p))}</div>${replyTo}
-    ${p.quote?quoteMarkup(p.quote):''}<p class="post-text">${esc(p.text)}</p>
+    ${p.quote?quoteMarkup(p.quote,p.quoteVersion):''}<p class="post-text">${esc(p.text)}</p>${p.updatedAt?`<p class="hint">Editada · versión ${p.version} · ${esc(dateLabel(p.updatedAt))}. Las aprobaciones pueden ser anteriores a esta edición.</p>`:''}${liked&&p.likedVersion!==p.version?'<p class="hint">Tu Me gusta corresponde a una versión anterior; no se ha renovado automáticamente.</p>':''}
     <div class="actions">
       <button class="approval" id="like-${p.id}" data-like="${p.id}" aria-pressed="${liked}" title="${liked?'Retirar':'Añadir'} Me gusta · Identidad oculta para otros usuarios"><span class="approval-mark" aria-hidden="true">✓</span> Me gusta${liked?' · Marcado':''}</button>
       <button id="save-${p.id}" data-save="${p.id}" aria-pressed="${saved}">${saved?'Guardado · Privado':'Guardar · Privado'}</button>
       ${mayReply(p)?`<button id="respond-${p.id}" data-reply="${p.id}" aria-expanded="${expandedReplies.has(p.id)}">Responder</button>`:''}
       ${mayQuote(p)?`<button data-quote="${p.id}">Citar en una publicación</button>`:''}
+      ${mayEdit(p)?`<button data-edit-post="${p.id}">Editar publicación</button>`:''}
+      ${p.author===state.user.id?`<details data-panel="withdraw-${p.id}"><summary>Retirar publicación</summary><p>Retira el texto de este servicio y lo sustituye por un marcador. No se puede restaurar aquí. Se conservan respuestas ajenas; las copias externas y respaldos pueden persistir.</p><button data-withdraw-post="${p.id}" data-version="${p.version}">Confirmar retirada del texto</button></details>`:''}
       ${savedView?`<button data-context="${p.id}">Ver en conversación</button>`:''}
     </div>
     <p class="hint approval-count">${p.likeCount===null||p.likeCount===undefined?'Recuento pendiente del próximo corte horario.':`${p.likeCount} ${p.likeCount===1?'aprobación':'aprobaciones'} · <time datetime="${esc(p.likesUpdatedAt)}" title="${esc(`Corte: ${dateLabel(p.likesUpdatedAt)}. Calculado: ${dateLabel(p.likesGeneratedAt)} (${localZone}).`)}">Recuento a las ${esc(new Intl.DateTimeFormat('es-ES',{hour:'2-digit',minute:'2-digit',timeZone:localZone}).format(new Date(p.likesUpdatedAt)))} · ${esc(new Intl.DateTimeFormat('es-ES',{day:'2-digit',month:'2-digit',timeZone:localZone}).format(new Date(p.likesUpdatedAt)))}</time>`}</p>
     ${replyDepth(state.posts,p.id)>=2?'<p class="hint">Último nivel de respuestas. Para continuar, inicia una publicación con cita.</p>':''}
+    ${edit?`<form data-post-editor="${p.id}"><label for="post-edit-${p.id}">Editar texto propio · Se conserva destino y audiencia</label><textarea id="post-edit-${p.id}" required maxlength="3000">${esc(edit.text)}</textarea>${edit.version!==p.version?'<p class="notice">Hay una versión más reciente. Conserva tu texto antes de cancelar o revisa la publicación vigente.</p>':''}<button type="submit">Guardar edición</button><button type="button" data-cancel-post-edit="${p.id}">Cancelar edición</button></form>`:''}
     ${mayReply(p)?`<form class="reply-form" data-parent="${p.id}" ${expandedReplies.has(p.id)?'':'hidden'}><label for="reply-${p.id}">Responder a ${esc(p.authorName)} · Misma audiencia</label><textarea id="reply-${p.id}" maxlength="3000" required>${esc(replyDrafts.get(p.id)??'')}</textarea><button type="submit">Enviar respuesta</button></form>`:''}
   </article>`;
 }
-function quoteMarkup(id){const q=state.posts.find(p=>p.id===id);return q?`<blockquote><p>Cita a <button data-context="${q.id}">${esc(q.authorName)}</button></p><p>${esc(q.text.slice(0,300))}${q.text.length>300?'…':''}</p></blockquote>`:'<p>Cita no disponible.</p>';}
+function quoteMarkup(id,version=null){const q=state.posts.find(p=>p.id===id);return !q?'<p>Cita no disponible.</p>':q.withdrawn?'<blockquote><p>La publicación citada fue retirada. Su texto ya no se muestra.</p></blockquote>':`<blockquote><p>Cita a <button data-context="${q.id}">${esc(q.authorName)}</button>${version&&version!==q.version?' · El original cambió después de esta cita; se muestra su texto actual.':''}</p><p>${esc(q.text.slice(0,300))}${q.text.length>300?'…':''}</p></blockquote>`;}
+
 function timeline(community){
   const roots=feedRoots(state.posts,community);
   return roots.length?roots.map(root=>`<section class="thread" aria-label="Conversación de ${esc(root.authorName)}">${conversationRows(state.posts,root.id).map(({post,depth})=>postMarkup(post,{depth})).join('')}</section>`).join(''):'<p class="empty">Todavía no hay publicaciones en este espacio.</p>';
@@ -103,7 +111,7 @@ function composer(){
   if(!options.some(o=>o.id===draft.audience))options.push({id:draft.audience,name:'Destino anterior sin permiso · Borrador protegido',disabled:true});
   $('audience').innerHTML=options.map(o=>`<option value="${o.id}" ${o.disabled?'disabled':''}>${esc(o.name)}</option>`).join('');
   $('audience').value=draft.audience;
-  const source=draft.quote?state.posts.find(p=>p.id===draft.quote):null;
+  const source=draft.quote?state.posts.find(p=>p.id===draft.quote&&!p.withdrawn):null;
   const restrictedQuote=Boolean(source&&source.audience!=='public');
   const choose=options.length>1&&destinationAvailable()&&!restrictedQuote;
   $('quote-preview').hidden=!draft.quote;
@@ -149,7 +157,7 @@ function render(){
     $('content').innerHTML=communityContent();
   }else{
     $('context').innerHTML='<h1>Mi cuenta</h1>';
-    $('content').innerHTML=`<p>Actúas como ${esc(state.user.name)}. Tus guardados son privados; tus Me gusta no muestran tu identidad a otros usuarios. No se publican identidades. Los recuentos se actualizan por cortes horarios comunes; tu elección propia se muestra al instante. El servidor local conserva tu elección para permitir retirarla; no hay anonimato frente al proveedor.</p><button id="export">Exportar mis aportaciones ficticias</button><p>Esta exportación no es un perfil portable de producción.</p><button id="logout">Cerrar esta sesión</button>`;
+    $('content').innerHTML=`<p>Actúas como ${esc(state.user.name)}. Tus guardados son privados; tus Me gusta no muestran tu identidad a otros usuarios. No se publican identidades. Los recuentos se actualizan por cortes horarios comunes; tu elección propia se muestra al instante. El servidor local conserva tu elección para permitir retirarla; no hay anonimato frente al proveedor.</p><button id="export">Exportar mis aportaciones ficticias</button><p>Esta exportación no es un perfil portable de producción.</p><button id="logout">Cerrar esta sesión</button>${(state.ownUnavailablePosts??[]).length?`<h2>Textos propios en espacios sin acceso</h2><p>Puedes retirar tu aportación; esto no recupera contenido ajeno ni permisos de comunidad.</p>${state.ownUnavailablePosts.map(p=>`<article class="post"><p>Tu aportación · ${esc(dateLabel(p.createdAt))} · Solo integrantes</p>${editRescue(p.id)}${p.withdrawn?'<p>Texto retirado.</p>':`<p class="post-text">${esc(p.text)}</p><details data-panel="withdraw-${p.id}"><summary>Retirar publicación</summary><p>No se puede restaurar aquí. Se conserva el contexto y pueden existir copias externas o respaldos.</p><button data-withdraw-post="${p.id}" data-version="${p.version}">Confirmar retirada del texto</button></details>`}</article>`).join('')}`:''}`;
   }
   composer();bindActions();
   for(const panel of panels){const details=document.querySelector(`details[data-panel="${panel}"]`);if(details)details.open=true;}
@@ -185,6 +193,11 @@ function finishComposition(draft,key){
   if(draft.id){loadedDrafts.delete(draft.id);activeDraftId=null;}else{const local=drafts.get(key);if(local){local.text='';delete local.quote;local.scheduling=false;local.publishAt='';}}
 }
 function bindActions(){
+  document.querySelectorAll('[data-edit-post]').forEach(b=>b.onclick=()=>{const p=state.posts.find(p=>p.id===b.dataset.editPost);if(!postEdits.has(p.id))postEdits.set(p.id,{text:p.text,version:p.version});render();$(`post-edit-${p.id}`)?.focus();});
+  document.querySelectorAll('[data-cancel-post-edit]').forEach(b=>b.onclick=()=>{postEdits.delete(b.dataset.cancelPostEdit);render();});
+  document.querySelectorAll('[data-post-editor]').forEach(form=>{const id=form.dataset.postEditor,editor=form.querySelector('textarea');editor.oninput=()=>{postEdits.get(id).text=editor.value;};form.onsubmit=async e=>{e.preventDefault();const draft=postEdits.get(id);if(await send({type:'edit-post',post:id,text:draft.text,version:draft.version})){postEdits.delete(id);render();}};});
+  document.querySelectorAll('[data-withdraw-post]').forEach(b=>b.onclick=async()=>{if(await send({type:'withdraw-post',post:b.dataset.withdrawPost,version:Number(b.dataset.version)})){postEdits.delete(b.dataset.withdrawPost);render();}});
+
   document.querySelectorAll('[data-trash-draft],[data-restore-draft]').forEach(b=>b.onclick=()=>send({type:b.dataset.trashDraft?'trash-draft':'restore-draft',id:b.dataset.trashDraft??b.dataset.restoreDraft,version:Number(b.dataset.version)}));
   document.querySelectorAll('[data-load-draft]').forEach(b=>b.onclick=()=>{
     const stored=state.drafts.find(d=>d.id===b.dataset.loadDraft&&d.status==='draft');if(!stored)return;

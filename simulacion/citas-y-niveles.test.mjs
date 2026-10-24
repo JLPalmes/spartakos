@@ -49,7 +49,7 @@ test('cita programada avisa al publicarse, no al preparar ni cancelar el envío'
 test('historial profundo se conserva; referencias cíclicas o ausentes no admiten nuevas respuestas',()=>{
  const data=thread();data.posts.push({id:'antiguo',parent:'p4',author:'bruno',text:'Histórico',community:'cuaderno',audience:'members'});
  const old=structuredClone(data);old.schema=3;delete old.seenQuotes;
- const migrated=migrateData(old);assert.deepEqual(migrated.posts,old.posts);assert.equal(replyDepth(migrated.posts,'antiguo'),3);
+ const migrated=migrateData(old);for(const original of old.posts){const current=migrated.posts.find(p=>p.id===original.id);for(const [key,value] of Object.entries(original))assert.deepEqual(current[key],value);}assert.equal(replyDepth(migrated.posts,'antiguo'),3);
  assert.throws(()=>command(migrated,'bruno',{type:'publish',parent:'antiguo',text:'No'}),{status:409});
  assert.equal(replyDepth([{id:'a',parent:'a'}],'a'),Infinity);assert.equal(replyDepth([],'ausente'),Infinity);
 });

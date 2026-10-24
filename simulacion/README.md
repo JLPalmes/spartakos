@@ -2,8 +2,8 @@
 title: Spartakos — Prototipo local con varias cuentas
 lang: es-ES
 license: CC-BY-SA-4.0
-version: 0.8
-date: 2026-10-23
+version: 0.9
+date: 2026-10-24
 status: Laboratorio funcional de un solo servidor; identidades ficticias
 ---
 
@@ -66,7 +66,7 @@ python3 verificar.py
 node --test prototipo/modelo.test.mjs simulacion/*.test.mjs
 ```
 
-Hay 78 pruebas: diez de la maqueta anterior, 31 HTTP, cuatro de selección y recorrido de conversaciones, diez de programación, siete de citas y límites, ocho de recuentos horarios y ocho de borradores. Cubren separación entre sesiones, permisos, audiencia, consentimiento, revocación, privacidad de guardados, persistencia, exportación, escrituras simultáneas, reacciones reversibles, migración de datos y lectura de historiales con 2.001 mensajes (no creación de nuevos hilos de esa profundidad), límite de tres niveles, citas, avisos y su privacidad. Estas pruebas no constituyen una auditoría de seguridad ni ejecutan la matriz completa A01–A148.
+Hay 88 pruebas: diez de la maqueta anterior, 33 HTTP, cuatro de selección y recorrido de conversaciones, diez de programación, siete de citas y límites, ocho de recuentos horarios ocho de borradores y ocho de edición y retirada. Cubren separación entre sesiones, permisos, audiencia, consentimiento, revocación, privacidad de guardados, persistencia, exportación, escrituras simultáneas, reacciones reversibles, migración de datos y lectura de historiales con 2.001 mensajes (no creación de nuevos hilos de esa profundidad), límite de tres niveles, citas, avisos y su privacidad. Estas pruebas no constituyen una auditoría de seguridad ni ejecutan la matriz completa A01–A148.
 
 Código bajo AGPL-3.0-or-later y documentación bajo CC-BY-SA-4.0, según el [mapa de licencias](../LICENCIAS.md). La [maqueta anterior](../prototipo/README.md) se conserva como antecedente descartable.
 
@@ -105,3 +105,11 @@ En dos pestañas, un conflicto no sobrescribe: conserva el texto y ofrece Guarda
 Por ahora se guardan publicaciones iniciales de texto, no respuestas ni la selección tentativa de fecha. Programar confirma fecha y hora por separado. Las ediciones sin guardar se pierden al recargar. Hay papelera recuperable y restauración; el borrado definitivo y el historial completo de versiones siguen pendientes.
 
 Mover a papelera conserva el borrador y permite restaurarlo. La papelera se abre desde Borradores; no se vacía automáticamente. Si se aparta una referencia ya publicada o programada, su publicación o programación sigue existiendo: esta acción solo organiza los borradores. Restaurar conserva su estado anterior y no repite el envío.
+
+## Editar y retirar publicaciones propias
+
+Editar publicación abre el texto propio y conserva destino, audiencia y referencias. Guardar edición comprueba versión y permisos y muestra la fecha de modificación. Respuestas y citas señalan si se refieren a una versión anterior; tu Me gusta anterior no se renueva automáticamente. Los totales horarios pueden incluir aprobaciones anteriores a una edición, sin desglose por versión o persona.
+
+Retirar publicación abre una explicación antes de Confirmar retirada del texto. Vacía el cuerpo en el estado activo y deja un marcador; no hay restauración del texto aquí. No elimina respuestas ajenas, citas independientes ni respaldos o copias externas. Las citas dejan de mostrar el cuerpo retirado, y una programación que lo necesite se bloquea. Los borradores privados independientes no se purgan automáticamente.
+
+Desde Mi cuenta puedes retirar texto propio de una comunidad a la que ya no tienes acceso, sin recuperar contenido ajeno. El borrado completo con política de copias y la moderación por terceros siguen fuera de esta implementación. Las ediciones locales no guardadas pueden copiarse ante conflictos, pero no sobreviven a recargar.

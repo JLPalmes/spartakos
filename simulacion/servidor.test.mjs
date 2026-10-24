@@ -195,7 +195,7 @@ test('los datos de la primera versión migran sin perder publicaciones ni guarda
   assert.equal(state.revision,7);assert.equal(state.posts.length,2);assert.deepEqual(state.saved,['p1']);
   assert(state.posts.every(p=>p.likedByMe===false&&!Object.hasOwn(p,'likes')));
   const persisted=JSON.parse(await readFile(path.join(f.directory,'estado.json'),'utf8'));
-  assert.equal(persisted.schema,6);assert.deepEqual(persisted.posts,legacy.posts);
+  assert.equal(persisted.schema,7);assert.deepEqual(persisted.posts,legacy.posts);
 });
 test('las reacciones persisten y la exportación solo atribuye las propias',async t=>{
   const f=await fixture(t);
@@ -206,7 +206,7 @@ test('las reacciones persisten y la exportación solo atribuye las propias',asyn
   assert.equal(state.posts.find(p=>p.id==='p2').likedByMe,true);
   const exported=(await f.request('/api/export',{token})).data;
   assert.deepEqual(exported.liked,['p2']);assert.deepEqual(exported.saved,[]);
-  assert.equal(exported.format,'spartakos-local-simulation-v5');
+  assert.equal(exported.format,'spartakos-local-simulation-v6');
 });
 test('abrir la comunidad no publica las reacciones de su historial restringido',async t=>{
   const f=await fixture(t);
@@ -332,4 +332,20 @@ test('papelera propia persiste y restaurar no publica ni concede permisos',async
  const restored=(await f.request('/api/state',{token})).data;
  assert.equal(restored.drafts[0].status,'draft');assert.equal(restored.posts.length,2);
  const alicia=await f.login('alicia');assert.deepEqual((await f.request('/api/state',{token:alicia})).data.drafts,[]);
+});
+test('edición HTTP exige versión y persiste sin publicar cuerpos anteriores',async t=>{
+ const f=await fixture(t);
+ const r=await f.cmd('bruno',{type:'edit-post',post:'p1',version:1,text:'Versión corregida persistente'});assert.equal(r.status,200);assert.equal(r.data.state.posts[0].version,2);
+ assert.equal((await f.cmd('bruno',{type:'edit-post',post:'p1',version:1,text:'Obsoleta'})).status,409);
+ assert.equal((await f.cmd('alicia',{type:'edit-post',post:'p1',version:2,text:'Ajena'})).status,403);
+ await f.restart();const token=await f.login('bruno');const state=(await f.request('/api/state',{token})).data;
+ assert.equal(state.posts[0].text,'Versión corregida persistente');assert(!JSON.stringify(state).includes('¿Qué libro os gustaría'));
+});
+test('retirada HTTP persiste y no filtra el cuerpo por estado, exportación o cita',async t=>{
+ const f=await fixture(t);await f.cmd('alicia',{type:'publish',quote:'p1',audience:'public',text:'Comentario independiente'});
+ assert.equal((await f.cmd('bruno',{type:'withdraw-post',post:'p1',version:1})).status,200);
+ await f.restart();const token=await f.login('bruno');
+ for(const route of ['/api/state','/api/export']){const state=(await f.request(route,{token})).data;assert(!JSON.stringify(state).includes('¿Qué libro os gustaría'));assert.equal(state.posts.find(p=>p.id==='p1').text,'');}
+ const alicia=await f.login('alicia');const state=(await f.request('/api/state',{token:alicia})).data;
+ assert.equal(state.posts.find(p=>p.id==='p3').text,'Comentario independiente');assert.equal(state.posts.find(p=>p.id==='p1').withdrawn,true);
 });
