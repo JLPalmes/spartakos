@@ -69,7 +69,7 @@ function postMarkup(p,{depth=0,savedView=false}={}){
     ${mayReply(p)?`<form class="reply-form" data-parent="${p.id}" ${expandedReplies.has(p.id)?'':'hidden'}><label for="reply-${p.id}">Responder a ${esc(p.authorName)} · Misma audiencia</label><textarea id="reply-${p.id}" maxlength="3000" required>${esc(replyDrafts.get(p.id)??'')}</textarea><button type="submit">Enviar respuesta</button></form>`:''}
   </article>`;
 }
-function quoteMarkup(id,version=null){const q=state.posts.find(p=>p.id===id);return !q?'<p>Cita no disponible.</p>':q.withdrawn?'<blockquote><p>La publicación citada fue retirada. Su texto ya no se muestra.</p></blockquote>':`<blockquote><p>Cita a <button data-context="${q.id}">${esc(q.authorName)}</button>${version&&version!==q.version?' · El original cambió después de esta cita; se muestra su texto actual.':''}</p><p>${esc(q.text.slice(0,300))}${q.text.length>300?'…':''}</p></blockquote>`;}
+function quoteMarkup(id,version=null){const q=state.posts.find(p=>p.id===id);return !q?'<p>Cita no disponible.</p>':q.withdrawn?'<blockquote><p>La publicación citada fue retirada. Su texto ya no se muestra.</p></blockquote>':`<blockquote><p>Cita a <button data-context="${q.id}">${esc(q.authorName)}</button>${version&&version!==q.version?' · Cita vinculada a otra versión; se muestra el texto actual del original.':''}</p><p>${esc(q.text.slice(0,300))}${q.text.length>300?'…':''}</p></blockquote>`;}
 
 function timeline(community){
   const roots=feedRoots(state.posts,community);

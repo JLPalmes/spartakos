@@ -53,6 +53,7 @@ test('retirada elimina elección y total visible y no deja cuerpos en avisos',()
 test('cita programada se bloquea si el original fue retirado sin publicar ni avisar',()=>{
  const now=Date.parse('2030-01-01T10:00:00Z');
  let data=command(initialData(now),'alicia',{type:'schedule',quote:'p1',text:'Cita futura',audience:'public',publishAt:'2030-01-01T11:00:00Z',timeZone:'Atlantic/Canary',lateMinutes:15},now).data;
+ const edited=command(data,'bruno',{type:'edit-post',post:'p1',version:1,text:'Original actualizado'},now+500).data;const executed=runDue(edited,now+3600000).data;assert.equal(executed.posts.at(-1).quoteVersion,1);assert.equal(executed.posts[0].version,2);
  data=command(data,'bruno',{type:'withdraw-post',post:'p1',version:1},now+1000).data;
  data=runDue(data,now+3600000).data;assert.equal(data.scheduled[0].status,'blocked');assert.equal(data.posts.length,2);assert.equal(view(data,'bruno').notices.length,0);
 });
