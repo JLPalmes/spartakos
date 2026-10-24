@@ -2,8 +2,8 @@
 title: Spartakos — Publicaciones, audiencias y conversaciones
 lang: es-ES
 license: CC-BY-SA-4.0
-version: 0.7
-date: 2026-10-23
+version: 0.8
+date: 2026-10-24
 status: Diseño funcional propuesto; decisiones pendientes identificadas
 ---
 
@@ -174,3 +174,27 @@ Alcance del simulador: publicaciones iniciales de texto, con o sin cita. No se g
 Mover a papelera aparta el borrador de los pendientes y conserva contenido, destino, audiencia, cita y estado anterior. Restaurar devuelve ese estado sin publicar, programar ni conceder permisos. Ambas acciones comprueban propiedad y versión; una acción obsoleta no sobrescribe otra. La papelera es privada por cuenta y persiste tras reiniciar.
 
 Mover la referencia de un borrador ya publicado o transferido a Programadas no retira la publicación ni cancela su envío. Restaurarla tampoco permite volver a ejecutarla. No hay vaciado automático ni purga definitiva; esta función no se presenta como borrado efectivo de datos. La política de retención, copias y borrado irreversible sigue pendiente de diseño antes de producción.
+
+## 13. Edición y retirada: alcance implementado en el laboratorio
+
+### 13.1 Edición con referencia de versión
+
+Editar publicación permite al autor corregir su texto, con permiso vigente para publicar o responder en su contexto. El servidor comprueba autoría y versión y rechaza una edición obsoleta. No se cambia identidad, autor, espacio, audiencia, padre ni cita mediante la edición del texto. Se muestran versión y fecha de modificación. Guardar sin cambios no crea otra versión. El editor local conserva el texto ante un conflicto para que su autor pueda copiarlo o revisarlo, sin sobrescritura automática.
+
+Cada nueva respuesta conserva la versión del mensaje al que respondió. Las citas mantienen referencia a la versión conocida al crearlas; el fragmento mostrado es el texto actual del original autorizado y se advierte cuando cambió después de la cita. No se presenta un texto actual como una transcripción histórica inmutable. No se almacena ni se ofrece un historial público completo de cuerpos anteriores.
+
+Me gusta conserva internamente la versión sobre la que se marcó. Una edición no renueva silenciosamente esa aprobación; el titular ve que corresponde a una versión anterior. Retirar y volver a marcar es una acción explícita sobre la versión actual. El total horario no se desglosa por versiones ni identifica participantes, y una publicación editada advierte que las aprobaciones pueden ser anteriores. No se atribuyen las respuestas o señales previas a una adhesión al texto modificado.
+
+### 13.2 Retirada del cuerpo y continuidad del hilo
+
+Retirar publicación despliega una explicación y requiere confirmar la retirada del texto. El servidor comprueba autoría y versión, vacía el cuerpo en el objeto activo y deja un marcador con la identidad y audiencia originales. No se ofrece restauración del cuerpo retirado en esta implementación. La operación no modifica ni elimina respuestas o publicaciones independientes de otras personas. Se rechazan nuevas respuestas directas, citas y reacciones a ese marcador; los descendientes existentes siguen conservando su contexto y límite de niveles.
+
+Las vistas de citas dejan de mostrar el cuerpo retirado. Los avisos de cita dejan de entregarse si el original citado o la publicación que lo cita fueron retirados. Las programaciones que necesitan citar un original retirado se bloquean al ejecutarse y requieren revisión; no se publica automáticamente una referencia que ya no está disponible. Los guardados conservan el marcador y permiten quitarlo de la colección. La exportación de aportaciones propias refleja el cuerpo retirado vacío, sin exponer un historial de versiones mediante esa vía.
+
+Perder acceso a una comunidad impide editar allí, pero no impide al autor retirar su propio texto. Mi cuenta ofrece sus aportaciones propias en espacios sin acceso; no devuelve contenido ajeno ni reactiva permisos. No se presupone potestad de una administración para reescribir o retirar texto en nombre de otra persona; la retirada moderadora sigue pendiente.
+
+### 13.3 Límites y protección del texto en curso
+
+Retirar del objeto activo no garantiza eliminar copias externas, exportaciones anteriores, respaldos o textos que otras personas hayan copiado por su cuenta. Los borradores privados propios e independientes tampoco se purgan automáticamente por retirar una publicación. Se distingue esta función de una política completa de borrado y retención, aún pendiente antes de producción.
+
+Si otra pestaña modifica la versión mientras se edita, se conserva el texto local y se rechaza guardar sobre la versión nueva. Si otra pestaña retira la publicación o se pierde el acceso, la edición local puede copiarse desde el marcador propio o Mi cuenta. Sigue siendo memoria del cliente: recargar puede perderla; no se anuncia recuperación de ediciones que nunca se guardaron como borrador. Las copias de texto hechas por el propio autor permanecen bajo su decisión, sin volver a publicarse por sí mismas.

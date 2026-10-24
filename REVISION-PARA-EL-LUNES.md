@@ -2,7 +2,7 @@
 title: Spartakos — Revisión de continuidad para el lunes 26 de octubre
 lang: es-ES
 license: CC-BY-SA-4.0
-date: 2026-10-23
+date: 2026-10-24
 status: Registro de trabajo en curso; no aprobación ni versión de producción
 ---
 
@@ -38,9 +38,17 @@ Implementada papelera privada y persistente, con restauración de contenido y es
 
 Comprobaciones: 78 pruebas automáticas superadas y recorrido de navegador con datos sintéticos. Se conservaron los datos locales del laboratorio. Se incorporan también las notas de estadísticas N11 y su desarrollo funcional, todavía sin implementación.
 
+### Bloque 2 — 24 de octubre: edición propia y retirada del cuerpo
+
+Implementada edición con versión, autoría y permisos, sin cambio de audiencia o contexto. Respuestas, citas y Me gusta anteriores conservan su referencia; se advierte sobre versiones anteriores y no se renueva automáticamente la aprobación. La retirada vacía el cuerpo activo, deja marcador y conserva respuestas ajenas. Las citas no muestran el cuerpo retirado y las programaciones que lo necesitan quedan bloqueadas. El autor puede retirar su propio texto tras perder acceso, sin recibir historial ajeno.
+
+Comprobaciones: 88 pruebas automáticas superadas; edición y referencias anteriores comprobadas con dos clientes; vista sintética de marcador y cita retirada comprobada en navegador. No se modificaron publicaciones del laboratorio del usuario durante esas pruebas. Límites: sin borrado garantizado de copias/respaldos, historial público de cuerpos anteriores o moderación por terceros.
+
 ### Siguiente bloque
 
-Edición y retirada de publicaciones. Partir de la sección 6 y 7 de FUNCIONAL-03-PUBLICACIONES-Y-CONVERSACIONES.md. Antes de modificar código, fijar la semántica mínima de edición, versión a la que responden otros y marcador de retirada. Preservar respuestas independientes y no prometer borrado de copias ajenas. Las citas deben dejar de mostrar el cuerpo retirado y la exportación, los avisos y las programaciones deben revisarse como posibles vías de filtración.
+Revisión de consistencia entre edición, retirada, citas, programaciones y borradores. Comprobar conflictos entre pestañas, accesibilidad de controles, aviso al editar una fuente citada y continuidad tras perder permisos. Revisar si conviene un recorrido explícito para guardar como borrador las ediciones locales rescatadas; no hacerlo público automáticamente.
+
+Después concretar el catálogo mínimo y permisos de estadísticas según N11, sin implementar captación de lecturas ni presumir cobertura global exhaustiva. Mantener propuestas no ratificadas claramente marcadas.
 
 ### Disciplina de continuidad
 

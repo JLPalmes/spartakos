@@ -2,8 +2,8 @@
 title: Spartakos — Notas de revisión del prototipo
 lang: es-ES
 license: CC-BY-SA-4.0
-date: 2026-10-23
-status: N01–N10 implementadas; N11 en estudio; validación de producto pendiente
+date: 2026-10-24
+status: N01–N10 y N12 implementadas; N11 en estudio; validación de producto pendiente
 ---
 
 # Notas de revisión del prototipo
@@ -89,3 +89,7 @@ Se distinguen tres ámbitos, con ejemplos candidatos:
 | Sistema | Disponibilidad agregada, capacidad ofrecida y comprometida, incidencias y cobertura de servicios participantes | Propuesta de panel público; solo datos autorizados y verificables, con alcance y fecha, sin revelar comunidades privadas ni detalles operativos sensibles |
 
 El diseño se desarrolla en la sección 12 de [Inicio, búsqueda y descubrimiento](FUNCIONAL-05-INICIO-BUSQUEDA-Y-DESCUBRIMIENTO.md). No se presupone medir lecturas individuales, seguimiento entre dispositivos ni actividad personal de terceros. Las estadísticas no pueden convertirse en una vía alternativa para consultar identidades de Me gusta, totales en directo o información fuera de la audiencia autorizada.
+
+## N12. Edición propia con versión y retirada del cuerpo
+
+**Alcance implementado:** edición por su autor con versión y permisos, sin cambiar audiencia ni contexto. Las respuestas, citas y Me gusta previos conservan su referencia de versión y no se convierten en adhesiones al texto modificado. Retirar exige confirmación, vacía el cuerpo activo y conserva el hilo mediante un marcador; no elimina aportaciones ajenas. Citas, avisos y programaciones se revisan para no mostrar ni citar automáticamente el cuerpo retirado. El autor puede retirar su texto incluso tras perder acceso al espacio, sin recuperar contenido ajeno. **Límites:** no es borrado garantizado de copias o respaldos, moderación por terceros ni historial público de cuerpos anteriores.

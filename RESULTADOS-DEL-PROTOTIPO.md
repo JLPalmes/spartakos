@@ -2,9 +2,9 @@
 title: Spartakos — Resultados de la primera comprobación del prototipo
 lang: es-ES
 license: CC-BY-SA-4.0
-version: 0.9
-date: 2026-10-23
-status: 78 pruebas automáticas superadas; borradores con papelera recuperable
+version: 0.10
+date: 2026-10-24
+status: 88 pruebas automáticas superadas; edición con versiones y retirada del cuerpo
 ---
 
 # Primera comprobación del prototipo
@@ -111,3 +111,11 @@ La función no recupera texto anterior que nunca se hubiera guardado, respuestas
 Resultado: **78 pruebas automáticas superadas, 0 fallos**: diez del modelo anterior, 31 HTTP, cuatro de conversaciones, diez de programación, siete de citas, ocho de recuentos y ocho de borradores. Se comprueba que mover y restaurar exige propiedad y versión, conserva contenido y audiencia, persiste al reiniciar y no repite una publicación ya ejecutada. No hay purga ni vaciado automático.
 
 En navegador con datos sintéticos se guardó un borrador, se movió a Papelera de borradores y se restauró. Retomar recuperó el texto original sin publicarlo ni programarlo. El borrado definitivo y su política de copias siguen pendientes.
+
+## 14. Edición y retirada de publicaciones propias
+
+Resultado: **88 pruebas automáticas superadas, 0 fallos**: diez del modelo anterior, 33 HTTP, cuatro de conversaciones, diez de programación, siete de citas, ocho de recuentos, ocho de borradores y ocho de edición y retirada. Se verifican autoría, permisos actuales, conflictos de versión, contexto y audiencia inmutables, referencia de respuestas y aprobación propia a versiones anteriores, marcador sin cuerpo y conservación de aportaciones ajenas. Se comprueba la retirada por el autor tras perder acceso sin recuperar contenido ajeno, el bloqueo de citas programadas retiradas y la eliminación de avisos asociados a cuerpos retirados. Reiniciar conserva edición o retirada; las pruebas HTTP verifican que estado y exportación no entregan el cuerpo anterior.
+
+En navegador, Alicia respondió y marcó Me gusta en una publicación sintética de Bruno; después Bruno la editó. Alicia vio la versión nueva, la advertencia de aprobación anterior y el contexto de su respuesta, sin controles para editar texto ajeno. En una segunda vista de datos sintéticos ya retirados se comprobaron el marcador, la respuesta independiente conservada y la cita sin fragmento del original. No se retiraron publicaciones del laboratorio del usuario.
+
+No es auditoría de seguridad ni ejecución de A01–A148. No se garantiza eliminación de copias externas, respaldos, borradores independientes o texto ya recibido por un cliente. Se mantienen pendientes política completa de retención, moderación por terceros y validación con participantes.
