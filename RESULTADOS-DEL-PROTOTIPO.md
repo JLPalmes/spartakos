@@ -4,7 +4,7 @@ lang: es-ES
 license: CC-BY-SA-4.0
 version: 0.10
 date: 2026-10-24
-status: 88 pruebas automáticas superadas; edición con versiones y retirada del cuerpo
+status: 91 pruebas automáticas superadas; consistencia entre borradores, edición y retirada
 ---
 
 # Primera comprobación del prototipo
@@ -119,3 +119,12 @@ Resultado: **88 pruebas automáticas superadas, 0 fallos**: diez del modelo ante
 En navegador, Alicia respondió y marcó Me gusta en una publicación sintética de Bruno; después Bruno la editó. Alicia vio la versión nueva, la advertencia de aprobación anterior y el contexto de su respuesta, sin controles para editar texto ajeno. En una segunda vista de datos sintéticos ya retirados se comprobaron el marcador, la respuesta independiente conservada y la cita sin fragmento del original. No se retiraron publicaciones del laboratorio del usuario.
 
 No es auditoría de seguridad ni ejecución de A01–A148. No se garantiza eliminación de copias externas, respaldos, borradores independientes o texto ya recibido por un cliente. Se mantienen pendientes política completa de retención, moderación por terceros y validación con participantes.
+
+
+## 15. Consistencia de borradores, versiones y retirada
+
+Resultado: **91 pruebas automáticas superadas, 0 fallos**. Se añaden tres escenarios de dominio a la batería anterior: retirada de una fuente citada por un borrador, conflicto entre edición y retirada desde versiones distintas y restauración de la referencia privada de una publicación ya retirada.
+
+Un envío rechazado conserva el borrador, su estado y su privacidad; no consume el pendiente. Una retirada obsoleta no borra la edición vigente. Tras serializar y recuperar el estado, una edición anterior no restaura el cuerpo retirado y recuperar una referencia de borrador ya utilizada no vuelve a publicarla. Los escenarios utilizan exclusivamente datos sintéticos; no se accede a los datos del laboratorio del usuario.
+
+La persistencia de estos tres escenarios se comprueba mediante serialización y migración del estado; las pruebas HTTP anteriores siguen comprobando reinicios del servidor. Este bloque no añade una nueva comprobación visual de accesibilidad ni confirma usabilidad con participantes. Las ediciones rescatadas siguen siendo texto local que puede copiarse: convertirlas en borradores persistentes requiere un diseño explícito de destino y audiencia, pendiente de revisión.

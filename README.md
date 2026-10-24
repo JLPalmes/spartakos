@@ -65,7 +65,7 @@ Los documentos de análisis conservan los antecedentes técnicos. La especificac
 
 ## Prototipo y comprobaciones
 
-La [simulación con varias cuentas](simulacion/README.md) incluye 33 pruebas HTTP, cuatro de conversaciones, diez de programación, siete de citas y niveles, ocho de recuentos horarios ocho de borradores y ocho de edición y retirada, además de las diez de la [maqueta anterior](prototipo/README.md). Se comprueban permisos por sesión, persistencia, audiencia y consentimiento, sin atribuir a esas pruebas garantías de una red distribuida. El [informe de resultados](RESULTADOS-DEL-PROTOTIPO.md) distingue estas comprobaciones de las pruebas de producto, que siguen sin ejecutarse.
+La [simulación con varias cuentas](simulacion/README.md) incluye 33 pruebas HTTP, cuatro de conversaciones, diez de programación, siete de citas y niveles, ocho de recuentos horarios, ocho de borradores y once de edición y retirada, además de las diez de la [maqueta anterior](prototipo/README.md). Se comprueban permisos por sesión, persistencia, audiencia y consentimiento, sin atribuir a esas pruebas garantías de una red distribuida. El [informe de resultados](RESULTADOS-DEL-PROTOTIPO.md) distingue estas comprobaciones de las pruebas de producto, que siguen sin ejecutarse.
 
 El [contrato preliminar de datos y autoridad](CONTRATO-DE-DATOS-Y-AUTORIDAD.md) fija separaciones antes de elegir componentes. El [paquete de apertura](PREPARACION-DE-APERTURA.md) documenta el repositorio y las licencias adoptadas, y las condiciones de contribución.
 

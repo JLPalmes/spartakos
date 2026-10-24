@@ -44,11 +44,15 @@ Implementada edición con versión, autoría y permisos, sin cambio de audiencia
 
 Comprobaciones: 88 pruebas automáticas superadas; edición y referencias anteriores comprobadas con dos clientes; vista sintética de marcador y cita retirada comprobada en navegador. No se modificaron publicaciones del laboratorio del usuario durante esas pruebas. Límites: sin borrado garantizado de copias/respaldos, historial público de cuerpos anteriores o moderación por terceros.
 
+### Bloque 3 — 24 de octubre: consistencia de operaciones
+
+Añadidos tres escenarios sintéticos de regresión: un borrador conserva estado y privacidad cuando se retira su fuente citada; una retirada obsoleta no borra una edición vigente; restaurar una referencia privada ya utilizada no reactiva el cuerpo retirado. Recuperar el estado serializado mantiene estos resultados. Batería completa: **91 pruebas superadas**, incluidos los 33 ensayos HTTP anteriores. Verificación documental y diferencias sin errores.
+
+No se han modificado datos del laboratorio, comportamiento de producción ni configuración del servidor. Los controles de accesibilidad y el rescate persistente de ediciones siguen pendientes; no se presentan como verificados en este bloque. Los cambios se conservan en la rama de la propuesta #2, sin integrar en main.
+
 ### Siguiente bloque
 
-Revisión de consistencia entre edición, retirada, citas, programaciones y borradores. Comprobar conflictos entre pestañas, accesibilidad de controles, aviso al editar una fuente citada y continuidad tras perder permisos. Revisar si conviene un recorrido explícito para guardar como borrador las ediciones locales rescatadas; no hacerlo público automáticamente.
-
-Después concretar el catálogo mínimo y permisos de estadísticas según N11, sin implementar captación de lecturas ni presumir cobertura global exhaustiva. Mantener propuestas no ratificadas claramente marcadas.
+Concretar el catálogo mínimo y permisos de estadísticas según N11, con alcance local por proveedor, supresión de grupos pequeños y ausencia de seguimiento de lecturas. Mantener propuestas no ratificadas claramente marcadas. Revisar después accesibilidad del editor y conflictos visibles entre pestañas; no convertir texto rescatado en publicación ni borrador sin acción explícita.
 
 ### Disciplina de continuidad
 
