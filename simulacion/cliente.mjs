@@ -159,9 +159,12 @@ function render(){
     $('context').innerHTML='<h1>Mi cuenta</h1>';
     $('content').innerHTML=`<p>Actúas como ${esc(state.user.name)}. Tus guardados son privados; tus Me gusta no muestran tu identidad a otros usuarios. No se publican identidades. Los recuentos se actualizan por cortes horarios comunes; tu elección propia se muestra al instante. El servidor local conserva tu elección para permitir retirarla; no hay anonimato frente al proveedor.</p><button id="export">Exportar mis aportaciones ficticias</button><p>Esta exportación no es un perfil portable de producción.</p><button id="logout">Cerrar esta sesión</button>${(state.ownUnavailablePosts??[]).length?`<h2>Textos propios en espacios sin acceso</h2><p>Puedes retirar tu aportación; esto no recupera contenido ajeno ni permisos de comunidad.</p>${state.ownUnavailablePosts.map(p=>`<article class="post"><p>Tu aportación · ${esc(dateLabel(p.createdAt))} · Solo integrantes</p>${editRescue(p.id)}${p.withdrawn?'<p>Texto retirado.</p>':`<p class="post-text">${esc(p.text)}</p><details data-panel="withdraw-${p.id}"><summary>Retirar publicación</summary><p>No se puede restaurar aquí. Se conserva el contexto y pueden existir copias externas o respaldos.</p><button data-withdraw-post="${p.id}" data-version="${p.version}">Confirmar retirada del texto</button></details>`}</article>`).join('')}`:''}`;
   }
+  if(page!=='cuenta'&&(state.ownUnavailablePosts??[]).some(p=>postEdits.has(p.id))){
+    $('context').insertAdjacentHTML('beforeend','<p class="notice">Conservas una edición local de un texto propio en un espacio sin acceso.</p><button id="show-local-edits">Ver mi texto conservado en Mi cuenta</button>');
+  }
   composer();bindActions();
   for(const panel of panels){const details=document.querySelector(`details[data-panel="${panel}"]`);if(details)details.open=true;}
-  if(focus){const element=$(focus.id);if(element&&!element.hidden){if(document.activeElement!==element)element.focus({preventScroll:true});if(element.tagName==='TEXTAREA'&&focus.start!==null)element.setSelectionRange(focus.start,focus.end);}}
+  if(focus){const rescued=focus.id.startsWith('post-edit-')?$(`post-rescue-${focus.id.slice('post-edit-'.length)}`):null;const element=$(focus.id)??rescued??(focus.id.startsWith('post-edit-')?$('show-local-edits'):null);if(element&&!element.hidden){if(document.activeElement!==element)element.focus({preventScroll:true});if(element.tagName==='TEXTAREA'&&focus.start!==null)element.setSelectionRange(focus.start,focus.end);}}
 }
 function openConversation(id){
   const root=rootFor(state.posts,id);
@@ -193,6 +196,7 @@ function finishComposition(draft,key){
   if(draft.id){loadedDrafts.delete(draft.id);activeDraftId=null;}else{const local=drafts.get(key);if(local){local.text='';delete local.quote;local.scheduling=false;local.publishAt='';}}
 }
 function bindActions(){
+  if($('show-local-edits'))$('show-local-edits').onclick=()=>{page='cuenta';render();document.querySelector('[data-local-rescue]')?.focus();};
   document.querySelectorAll('[data-edit-post]').forEach(b=>b.onclick=()=>{const p=state.posts.find(p=>p.id===b.dataset.editPost);if(!postEdits.has(p.id))postEdits.set(p.id,{text:p.text,version:p.version});render();$(`post-edit-${p.id}`)?.focus();});
   document.querySelectorAll('[data-cancel-post-edit]').forEach(b=>b.onclick=()=>{postEdits.delete(b.dataset.cancelPostEdit);render();$(`edit-post-${b.dataset.cancelPostEdit}`)?.focus();});
   document.querySelectorAll('[data-post-editor]').forEach(form=>{const id=form.dataset.postEditor,editor=form.querySelector('textarea');editor.oninput=()=>{postEdits.get(id).text=editor.value;};form.onsubmit=async e=>{e.preventDefault();const draft=postEdits.get(id);if(await send({type:'edit-post',post:id,text:draft.text,version:draft.version})){postEdits.delete(id);render();$(`edit-post-${id}`)?.focus();}};});
