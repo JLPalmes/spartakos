@@ -66,9 +66,15 @@ Comprobaciones realizadas: sintaxis del cliente correcta, batería completa de *
 
 **Estado de publicación:** bloque incorporado a la rama de la propuesta #2 junto con esta evidencia. Los cambios permanecen en `prototipo-segunda-revision`, sin integrar en main. La copia local debe verificarse contra el remoto después de publicar; no descartar commits locales sin comprobar igualdad de contenido.
 
+### Bloque 6 — 25 de octubre: rescate tras pérdida de membresía
+
+Al perder acceso completo a una comunidad, la edición local ya conservada necesita un recorrido visible. Se añade aviso y botón para abrir Mi cuenta cuando existe texto propio en edición fuera de los espacios accesibles. Si el editor enfocado desaparece, el foco pasa al acceso al rescate; en una reducción de permisos con lectura, pasa al campo rescatado. Abrir el recorrido enfoca el texto local de solo lectura. No se publica ni guarda automáticamente, ni se recupera acceso al historial ajeno.
+
+Recorrido sintético comprobado en servidor separado: Bruno publicó y dejó una edición abierta; Alicia le retiró la membresía. Desapareció el historial de comunidad, apareció el aviso con foco y Mi cuenta mostró únicamente la aportación propia y su edición local, con `readOnly` verificado. Se conservan los controles de retirada del texto propio ya existentes, sin ejecutarlos en este recorrido. La batería completa mantiene **91 pruebas superadas**; sintaxis, 48 documentos es-ES y diferencias correctos. No se accedió a datos del laboratorio del usuario. El bloque se incorpora a la rama de #2 para revisión, sin integrar en main.
+
 ### Siguiente bloque
 
-Revisar pérdida completa de membresía mientras hay una edición abierta y continuidad del rescate en Mi cuenta, incluyendo control del foco al desaparecer el editor. Mantener la limitación de que el texto no guardado se pierde al recargar. No implementar estadísticas sin revisión del catálogo ni atribuir a estos recorridos una auditoría de accesibilidad.
+Preparar un recorrido breve para la revisión del lunes que distinga funciones disponibles, límites y propuestas pendientes. Revisar el rescate al cerrar sesión y los mensajes sobre texto no guardado; no prometer persistencia de las ediciones en memoria al recargar. No implementar estadísticas sin revisión del catálogo ni atribuir a estos recorridos una auditoría completa de accesibilidad.
 
 ### Disciplina de continuidad
 

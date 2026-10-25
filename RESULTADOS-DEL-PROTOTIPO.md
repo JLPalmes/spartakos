@@ -136,3 +136,10 @@ El cliente conserva como texto local de solo lectura una edición abierta que ha
 
 
 Comprobación posterior, 25 de octubre: se recuperó el navegador y se ejecutó el recorrido con dos pestañas sintéticas de Bruno y una de Alicia en un servidor separado. Guardar y cancelar devuelven el foco al botón de edición. Una versión obsoleta se rechaza conservando el texto local y mostrando la versión vigente. Al reducir el permiso de Bruno a lectura, su edición abierta se conserva en un campo de solo lectura, sin botón para guardarla ni cambio del cuerpo publicado. Se verificó `readOnly` en el control. Esto no equivale a una evaluación completa con teclado o lector de pantalla. No se accedió a datos del laboratorio del usuario.
+
+
+## 17. Rescate tras perder la membresía
+
+Se añade un aviso y acceso a Mi cuenta para las ediciones locales de aportaciones propias en espacios ya inaccesibles. Si desaparece el editor enfocado, el foco pasa al acceso al rescate; si la lectura se conserva, al campo rescatado. Abrir el recorrido enfoca el texto de solo lectura. No hay publicación ni guardado automático.
+
+Comprobado en navegador con datos sintéticos separados: baja de Bruno aplicada por Alicia mientras había una edición abierta, desaparición del historial privado, aviso enfocado y recuperación visual del texto local junto a su aportación propia. Se verificó la propiedad `readOnly`; no se mostró el historial ajeno. No se ejecutó retirada irreversible en este recorrido. La batería completa mantiene **91 pruebas superadas**. No es auditoría completa de accesibilidad ni garantía de recuperación del texto local tras recargar o cerrar sesión.
