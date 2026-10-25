@@ -44,7 +44,7 @@ function mayReply(p){const c=state.communities.find(c=>c.id===p.community);retur
 function mayQuote(p){const c=state.communities.find(c=>c.id===p.community);return !p.withdrawn&&(p.audience==='public'||['admin','contributor'].includes(c?.role));}
 function mayEdit(p){const c=state.communities.find(c=>c.id===p.community);return !p.withdrawn&&p.author===state.user.id&&(!p.community||(p.parent?['admin','contributor','commenter']:['admin','contributor']).includes(c?.role));}
 function contextLabel(p){const c=state.communities.find(c=>c.id===p.community);return `${p.community?c?.name??'Comunidad':'General'} · ${p.audience==='public'?'Público':'Solo integrantes · Operador con acceso'}`;}
-function editRescue(id){const edit=postEdits.get(id);return edit?`<p class="notice">Conservas una edición local sin guardar. Puedes copiarla antes de salir; no restaura ni publica el texto retirado.</p><label for="post-rescue-${id}">Edición local conservada</label><textarea id="post-rescue-${id}" data-local-rescue readonly>${esc(edit.text)}</textarea>`:'';}
+function editRescue(id){const edit=postEdits.get(id);return edit?`<p class="notice">Conservas una edición local sin guardar. Puedes copiarla antes de salir; no restaura ni publica contenido y no recupera permisos.</p><label for="post-rescue-${id}">Edición local conservada</label><textarea id="post-rescue-${id}" data-local-rescue readonly>${esc(edit.text)}</textarea>`:'';}
 function postMarkup(p,{depth=0,savedView=false}={}){
   const saved=state.saved.includes(p.id),liked=p.likedByMe===true;
   const parent=state.posts.find(q=>q.id===p.parent);
@@ -59,13 +59,13 @@ function postMarkup(p,{depth=0,savedView=false}={}){
       <button id="save-${p.id}" data-save="${p.id}" aria-pressed="${saved}">${saved?'Guardado · Privado':'Guardar · Privado'}</button>
       ${mayReply(p)?`<button id="respond-${p.id}" data-reply="${p.id}" aria-expanded="${expandedReplies.has(p.id)}">Responder</button>`:''}
       ${mayQuote(p)?`<button data-quote="${p.id}">Citar en una publicación</button>`:''}
-      ${mayEdit(p)?`<button data-edit-post="${p.id}">Editar publicación</button>`:''}
+      ${mayEdit(p)?`<button id="edit-post-${p.id}" data-edit-post="${p.id}">Editar publicación</button>`:''}
       ${p.author===state.user.id?`<details data-panel="withdraw-${p.id}"><summary>Retirar publicación</summary><p>Retira el texto de este servicio y lo sustituye por un marcador. No se puede restaurar aquí. Se conservan respuestas ajenas; las copias externas y respaldos pueden persistir.</p><button data-withdraw-post="${p.id}" data-version="${p.version}">Confirmar retirada del texto</button></details>`:''}
       ${savedView?`<button data-context="${p.id}">Ver en conversación</button>`:''}
     </div>
     <p class="hint approval-count">${p.likeCount===null||p.likeCount===undefined?'Recuento pendiente del próximo corte horario.':`${p.likeCount} ${p.likeCount===1?'aprobación':'aprobaciones'} · <time datetime="${esc(p.likesUpdatedAt)}" title="${esc(`Corte: ${dateLabel(p.likesUpdatedAt)}. Calculado: ${dateLabel(p.likesGeneratedAt)} (${localZone}).`)}">Recuento a las ${esc(new Intl.DateTimeFormat('es-ES',{hour:'2-digit',minute:'2-digit',timeZone:localZone}).format(new Date(p.likesUpdatedAt)))} · ${esc(new Intl.DateTimeFormat('es-ES',{day:'2-digit',month:'2-digit',timeZone:localZone}).format(new Date(p.likesUpdatedAt)))}</time>`}</p>
     ${replyDepth(state.posts,p.id)>=2?'<p class="hint">Último nivel de respuestas. Para continuar, inicia una publicación con cita.</p>':''}
-    ${edit?`<form data-post-editor="${p.id}"><label for="post-edit-${p.id}">Editar texto propio · Se conserva destino y audiencia</label><textarea id="post-edit-${p.id}" required maxlength="3000">${esc(edit.text)}</textarea>${edit.version!==p.version?'<p class="notice">Hay una versión más reciente. Conserva tu texto antes de cancelar o revisa la publicación vigente.</p>':''}<button type="submit">Guardar edición</button><button type="button" data-cancel-post-edit="${p.id}">Cancelar edición</button></form>`:''}
+    ${edit&&!mayEdit(p)?editRescue(p.id):''}${edit&&mayEdit(p)?`<form data-post-editor="${p.id}"><label for="post-edit-${p.id}">Editar texto propio · Se conserva destino y audiencia</label><textarea id="post-edit-${p.id}" required maxlength="3000">${esc(edit.text)}</textarea>${edit.version!==p.version?'<p class="notice">Hay una versión más reciente. Conserva tu texto antes de cancelar o revisa la publicación vigente.</p>':''}<button id="save-post-edit-${p.id}" type="submit">Guardar edición</button><button id="cancel-post-edit-${p.id}" type="button" data-cancel-post-edit="${p.id}">Cancelar edición</button></form>`:''}
     ${mayReply(p)?`<form class="reply-form" data-parent="${p.id}" ${expandedReplies.has(p.id)?'':'hidden'}><label for="reply-${p.id}">Responder a ${esc(p.authorName)} · Misma audiencia</label><textarea id="reply-${p.id}" maxlength="3000" required>${esc(replyDrafts.get(p.id)??'')}</textarea><button type="submit">Enviar respuesta</button></form>`:''}
   </article>`;
 }
@@ -194,8 +194,8 @@ function finishComposition(draft,key){
 }
 function bindActions(){
   document.querySelectorAll('[data-edit-post]').forEach(b=>b.onclick=()=>{const p=state.posts.find(p=>p.id===b.dataset.editPost);if(!postEdits.has(p.id))postEdits.set(p.id,{text:p.text,version:p.version});render();$(`post-edit-${p.id}`)?.focus();});
-  document.querySelectorAll('[data-cancel-post-edit]').forEach(b=>b.onclick=()=>{postEdits.delete(b.dataset.cancelPostEdit);render();});
-  document.querySelectorAll('[data-post-editor]').forEach(form=>{const id=form.dataset.postEditor,editor=form.querySelector('textarea');editor.oninput=()=>{postEdits.get(id).text=editor.value;};form.onsubmit=async e=>{e.preventDefault();const draft=postEdits.get(id);if(await send({type:'edit-post',post:id,text:draft.text,version:draft.version})){postEdits.delete(id);render();}};});
+  document.querySelectorAll('[data-cancel-post-edit]').forEach(b=>b.onclick=()=>{postEdits.delete(b.dataset.cancelPostEdit);render();$(`edit-post-${b.dataset.cancelPostEdit}`)?.focus();});
+  document.querySelectorAll('[data-post-editor]').forEach(form=>{const id=form.dataset.postEditor,editor=form.querySelector('textarea');editor.oninput=()=>{postEdits.get(id).text=editor.value;};form.onsubmit=async e=>{e.preventDefault();const draft=postEdits.get(id);if(await send({type:'edit-post',post:id,text:draft.text,version:draft.version})){postEdits.delete(id);render();$(`edit-post-${id}`)?.focus();}};});
   document.querySelectorAll('[data-withdraw-post]').forEach(b=>b.onclick=async()=>{if(await send({type:'withdraw-post',post:b.dataset.withdrawPost,version:Number(b.dataset.version)})){postEdits.delete(b.dataset.withdrawPost);render();}});
 
   document.querySelectorAll('[data-trash-draft],[data-restore-draft]').forEach(b=>b.onclick=()=>send({type:b.dataset.trashDraft?'trash-draft':'restore-draft',id:b.dataset.trashDraft??b.dataset.restoreDraft,version:Number(b.dataset.version)}));
