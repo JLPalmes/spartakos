@@ -76,3 +76,5 @@ El [registro de revisión](REVISION-PARA-EL-LUNES.md) reúne el estado de los bl
 La [resolución propuesta de los 29 pendientes](RESOLUCION-DE-PENDIENTES.md) concreta recomendaciones, alternativas y dependencias. Se complementa con el [gobierno de la acreditación](GOBIERNO-DE-LA-ACREDITACION.md), el [programa de operadores voluntarios](OPERACION-Y-VOLUNTARIADO.md) y el [protocolo de validación](VALIDACION-Y-PUERTAS-DE-AVANCE.md). Son propuestas listas para revisar, sin ratificación implícita.
 
 La continuación exige evidencia: participantes para probar recorridos, archivos consentidos para importación, operadores comprometidos y ensayos técnicos. Las licencias iniciales y el destino público están adoptados. La autoridad de gobierno de la red, los operadores y la validación siguen pendientes. El simulador es una implementación local experimental; no adopta todavía la arquitectura de producción.
+
+Para preparar la siguiente prueba, consultar la [guía de revisión del prototipo](GUIA-REVISION-PROTOTIPO.md), que distingue los recorridos disponibles, lo persistido y los asuntos pendientes.

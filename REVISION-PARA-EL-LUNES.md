@@ -72,9 +72,15 @@ Al perder acceso completo a una comunidad, la edición local ya conservada neces
 
 Recorrido sintético comprobado en servidor separado: Bruno publicó y dejó una edición abierta; Alicia le retiró la membresía. Desapareció el historial de comunidad, apareció el aviso con foco y Mi cuenta mostró únicamente la aportación propia y su edición local, con `readOnly` verificado. Se conservan los controles de retirada del texto propio ya existentes, sin ejecutarlos en este recorrido. La batería completa mantiene **91 pruebas superadas**; sintaxis, 48 documentos es-ES y diferencias correctos. No se accedió a datos del laboratorio del usuario. El bloque se incorpora a la rama de #2 para revisión, sin integrar en main.
 
+### Bloque 7 — 25 de octubre: guion de revisión y límites de sesión
+
+Preparada la [guía de revisión](GUIA-REVISION-PROTOTIPO.md), con recorrido por espacios, interacciones, conversaciones, borradores, programación, versiones y pérdida de permisos. Distingue persistencia del servidor de texto en memoria y orienta a usar un escenario separado. La inspección del cliente confirma que entrar en una cuenta reinicia los editores locales; la exportación no incluye texto que nunca se envió. No se añade aviso de salida, guardado automático ni promesa de recuperación tras cerrar sesión.
+
+Cambio exclusivamente documental: verificación editorial de 49 documentos y diferencias sin errores. La batería funcional vigente sigue en **91 pruebas superadas**, sin repetirla por esta guía. El guion es para revisión, no una nueva acta de pruebas ni aprobación de estadísticas. Documentación incorporada a la rama de la propuesta #2, sin integrar en main.
+
 ### Siguiente bloque
 
-Preparar un recorrido breve para la revisión del lunes que distinga funciones disponibles, límites y propuestas pendientes. Revisar el rescate al cerrar sesión y los mensajes sobre texto no guardado; no prometer persistencia de las ediciones en memoria al recargar. No implementar estadísticas sin revisión del catálogo ni atribuir a estos recorridos una auditoría completa de accesibilidad.
+Revisar coherencia final entre guía, informe y estado disponible. No repetir recorridos ya documentados sin un cambio o fallo que lo justifique. Al llegar al lunes, consolidar resultados y asuntos pendientes y no iniciar otro desarrollo. La implementación de estadísticas queda pendiente de revisión del catálogo.
 
 ### Disciplina de continuidad
 
