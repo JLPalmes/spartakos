@@ -16,6 +16,8 @@ Usar un escenario sintético separado siguiendo las instrucciones de [la simulac
 
 Las cuentas no tienen autenticación de producción; no introducir datos personales. El operador puede leer el contenido del servidor. Cada pestaña es una sesión independiente: dos pestañas pueden representar a la misma cuenta para comprobar conflictos.
 
+Un cliente que ya estaba abierto puede conservar una versión anterior del programa. Para cargar el cliente actual, copiar primero cualquier texto local sin guardar y después recargar la página. Recargar no borra las publicaciones ni los borradores ya persistidos en el servidor, pero sí puede perder el texto que solo existía en memoria.
+
 ## 2. Recorrido propuesto
 
 | Paso | Acción | Resultado que revisar |

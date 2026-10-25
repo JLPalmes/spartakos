@@ -10,6 +10,14 @@ status: Registro de trabajo en curso; no aprobación ni versión de producción
 
 La revisión prevista es el lunes 26 de octubre de 2026. Este registro reúne resultados, límites y propuestas para facilitar la revisión conjunta. No sustituye la especificación ni la matriz de aceptación.
 
+## Estado vigente antes de la revisión
+
+- Funcionalidad disponible: borradores privados con papelera, edición con versión, retirada del cuerpo, citas y tres niveles, programación, Me gusta con cortes horarios y rescate local al perder permisos o membresía.
+- Validación vigente: 91 pruebas automáticas superadas y recorridos sintéticos registrados; 49 documentos verificados. Los recuentos menores de los bloques anteriores son resultados históricos.
+- Estadísticas: catálogo propuesto, sin aprobar ni implementar. La identidad distribuida, migración real y operación con proveedores siguen fuera del simulador.
+- Preparación: seguir la [guía de revisión](GUIA-REVISION-PROTOTIPO.md) con un escenario separado. Antes de recargar un cliente abierto para cargar la versión actual, copiar el texto local que no se haya guardado.
+- Rama de #2 sin integrar en main. No hay despliegue público ni nueva captación. Los datos del laboratorio del usuario se mantienen separados de los ensayos.
+
 ## Estado de partida
 
 - Rama de trabajo: `prototipo-segunda-revision`; propuesta pública [#2](https://github.com/JLPalmes/spartakos/pull/2), sin integrar en main.
@@ -78,9 +86,13 @@ Preparada la [guía de revisión](GUIA-REVISION-PROTOTIPO.md), con recorrido por
 
 Cambio exclusivamente documental: verificación editorial de 49 documentos y diferencias sin errores. La batería funcional vigente sigue en **91 pruebas superadas**, sin repetirla por esta guía. El guion es para revisión, no una nueva acta de pruebas ni aprobación de estadísticas. Documentación incorporada a la rama de la propuesta #2, sin integrar en main.
 
-### Siguiente bloque
+### Bloque 8 — 25 de octubre: coherencia del cierre
 
-Revisar coherencia final entre guía, informe y estado disponible. No repetir recorridos ya documentados sin un cambio o fallo que lo justifique. Al llegar al lunes, consolidar resultados y asuntos pendientes y no iniciar otro desarrollo. La implementación de estadísticas queda pendiente de revisión del catálogo.
+Contrastados guía, informe y estado del cliente. Los 91 casos declarados coinciden con la batería vigente registrada; no se repiten pruebas de comportamiento sin cambio de código. Se añade una síntesis actual para distinguir resultados históricos y una instrucción de recarga que protege el texto local sin guardar. Verificación editorial de 49 documentos y diferencias sin errores. No hay nuevas funciones ni cambios de datos. Ajuste documental conservado en un commit local de la rama de #2, pendiente de publicación: el control de permisos del navegador agotó su tiempo de espera. No es una denegación ni un cambio del estado de los bloques ya publicados.
+
+### Siguiente paso
+
+Inspeccionar y publicar el commit documental pendiente cuando vuelva el acceso al navegador, sin descartar sus cambios al sincronizar referencias. Consolidar el estado al llegar el lunes y no iniciar otro desarrollo. Hasta entonces, actuar solo ante incidencias concretas o incoherencias nuevas; no ampliar alcance ni repetir recorridos ya registrados sin motivo. La implementación de estadísticas queda pendiente de revisión del catálogo.
 
 ### Disciplina de continuidad
 
