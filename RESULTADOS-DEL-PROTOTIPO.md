@@ -128,3 +128,11 @@ Resultado: **91 pruebas automáticas superadas, 0 fallos**. Se añaden tres esce
 Un envío rechazado conserva el borrador, su estado y su privacidad; no consume el pendiente. Una retirada obsoleta no borra la edición vigente. Tras serializar y recuperar el estado, una edición anterior no restaura el cuerpo retirado y recuperar una referencia de borrador ya utilizada no vuelve a publicarla. Los escenarios utilizan exclusivamente datos sintéticos; no se accede a los datos del laboratorio del usuario.
 
 La persistencia de estos tres escenarios se comprueba mediante serialización y migración del estado; las pruebas HTTP anteriores siguen comprobando reinicios del servidor. Este bloque no añade una nueva comprobación visual de accesibilidad ni confirma usabilidad con participantes. Las ediciones rescatadas siguen siendo texto local que puede copiarse: convertirlas en borradores persistentes requiere un diseño explícito de destino y audiencia, pendiente de revisión.
+
+
+## 16. Ajuste del editor pendiente de comprobación visual
+
+El cliente conserva como texto local de solo lectura una edición abierta que ha perdido permiso para guardarse. Se proponen identificadores estables y retorno del foco al botón de edición después de guardar o cancelar. La batería existente mantiene **91 pruebas superadas** y la sintaxis del cliente es correcta. No se ha ejecutado una prueba de teclado o lector de pantalla: el canal del navegador dejó de responder antes de abrir el escenario sintético. No se atribuye a las pruebas HTTP una validación visual. El estado de publicación y el recorrido pendiente se registran en [la revisión de continuidad](REVISION-PARA-EL-LUNES.md).
+
+
+Comprobación posterior, 25 de octubre: se recuperó el navegador y se ejecutó el recorrido con dos pestañas sintéticas de Bruno y una de Alicia en un servidor separado. Guardar y cancelar devuelven el foco al botón de edición. Una versión obsoleta se rechaza conservando el texto local y mostrando la versión vigente. Al reducir el permiso de Bruno a lectura, su edición abierta se conserva en un campo de solo lectura, sin botón para guardarla ni cambio del cuerpo publicado. Se verificó `readOnly` en el control. Esto no equivale a una evaluación completa con teclado o lector de pantalla. No se accedió a datos del laboratorio del usuario.

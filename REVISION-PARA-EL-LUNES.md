@@ -56,9 +56,19 @@ El [diseño de estadísticas](DISENO-ESTADISTICAS.md) concreta fuentes, audienci
 
 Diez casos de aceptación documentales quedan pendientes de ejecución si se aprueba desarrollar el catálogo. No se ha añadido captación, implementación ni acceso a datos del laboratorio. Verificación editorial de 48 documentos y diferencias sin errores; la batería funcional vigente sigue siendo de 91 pruebas, sin repetirla por este cambio exclusivamente documental. Catálogo enlazado en la documentación de la rama de #2 para revisión, no decisión ratificada.
 
+### Bloque 5 — 25 de octubre: controles del editor y pérdida de permisos
+
+Ajuste local del cliente: cuando el autor conserva lectura pero pierde permiso de edición, el texto que estaba editando se presenta como rescate local de solo lectura, en lugar de ofrecer Guardar edición. La conservación no publica, no persiste el texto por sí misma ni recupera permisos. El mensaje de rescate también se aplica a retirada o pérdida de acceso. Se añaden identificadores estables a los controles de edición y retorno del foco al botón Editar publicación tras guardar o cancelar.
+
+Comprobaciones realizadas: sintaxis del cliente correcta, batería completa de **91 pruebas superadas**, metadatos y enlaces de 48 documentos y diferencias sin errores. Estas pruebas de dominio y HTTP no validan el foco del navegador. El recorrido visual, los conflictos entre pestañas y teclado/lector de pantalla siguen pendientes: el canal del navegador dejó de responder antes de abrir el escenario sintético. No se modificaron datos del usuario ni se reinició su servidor.
+
+**Comprobación posterior — 25 de octubre:** recuperado el navegador, se ejecutó el recorrido con datos sintéticos en un servidor separado. Guardar y cancelar devuelven el foco a Editar publicación. Dos pestañas de Bruno comprobaron el rechazo de una edición obsoleta, conservando su texto y mostrando la versión nueva. Al reducir Alicia el permiso de Bruno a lectura, su edición abierta apareció como rescate de solo lectura, sin Guardar edición y sin cambiar el cuerpo publicado. Se comprobó la propiedad `readOnly` del control. No se ha realizado evaluación con lector de pantalla ni auditoría completa de accesibilidad.
+
+**Estado de publicación:** bloque incorporado a la rama de la propuesta #2 junto con esta evidencia. Los cambios permanecen en `prototipo-segunda-revision`, sin integrar en main. La copia local debe verificarse contra el remoto después de publicar; no descartar commits locales sin comprobar igualdad de contenido.
+
 ### Siguiente bloque
 
-Revisar accesibilidad de controles del editor y conflictos visibles entre pestañas con escenarios sintéticos. No convertir texto rescatado en publicación ni borrador sin acción explícita. La implementación de estadísticas queda pendiente de revisión del catálogo; la automatización no lo aprueba.
+Revisar pérdida completa de membresía mientras hay una edición abierta y continuidad del rescate en Mi cuenta, incluyendo control del foco al desaparecer el editor. Mantener la limitación de que el texto no guardado se pierde al recargar. No implementar estadísticas sin revisión del catálogo ni atribuir a estos recorridos una auditoría de accesibilidad.
 
 ### Disciplina de continuidad
 
