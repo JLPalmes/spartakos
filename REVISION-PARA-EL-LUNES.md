@@ -90,9 +90,22 @@ Cambio exclusivamente documental: verificación editorial de 49 documentos y dif
 
 Contrastados guía, informe y estado del cliente. Los 91 casos declarados coinciden con la batería vigente registrada; no se repiten pruebas de comportamiento sin cambio de código. Se añade una síntesis actual para distinguir resultados históricos y una instrucción de recarga que protege el texto local sin guardar. Verificación editorial de 49 documentos y diferencias sin errores. No hay nuevas funciones ni cambios de datos. Ajuste documental conservado en un commit local de la rama de #2, pendiente de publicación: el control de permisos del navegador agotó su tiempo de espera. No es una denegación ni un cambio del estado de los bloques ya publicados.
 
+### Consolidación previa a la revisión — noche del 25 de octubre
+
+No se inicia otro desarrollo. El cliente y las pruebas publicados siguen siendo los de la rama de #2; los últimos cambios pendientes son exclusivamente documentales. El navegador sigue sin conexión en esta comprobación, por lo que no se atribuye publicación al ajuste local. No se han modificado credenciales, desplegado servicios públicos ni integrado cambios en main.
+
+Para la revisión quedan estas decisiones y comprobaciones:
+
+- Valorar el recorrido de la guía y decidir si la experiencia permite otra prueba con participantes antes de integrar #2.
+- Revisar el catálogo de estadísticas; sigue sin aprobación, implementación ni captación añadida.
+- Priorizar respuestas recuperables y ediciones persistentes: actualmente solo los borradores de publicaciones iniciales tienen guardado explícito.
+- Definir política de retención y copias; retirada del cuerpo activo no equivale a borrar respaldos o referencias privadas independientes.
+- Planificar evaluación de accesibilidad, seguridad y matriz completa de producto; las 91 pruebas de laboratorio no las sustituyen.
+- Mantener fuera de las garantías del prototipo la identidad distribuida, migración real, recuperación de cuentas y operación entre proveedores.
+
 ### Siguiente paso
 
-Inspeccionar y publicar el commit documental pendiente cuando vuelva el acceso al navegador, sin descartar sus cambios al sincronizar referencias. Consolidar el estado al llegar el lunes y no iniciar otro desarrollo. Hasta entonces, actuar solo ante incidencias concretas o incoherencias nuevas; no ampliar alcance ni repetir recorridos ya registrados sin motivo. La implementación de estadísticas queda pendiente de revisión del catálogo.
+Publicar los ajustes documentales locales cuando vuelva el acceso al navegador, comprobando igualdad de contenido antes de alinear referencias. Al llegar al lunes, confirmar este estado y detener los bloques autónomos. No ampliar alcance ni repetir recorridos ya registrados sin motivo; cualquier bloqueo de publicación debe quedar explícito para la revisión.
 
 ### Disciplina de continuidad
 
