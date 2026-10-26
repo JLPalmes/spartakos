@@ -197,7 +197,7 @@ function finishComposition(draft,key){
 }
 function bindActions(){
   if($('show-local-edits'))$('show-local-edits').onclick=()=>{page='cuenta';render();document.querySelector('[data-local-rescue]')?.focus();};
-  document.querySelectorAll('[data-edit-post]').forEach(b=>b.onclick=()=>{const p=state.posts.find(p=>p.id===b.dataset.editPost);if(!postEdits.has(p.id))postEdits.set(p.id,{text:p.text,version:p.version});render();$(`post-edit-${p.id}`)?.focus();});
+  document.querySelectorAll('[data-edit-post]').forEach(b=>b.onclick=()=>{const p=state.posts.find(p=>p.id===b.dataset.editPost);if(!postEdits.has(p.id))postEdits.set(p.id,{text:p.text,version:p.version});render();const editor=$(`post-edit-${p.id}`);if(editor){editor.focus();editor.setSelectionRange(editor.value.length,editor.value.length);}});
   document.querySelectorAll('[data-cancel-post-edit]').forEach(b=>b.onclick=()=>{postEdits.delete(b.dataset.cancelPostEdit);render();$(`edit-post-${b.dataset.cancelPostEdit}`)?.focus();});
   document.querySelectorAll('[data-post-editor]').forEach(form=>{const id=form.dataset.postEditor,editor=form.querySelector('textarea');editor.oninput=()=>{postEdits.get(id).text=editor.value;};form.onsubmit=async e=>{e.preventDefault();const draft=postEdits.get(id);if(await send({type:'edit-post',post:id,text:draft.text,version:draft.version})){postEdits.delete(id);render();$(`edit-post-${id}`)?.focus();}};});
   document.querySelectorAll('[data-withdraw-post]').forEach(b=>b.onclick=async()=>{if(await send({type:'withdraw-post',post:b.dataset.withdrawPost,version:Number(b.dataset.version)})){postEdits.delete(b.dataset.withdrawPost);render();}});
