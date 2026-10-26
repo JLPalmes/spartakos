@@ -349,3 +349,27 @@ test('retirada HTTP persiste y no filtra el cuerpo por estado, exportación o ci
  const alicia=await f.login('alicia');const state=(await f.request('/api/state',{token:alicia})).data;
  assert.equal(state.posts.find(p=>p.id==='p3').text,'Comentario independiente');assert.equal(state.posts.find(p=>p.id==='p1').withdrawn,true);
 });
+test('bloqueo programado persiste y recuperar permisos exige una nueva acción explícita',async t=>{
+ let now=Date.parse('2030-01-15T12:00:00Z');const f=await fixture(t,{clock:()=>now});
+ const text='Pendiente sintética tras recuperar permisos';
+ assert.equal((await f.cmd('bruno',{type:'schedule',text,community:'cuaderno',audience:'members',publishAt:'2030-01-15T12:01:00Z',timeZone:'Atlantic/Canary',lateMinutes:15})).status,200);
+ assert.equal((await f.cmd('alicia',{type:'set-role',community:'cuaderno',member:'bruno',role:'reader'})).status,200);
+ now+=60000;
+ // El reloj avanza, pero no hay consultas del cliente: el temporizador debe bloquear y persistir.
+ await new Promise(r=>setTimeout(r,1200));
+ let disk=JSON.parse(await readFile(path.join(f.directory,'estado.json'),'utf8'));
+ assert.equal(disk.scheduled[0].status,'blocked');assert(disk.scheduled[0].reason);assert(!disk.posts.some(p=>p.text===text));
+ await f.restart();f.tokens.bruno=await f.login('bruno');f.tokens.alicia=await f.login('alicia');f.tokens.diego=await f.login('diego');
+ assert.equal((await f.cmd('bruno',{type:'publish-schedule',id:'s1',version:2})).status,403);
+ assert.equal((await f.cmd('alicia',{type:'set-role',community:'cuaderno',member:'bruno',role:'contributor'})).status,200);
+ now+=60000;await new Promise(r=>setTimeout(r,1200));
+ disk=JSON.parse(await readFile(path.join(f.directory,'estado.json'),'utf8'));
+ assert.equal(disk.scheduled[0].status,'blocked');assert(!disk.posts.some(p=>p.text===text));
+ assert.deepEqual((await f.request('/api/state',{token:f.tokens.alicia})).data.scheduled,[]);
+ const published=await f.cmd('bruno',{type:'publish-schedule',id:'s1',version:2});assert.equal(published.status,200);assert.equal(published.data.state.scheduled[0].status,'published');
+ assert.equal((await f.cmd('bruno',{type:'publish-schedule',id:'s1',version:2})).status,409);
+ assert(!(await f.request('/api/state',{token:f.tokens.diego})).data.posts.some(p=>p.text===text));
+ await f.restart();const token=await f.login('bruno');
+ const state=(await f.request('/api/state',{token})).data;
+ assert.equal(state.posts.filter(p=>p.text===text).length,1);assert.equal(state.scheduled[0].status,'published');assert.equal(state.posts.find(p=>p.text===text).audience,'members');
+});

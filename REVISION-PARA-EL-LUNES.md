@@ -2,7 +2,7 @@
 title: Spartakos — Revisión de continuidad para el lunes 26 de octubre
 lang: es-ES
 license: CC-BY-SA-4.0
-date: 2026-10-24
+date: 2026-10-26
 status: Registro de trabajo en curso; no aprobación ni versión de producción
 ---
 
@@ -13,7 +13,7 @@ La revisión prevista es el lunes 26 de octubre de 2026. Este registro reúne re
 ## Estado vigente antes de la revisión
 
 - Funcionalidad disponible: borradores privados con papelera, edición con versión, retirada del cuerpo, citas y tres niveles, programación, Me gusta con cortes horarios y rescate local al perder permisos o membresía.
-- Validación vigente: 91 pruebas automáticas superadas y recorridos sintéticos registrados; 49 documentos verificados. Los recuentos menores de los bloques anteriores son resultados históricos.
+- Validación vigente: 92 pruebas automáticas superadas y recorridos sintéticos registrados; 49 documentos verificados. Los recuentos menores de los bloques anteriores son resultados históricos.
 - Estadísticas: catálogo propuesto, sin aprobar ni implementar. La identidad distribuida, migración real y operación con proveedores siguen fuera del simulador.
 - Preparación: seguir la [guía de revisión](GUIA-REVISION-PROTOTIPO.md) con un escenario separado. Antes de recargar un cliente abierto para cargar la versión actual, copiar el texto local que no se haya guardado.
 - Rama de #2 sin integrar en main. No hay despliegue público ni nueva captación. Los datos del laboratorio del usuario se mantienen separados de los ensayos.
@@ -110,3 +110,10 @@ Publicar los ajustes documentales locales cuando vuelva el acceso al navegador, 
 ### Disciplina de continuidad
 
 Inspeccionar rama, cambios locales y propuesta de revisión antes de continuar. La automatización no confirma por sí misma nuevas decisiones de producto. No empezar otro bloque tras el lunes 26; consolidar los resultados y límites. Registrar aquí las pruebas reales y el estado de publicación de cada bloque.
+
+
+## Continuación autorizada tras la revisión — 26 de octubre
+
+Reanudadas las comprobaciones por indicación del usuario, sin exigirle ejecutar ensayos funcionales automatizables. Al comenzar, árbol limpio y rama sincronizada tras fetch. Los ajustes documentales anteriores ya figuran en el remoto; su condición pendiente en los bloques históricos queda superada. El ajuste del cursor al final fue confirmado por el usuario y publicado en el commit `93aae8a`.
+
+La nueva prueba integrada de programación verifica bloqueo sin cliente, persistencia tras reinicio, rechazo sin permisos, ausencia de reactivación al recuperarlos y publicación única solo por acción explícita. Resultado global: **92 pruebas superadas**, 34 de ellas HTTP. No cambia el comportamiento del producto ni se accede a datos del usuario. La nueva prueba y el recuento documental se reúnen en esta unidad para su incorporación autorizada a la rama de la propuesta #2. La revisión estadística y las limitaciones estructurales siguen pendientes. No se integra en main.

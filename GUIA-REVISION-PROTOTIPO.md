@@ -2,7 +2,7 @@
 title: Spartakos — Recorrido de revisión del prototipo
 lang: es-ES
 license: CC-BY-SA-4.0
-date: 2026-10-25
+date: 2026-10-26
 status: Guion para revisión; no acta de aceptación
 ---
 
@@ -52,7 +52,7 @@ Antes de cerrar sesión, copiar el texto local que se quiera conservar o guardar
 
 Las estadísticas son un [catálogo propuesto](DISENO-ESTADISTICAS.md), sin implementación ni captación nueva. También siguen pendientes la identidad soberana real, migración desde redes populares, red distribuida, recuperación de cuentas, cifrado de extremo a extremo, operación voluntaria a escala y servicios comerciales. La especificación de estas materias no equivale a su desarrollo.
 
-La batería vigente suma 91 pruebas automáticas y hay recorridos sintéticos de navegador registrados. No equivale a ejecutar los 148 criterios completos, una auditoría de seguridad, un ensayo de carga o una evaluación completa de accesibilidad. La prueba de una acción concreta no acredita todos los casos de esa función.
+La batería vigente suma 92 pruebas automáticas y hay recorridos sintéticos de navegador registrados. No equivale a ejecutar los 148 criterios completos, una auditoría de seguridad, un ensayo de carga o una evaluación completa de accesibilidad. La prueba de una acción concreta no acredita todos los casos de esa función.
 
 ## 5. Decisiones para revisar
 

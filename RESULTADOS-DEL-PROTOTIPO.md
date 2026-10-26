@@ -3,8 +3,8 @@ title: Spartakos — Resultados de la primera comprobación del prototipo
 lang: es-ES
 license: CC-BY-SA-4.0
 version: 0.10
-date: 2026-10-24
-status: 91 pruebas automáticas superadas; consistencia entre borradores, edición y retirada
+date: 2026-10-26
+status: 92 pruebas automáticas superadas; bloqueo programado y recuperación de permisos
 ---
 
 # Primera comprobación del prototipo
@@ -143,3 +143,10 @@ Comprobación posterior, 25 de octubre: se recuperó el navegador y se ejecutó 
 Se añade un aviso y acceso a Mi cuenta para las ediciones locales de aportaciones propias en espacios ya inaccesibles. Si desaparece el editor enfocado, el foco pasa al acceso al rescate; si la lectura se conserva, al campo rescatado. Abrir el recorrido enfoca el texto de solo lectura. No hay publicación ni guardado automático.
 
 Comprobado en navegador con datos sintéticos separados: baja de Bruno aplicada por Alicia mientras había una edición abierta, desaparición del historial privado, aviso enfocado y recuperación visual del texto local junto a su aportación propia. Se verificó la propiedad `readOnly`; no se mostró el historial ajeno. No se ejecutó retirada irreversible en este recorrido. La batería completa mantiene **91 pruebas superadas**. No es auditoría completa de accesibilidad ni garantía de recuperación del texto local tras recargar o cerrar sesión.
+
+
+## 18. Programación, permisos y continuidad tras reiniciar
+
+Resultado del 26 de octubre: **92 pruebas automáticas superadas, 0 fallos**, incluidas 34 HTTP. Se añade un recorrido integrado con servidor real de loopback, reloj inyectado y almacenamiento temporal separado. Programa una aportación restringida, revoca permisos y comprueba en disco que el temporizador bloquea el envío sin consultas del cliente. Reiniciar conserva el bloqueo. Publicar inmediatamente sin permisos se deniega; recuperar permisos no reactiva el envío automáticamente. Una acción explícita posterior del autor publica una sola vez, mantiene la audiencia y persiste tras otro reinicio. Una acción repetida se rechaza y la cuenta externa no recibe el contenido. Los pendientes siguen siendo privados, incluso frente a la administración comunitaria.
+
+No se detectó un fallo de comportamiento ni fue necesario cambiar código de producción. Esta comprobación automatizada no evalúa por sí sola la comprensión del mensaje de bloqueo. Se mantienen los límites de identidad ficticia y operación local. No se accedió al escenario de prueba del usuario ni a sus datos anteriores.

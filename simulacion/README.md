@@ -3,7 +3,7 @@ title: Spartakos — Prototipo local con varias cuentas
 lang: es-ES
 license: CC-BY-SA-4.0
 version: 0.9
-date: 2026-10-24
+date: 2026-10-26
 status: Laboratorio funcional de un solo servidor; identidades ficticias
 ---
 
@@ -66,7 +66,7 @@ python3 verificar.py
 node --test prototipo/modelo.test.mjs simulacion/*.test.mjs
 ```
 
-Hay 91 pruebas: diez de la maqueta anterior, 33 HTTP, cuatro de selección y recorrido de conversaciones, diez de programación, siete de citas y límites, ocho de recuentos horarios, ocho de borradores y once de edición y retirada. Cubren separación entre sesiones, permisos, audiencia, consentimiento, revocación, privacidad de guardados, persistencia, exportación, escrituras simultáneas, reacciones reversibles, migración de datos y lectura de historiales con 2.001 mensajes (no creación de nuevos hilos de esa profundidad), límite de tres niveles, citas, avisos y su privacidad. Estas pruebas no constituyen una auditoría de seguridad ni ejecutan la matriz completa A01–A148.
+Hay 92 pruebas: diez de la maqueta anterior, 34 HTTP, cuatro de selección y recorrido de conversaciones, diez de programación, siete de citas y límites, ocho de recuentos horarios, ocho de borradores y once de edición y retirada. Cubren separación entre sesiones, permisos, audiencia, consentimiento, revocación, privacidad de guardados, persistencia, exportación, escrituras simultáneas, reacciones reversibles, migración de datos y lectura de historiales con 2.001 mensajes (no creación de nuevos hilos de esa profundidad), límite de tres niveles, citas, avisos y su privacidad. Estas pruebas no constituyen una auditoría de seguridad ni ejecutan la matriz completa A01–A148.
 
 Código bajo AGPL-3.0-or-later y documentación bajo CC-BY-SA-4.0, según el [mapa de licencias](../LICENCIAS.md). La [maqueta anterior](../prototipo/README.md) se conserva como antecedente descartable.
 
