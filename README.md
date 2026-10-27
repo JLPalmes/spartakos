@@ -82,3 +82,5 @@ Para preparar la siguiente prueba, consultar la [guía de revisión del prototip
 El siguiente ensayo estructural se acota en [Traslado individual entre alojamientos](ENSAYO-02-TRASLADO-INDIVIDUAL.md): protocolo preparado, aún no ejecutado ni arquitectura adoptada.
 
 La [comparación de mecanismos de identidad](ARQUITECTURA-04-CANDIDATOS-DE-IDENTIDAD.md) propone KERIpy como primer candidato de laboratorio y documenta nueve familias, revisiones observadas y límites. No hay integración ni arquitectura de producción adoptada.
+
+El [laboratorio aislado de identidad](laboratorio-identidad/README.md) recoge el primer resultado ejecutado con KERIpy y sus límites.

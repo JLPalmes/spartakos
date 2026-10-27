@@ -142,3 +142,31 @@ Revisadas fuentes primarias de nueve alternativas o familias: claves estáticas,
 No se instalaron componentes ni se ejecutaron ensayos estructurales. No hay nuevas pruebas funcionales ni cambios del simulador: la batería vigente sigue en 109 pruebas. Verificación editorial ampliada a 51 documentos es-ES y validación del inventario JSON. El bloque documental se incorpora a la rama de revisión mediante commit y push autorizados. La rama se verificó inicialmente limpia y sincronizada mediante fetch. No se integra main ni se modifican los datos del usuario.
 
 Siguiente bloque propuesto: entorno aislado para KERIpy con revisión fijada, dependencias e integridad inventariadas; comprobar persistencia, rotación y rechazo de autoridad antes de ejecutar traslado entre dos alojamientos. Si no puede comprobarse una garantía, se declara pendiente o fallida, sin sustituirla por identidades ficticias ni criptografía propia.
+
+## Primer laboratorio real de identidad — 27 de octubre
+
+Preparado el [laboratorio KERIpy](laboratorio-identidad/README.md) en un entorno temporal separado, sin cambios globales ni datos del usuario. Cinco pruebas superadas: persistencia en tres procesos, rotación conservando identidad, firma inválida, clave no comprometida, clave antigua y repetición de evento. Las dos primeras propiedades se verifican juntas en una prueba. Comprobación de dependencias sin conflictos y 101 pruebas propias de libsodium superadas; cifras separadas de las 109 funcionales del simulador, que no se ha modificado.
+
+Inventariadas versiones, fuentes y hashes, sin claves ni rutas privadas. No se ha verificado la firma de la distribución nativa ni completado una auditoría de vulnerabilidades. Pendientes testigos, particiones y traslado entre proveedores. Cambios locales en la rama de revisión, sin integrar main ni publicar este bloque. Siguiente propuesta: testigos de referencia y disponibilidad antes de ampliar el ensayo de traslado.
+
+## Recibos de testigos y vistas discrepantes — 27 de octubre
+
+Siete pruebas nuevas superadas, doce de identidad en total, separadas de las 109 funcionales. Se verifican recibos suficientes/insuficientes, duplicados, impostores, conservación del estado previo y contradicciones entre eventos y entre dos verificadores aislados. Se usan claves sintéticas y bases temporales; sin cambios del simulador ni datos del usuario.
+
+Hallazgo: si el titular y un testigo compartido firman dos ramas, los verificadores aislados pueden aceptarlas por separado. Detectan el conflicto cuando se les entrega la otra rama; no convergen automáticamente. Los recibos se entregaron directamente a la API: quedan pendientes servidores de testigos, transporte, reanudación automática y contraste operativo entre fuentes. El [laboratorio](laboratorio-identidad/README.md) recoge el alcance y la reproducción. Cambios locales pendientes de commit y push; remoto comprobado mediante fetch, sin integración en main.
+
+## Continuación autónoma: HTTP, caída abrupta y diagnóstico — 27 de octubre
+
+Ejecutadas tres pruebas HTTP adicionales: dos escenarios completos de continuidad con cierre normal/terminación abrupta y una reproducción diagnóstica de H01. Total: 15 comprobaciones del laboratorio, separadas de las 109 funcionales. Testigos en procesos con almacenes separados; sockets solo locales, sin servicios permanentes ni datos del usuario. Se comprueban conexión rechazada, conservación del estado, reapertura con la misma identidad, recibo persistido, reenvío explícito, rotación y rechazo de claves/recibos antiguos.
+
+H01: el endpoint de referencia devuelve un recibo firmado para un evento con firma de autor inválida ausente de su historial aceptado. El verificador completo sí lo rechaza. La reproducción correcta de ese comportamiento no aprueba la seguridad del endpoint. Integración de ese servicio en producción descartada mientras no se resuelva y verifique; no es una decisión sobre adoptar o descartar todo KERI. No se contacta con terceros.
+
+Consulta OSV para 34 versiones PyPI sin avisos devueltos; no sustituye auditoría ni cubre dependencias nativas. Pendientes firma de libsodium, reanudación tras reinicio del coordinador y contraste operativo entre fuentes. Cambios conservados localmente en la rama de revisión, sin commit/push ni integración en main. La continuidad autónoma no se condiciona a una respuesta rutinaria del usuario.
+
+### Recuperación del evento pendiente entre tres procesos
+
+Añadida una prueba de persistencia de escrow: guardar con un recibo, cerrar, reabrir, añadir solo el recibo faltante y procesar las colas oficiales, volver a cerrar y comprobar el resultado en un tercer proceso. No se reenvía el evento. Total de laboratorio: 16 comprobaciones, incluida la reproducción de H01; no equivale a 16 garantías de seguridad aprobadas. La recuperación del verificador se prueba separadamente del transporte HTTP. Documentación y reproducción conjunta actualizadas. Sin necesidad de decisión del usuario para estas pruebas; pendientes composición completa, caducidad y contraste persistido.
+
+### Cierre autorizado del laboratorio para revisión
+
+El usuario autoriza commit y push de esta unidad. Repetidas las 16 comprobaciones del laboratorio y la validación de los 52 documentos; revisión de archivos nuevos sin claves privadas, credenciales, datos del usuario ni rutas del entorno temporal. Se prepara su publicación en la rama de la propuesta #2, sin integrar main. Las anotaciones anteriores de cambios pendientes describen el estado previo a esta autorización. H01 sigue reproducido y sin resolver; no se aprueba el endpoint para producción.

@@ -99,3 +99,19 @@ Estas referencias se fijan para reproducir la investigación; no constituyen un 
 5. Solo después probar datos y referencias de perfil entre A y B. Las programaciones copiadas permanecen inactivas; no se promete reanudación entre proveedores sin demostrar un único ejecutor.
 
 No se ha ejecutado este bloque. La independencia institucional de los operadores, el coste de testigos y la recuperación sin medios suficientes siguen siendo cuestiones abiertas. La elección definitiva se tomará con resultados de fallos y operación, no con la cantidad de propiedades declaradas en una especificación.
+
+## 7. Actualización del laboratorio — 27 de octubre
+
+Después del inventario se ha ejecutado el [primer laboratorio aislado](laboratorio-identidad/README.md): cinco pruebas locales superadas con revisión y dependencias fijadas. Se completan las comprobaciones iniciales de persistencia y autoridad; no se ha ejecutado el traslado ni el ensayo con testigos. La auditoría de dependencias y la verificación de la firma de la distribución nativa siguen pendientes; el ensayo no constituye aprobación para producción.
+
+## 8. Límite observado de los recibos — 27 de octubre
+
+El [ensayo de recibos y discrepancias](laboratorio-identidad/README.md) añade siete pruebas superadas. Con un umbral sintético de dos de tres, faltar un recibo permite aceptar; faltar dos lo impide. Duplicar recibos o suplirlos con firmas ajenas no satisface el umbral. No se han arrancado servidores ni provocado fallos de red.
+
+Dos verificadores aislados aceptan ramas distintas si el titular y un testigo compartido firman ambas; detectan la discrepancia al recibir la otra rama y mantienen su estado anterior. No hay convergencia automática demostrada. La evaluación de KERI continúa condicionada a contraste entre fuentes, operación de testigos y gestión de conflictos; no se eleva una mayoría de firmas a garantía general de consenso.
+
+## 9. Transporte real y límite del servicio de recibos — 27 de octubre
+
+Dos escenarios con procesos y HTTP locales verifican cierre normal y caída abrupta, persistencia del testigo, bloqueo sin recibos suficientes, reenvío explícito y rotación posterior. Una tercera prueba reproduce H01: ReceiptEnd firma el recibo de una interacción cuya firma de autor es inválida, aunque el evento no conste en su historial aceptado; el verificador completo sí lo rechaza. Véanse [resultados y límites](laboratorio-identidad/README.md).
+
+KERI continúa como candidata de investigación. El endpoint de esta revisión no queda aprobado para producción; el hallazgo exige revisar la implementación y el límite de validación, sin deducir que se haya roto la autoridad del titular. No se sustituye el componente ni se inventa un protocolo propio. La consulta OSV de 34 versiones PyPI no devuelve avisos, con el alcance limitado indicado en el laboratorio.
