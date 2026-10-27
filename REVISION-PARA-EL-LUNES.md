@@ -186,3 +186,13 @@ El coordinador de pruebas actualiza explícitamente el puerto del testigo reinic
 ### Publicación autorizada de la protección y el ensayo combinado
 
 El usuario autoriza commit y push de ambas ampliaciones. Repetidas las 19 comprobaciones y la validación de 52 documentos; inventarios JSON revisados sin credenciales, claves privadas ni rutas del entorno temporal. Se prepara la publicación en la rama de la propuesta #2, sin integrar main. Las notas anteriores de cambios pendientes corresponden al estado previo a esta autorización; la mitigación de H01 sigue siendo experimental.
+
+## Caducidad y contraste persistido
+
+Inicio con árbol limpio y sincronización remota verificada mediante fetch. Añadido keri_lifecycle.py con tres escenarios ejecutados: frontera de caducidad y reenvío explícito, conservación de evidencia tras caducidad de la cola de contradicciones, y contraste entre dos bases que aceptaron ramas distintas tras reiniciar sus procesos. Total: 22 comprobaciones, incluida la reproducción de H01. Reloj controlado solo en pruebas; bases sintéticas separadas, sin cambios del simulador ni datos del usuario.
+
+Hallazgos: salir de una cola no revoca un evento ni resuelve una contradicción. Tras caducar la entrada de posible duplicidad, la evidencia sigue disponible en este ensayo, pero ya no aparece en esa cola. Se proponen registros separados de conflictos y cancelaciones explícitas. No se afirma retención indefinida, sincronización automática ni convergencia. Cambios locales pendientes de commit y push. Próximo bloque: balance documental de garantías demostradas y pendientes frente a E/T, sin necesidad de decisión del usuario para elaborarlo.
+
+### Publicación autorizada del ciclo de vida
+
+El usuario autoriza commit y push de las pruebas de caducidad y contraste persistido. Repetidas las 22 comprobaciones y la validación de 52 documentos; archivo nuevo revisado sin credenciales, claves privadas ni rutas locales. Se prepara la publicación en la rama de la propuesta #2, sin integrar main. Las notas de cambios pendientes anteriores describen el estado previo a esta autorización.

@@ -119,3 +119,9 @@ KERI continúa como candidata de investigación. El endpoint de esta revisión n
 ## 10. Mitigación experimental de H01
 
 La revisión de desarrollo posterior conserva por inspección estática el flujo relevante; no se ha verificado una corrección oficial. Se mantiene la versión fijada para no mezclar cambios de protocolo con la investigación. Dos pruebas nuevas verifican un adaptador local que solo firma recibos del evento exacto ya aceptado en el almacén, conservando recuperación y rotación. [Alcance, fuentes y límites](laboratorio-identidad/README.md). No se aprueba para producción ni se da por resuelto H01 en la biblioteca; la concurrencia y las configuraciones completas siguen pendientes.
+
+## 11. Caducidad y evidencia de conflicto
+
+Tres escenarios nuevos comprueban la frontera de caducidad de pendientes, la persistencia de evidencia de contradicción tras reinicio y caducidad de la cola, y el contraste de dos verificadores con ramas distintas después de reiniciar. [Resultados reproducibles](laboratorio-identidad/README.md). La cola de posible duplicidad puede quedar vacía mientras la evidencia sigue almacenada; su vaciado no significa resolución. Caducar un pendiente tampoco revoca su firma: el reenvío completo puede aceptarse.
+
+Se propone separar registro de conflictos, colas operativas y cancelaciones. No se adopta todavía una política de retención o consenso ni se anuncia convergencia automática. La candidata necesita un balance de garantías frente a los ensayos E y T antes de abordar el traslado de identidad.

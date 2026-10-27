@@ -139,3 +139,27 @@ Añadida una prueba completa en keri_pending.py, **19 comprobaciones en total**.
 El ensayo compone las piezas que antes se verificaban por separado. No demuestra descubrimiento automático del nuevo puerto: el coordinador de pruebas actualiza explícitamente esa dirección. El verificador se reinicia tras un cierre normal; la terminación abrupta corresponde al testigo y ocurre después de haber respondido. No se prueban pérdida de disco, caída durante transacción, caducidad del pendiente ni traslado entre proveedores. La mitigación de H01 sigue siendo experimental.
 
 Siguiente bloque técnico: comprobar caducidad de pendientes y contraste persistido de historiales discrepantes. Las pruebas de laboratorio no obligan todavía a elegir umbrales, operadores o mecanismos de recuperación de cuentas para Spartakos.
+
+## Caducidad y contradicciones después de reiniciar
+
+[Ensayo de ciclo de vida](keri_lifecycle.py): tres comprobaciones nuevas, **22 comprobaciones de laboratorio en total**, incluida la reproducción de H01. Los escenarios usan bases temporales propias y procesos nuevos para cada fase. El reloj se sustituye únicamente durante llamadas de prueba; no se cambia el reloj del equipo ni las fechas de datos del usuario.
+
+### Pendientes de recibos
+
+La revisión fijada define TimeoutPWE en 3600 segundos. Se comprueba que la entrada sigue pendiente un segundo antes y exactamente en ese límite; al superarlo un segundo sale de la cola, sin avanzar el estado aceptado. Los bytes del evento permanecen almacenados en este ensayo. Un reenvío explícito posterior del mismo evento con recibos suficientes puede aceptarse y el resultado persiste tras otro reinicio.
+
+Es un tiempo de retención de la biblioteca, no una decisión adoptada para Spartakos. La salida de una cola no revoca un evento firmado ni implementa la cancelación de una publicación o de una operación de traslado.
+
+### Contradicciones persistidas
+
+Después de aceptar una rama y recibir otra contradictoria, Kevery señala la discrepancia y conserva la rama previa. La entrada de posible duplicidad, los bytes de la otra rama y su firma válida del titular sobreviven a la reapertura. Al superar TimeoutLDE, también de 3600 segundos en esta revisión, la entrada sale de la cola, pero los bytes y la firma siguen disponibles tras otra reapertura. El estado aceptado no cambia. No se demuestra conservación indefinida ni una política de archivo.
+
+Otro escenario comienza con dos bases independientes que aceptan ramas diferentes. Después de cerrar sus procesos, cada una recibe la otra rama en un proceso nuevo. Ambas detectan la contradicción, conservan su historia previa y mantienen la evidencia al volver a abrirse. La entrega entre fuentes está controlada por el ensayo y usa la API: no se prueban descubrimiento de observadores ni sincronización de red automática. No hay convergencia automática demostrada.
+
+### Consecuencias propuestas
+
+- Un registro duradero de conflictos deberá distinguirse de una cola temporal de reintentos. Una cola vacía no puede presentarse como ausencia de conflictos.
+- La cancelación necesita una regla explícita de autoridad y estado; no puede deducirse de que haya caducado una cola.
+- Antes de escoger KERI para producción, deben concretarse retención de evidencia, contraste entre fuentes y comportamiento ante conflicto, además de resolver los límites de H01.
+
+Son propuestas derivadas de los resultados; no se han añadido estados al cliente social ni se ha aprobado una política de consenso. Próximo bloque: elaborar el balance de garantías demostradas y pendientes frente a los ensayos E y T, para decidir qué falta antes del traslado de identidad entre alojamientos. No se requieren decisiones del usuario para completar ese balance documental.
