@@ -285,7 +285,7 @@
     "keri_local_tests": 5,
     "libsodium_upstream_tests": 101,
     "keri_witness_receipt_tests": 7,
-    "keri_total_tests": 38,
+    "keri_total_tests": 46,
     "keri_http_tests": 5,
     "http_continuity_scenarios": 2,
     "http_endpoint_diagnostic_reproductions": 1,
@@ -294,7 +294,9 @@
     "combined_http_persisted_recovery_tests": 1,
     "keri_lifecycle_tests": 3,
     "keri_destination_authorization_tests": 9,
-    "keri_public_profile_binding_tests": 7
+    "keri_public_profile_binding_tests": 7,
+    "keri_profile_state_tests": 3,
+    "keri_profile_http_delivery_tests": 5
   },
   "limitations": [
     "No dependency security audit completed",
@@ -315,9 +317,14 @@
     "Key rotation does not itself revoke endpoint role authorization",
     "Role multiplicity is supported; endpoint role does not define profile editing authority",
     "Profile binding uses experimental application schema, not native KERI profile semantics",
-    "Profile A/B are byte copies only; no profile servers or migration executed",
     "Profile head is local validated-view state, not global freshness or permission to act",
-    "Profile binding persistence and durable conflict gate not yet tested"
+    "Local profile conflict registry tested for simple sn=1 forks without witnesses, rotation or delegation",
+    "KERI/SQLite cross-store crash window, corruption and lost-registry recovery not tested",
+    "False confirmation_blocked is not activation permission; global freshness remains unproven",
+    "Read-only public-profile HTTP A/B tested with A off; addresses explicitly supplied by test coordinator",
+    "HTTP profile delivery not integrated with endpoint-role authorization or automatic discovery",
+    "Profile history supplied by provider validates against independently pinned owner, without global freshness proof",
+    "No destination change, profile writing delegation or complete provider migration tested"
   ],
   "osv_query": {
     "date": "2026-10-27",

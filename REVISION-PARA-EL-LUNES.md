@@ -228,3 +228,21 @@ La inspección distingue cabeza en la vista de actualidad global desconocida. No
 ### Publicación autorizada de orden y perfil
 
 El usuario autoriza commit y push de los ensayos de orden y perfil, y continuar después con persistencia y conflicto. Repetidas las 38 comprobaciones y la validación de 53 documentos; archivo nuevo revisado sin secretos ni rutas privadas. Se prepara la publicación en la rama de #2 sin integrar main. Las notas previas de cambios pendientes corresponden al estado anterior a esta autorización.
+
+## Publicación y continuación con persistencia de perfil
+
+Publicado eb238b3 con los ensayos de orden y perfil, tras repetir 38 comprobaciones y verificar 53 documentos; rama limpia y coincidencia remota confirmadas antes de continuar. La propuesta #2 permanece asociada y no se integra main.
+
+Continuación autorizada: añadido keri_profile_state.py con tres pruebas nuevas, total 41. El perfil y su referencia sobreviven a otro proceso; un registro local separado mantiene bloqueo por conflicto después de reinicio y caducidad de la cola; una firma ajena no crea evidencia verificada. La validación de ramas del arnés se limita a sn=1 sin rotación/testigos/delegación. No se prueban cortes entre KERI y SQLite, corrupción o pérdida del registro; no estar bloqueado no equivale a autorización ni actualidad global.
+
+Datos sintéticos temporales, sin cambios del simulador ni datos del usuario. La continuación queda local pendiente de commit/push; la autorización previa se ejecutó para los cambios existentes antes de continuar. Siguiente unidad: entrega HTTP A/B con origen apagado y verificador separado, declarando que recuperación de entrega no es traslado completo de autoridad.
+
+## Entrega HTTP del perfil con A apagado
+
+Inicio preservando la ampliación local de persistencia y con remoto verificado mediante fetch. Añadido keri_profile_http.py con cinco pruebas, total 46 de laboratorio. Dos servicios HTTP locales de solo lectura entregan perfil e historia firmada desde directorios separados, sin claves del titular; el verificador tiene su base e identidad esperada propias. A se apaga y se comprueba la conexión fallida antes de recuperar B. Se rechazan por validación específica contenido alterado, cuerpo sin anclaje y sustitución de titular; un cuerpo anterior queda histórico en la vista actualizada.
+
+Es recuperación de entrega, no traslado completo: direcciones proporcionadas por el coordinador, autorización de roles no compuesta aún con HTTP, sin escritura delegada ni cambio de destino. No se modifica el simulador ni los datos del usuario. Pendientes unir resolución autorizada y entrega, actualizar con A apagado y contrastar la copia anterior al volver A. La ampliación de persistencia y esta unidad quedan locales pendientes de commit/push.
+
+### Publicación autorizada de persistencia y entrega
+
+El usuario autoriza commit y push y continuar después. Repetidas las 46 comprobaciones y la validación de 53 documentos; archivos nuevos revisados sin claves privadas ni rutas privadas. Se prepara la publicación de persistencia y entrega HTTP en la rama de #2, sin integrar main. Las notas previas de trabajo local corresponden al estado anterior a esta autorización.

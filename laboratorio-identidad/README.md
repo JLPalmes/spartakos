@@ -230,3 +230,47 @@ La inspección devuelve `head_in_this_view` y `globally_current: null`. El segun
 A y B en esta unidad son copias de bytes dentro de la prueba, no servidores ejecutados. Los verificadores usan bases sintéticas temporales; la persistencia de este enlace de perfil no se ha probado entre procesos. No se transportan contactos, publicaciones, borradores ni datos comunitarios, no hay cifrado de perfil privado y no se prueba recuperación sin medios previos.
 
 Resultado: se ha demostrado una vinculación acotada entre cuerpo público, titular y revisión en una historia validada. **No se ha ejecutado el traslado de un perfil entre alojamientos.** Siguiente unidad: persistir el estado de revisión y conflicto del perfil, después ejecutar A/B como servicios locales de entrega con el origen apagado y con el titular y el verificador separados. La prueba deberá dejar explícito qué actualización falta y rechazar una copia sin anclaje autorizado.
+
+## Persistencia del perfil y registro local de conflicto
+
+[Ensayo de estado de perfil](keri_profile_state.py): tres pruebas adicionales, **41 comprobaciones de laboratorio en total**. El cuerpo público se conserva en un almacén SQLite local del arnés y se contrasta contra el historial KERI persistido al abrir otro proceso verificador. No se confía en una columna de versión recibida del proveedor para acreditar la revisión.
+
+El registro de conflictos está separado de las colas temporales de KERI. El ensayo verifica dos ramas de interacción independientes contra la misma creación de identidad mediante verificadores nativos de la biblioteca, antes de guardar evidencia pública sintética. Después comprueba que:
+
+1. Cuerpo y vínculo con el evento sobreviven al cambio de proceso.
+2. El conflicto registrado bloquea la confirmación local, incluso tras otro reinicio, caducidad controlada de la cola de posibles contradicciones y posterior reapertura.
+3. Una firma de otra identidad no crea una entrada de conflicto verificado en ese registro.
+
+El arnés usa dos interacciones de secuencia 1, sin testigos, delegación ni rotación; rechaza escenarios fuera de ese alcance. No se afirma que el verificador de evidencia de esta prueba sea una solución general para cualquier historial. La firma ajena rechazada tampoco demuestra resistencia completa a denegación de servicio.
+
+`confirmation_blocked` indica bloqueo por un conflicto ya registrado. Su valor falso **no autoriza ninguna acción**: la actualidad global continúa sin probarse y no existe todavía una puerta de activación del traslado. El registro no elige una rama ni ofrece desbloqueo automático o procedimiento de recurso. La evidencia conservada contiene eventos y firmas públicos sintéticos, nunca claves privadas.
+
+La prueba registra el conflicto antes de procesar la caducidad. Las transacciones de KERI y SQLite no son una única transacción: no se han probado cortes entre detección y registro, corrupción de esos almacenes, sincronización con otros observadores ni recuperación del registro perdido. Resolver ese intervalo y la recuperación de evidencia es requisito de una integración posterior; no se presenta este arnés como protección de producción.
+
+Próxima unidad propuesta: entrega del perfil desde dos servicios HTTP locales, con titular y verificador independientes, origen apagado y copia sin autoridad rechazada. El flujo será un ensayo de recuperación de entrega; no afirmará transferencia completa de autoridad ni actualidad global por el mero hecho de responder desde B.
+
+## Entrega HTTP desde B con A apagado
+
+[Ensayo de entrega de perfil](keri_profile_http.py): cinco pruebas nuevas, **46 comprobaciones de laboratorio en total**. A y B son procesos HTTP de solo lectura, con directorios separados y acceso limitado a `/profile` y `/proof`. Solo escuchan en bucle local y se cierran al terminar. No permiten listar el directorio ni recibir escrituras; no contienen claves privadas del titular.
+
+El coordinador prepara antes del corte el perfil público sintético y los eventos firmados. El verificador usa su propia base persistente y recibe la identidad esperada por un canal separado del proveedor. Cuando parte sin historia, valida con KERIpy los eventos entregados por HTTP y contrasta el cuerpo con su anclaje. Una historia firmada válida se acepta como historia conocida, **sin certificar que sea completa o globalmente actual**.
+
+| Prueba | Resultado observado |
+| --- | --- |
+| Apagar A y recuperar desde B | Se comprueba conexión fallida a A y lectura desde B con el mismo ID y revisión; funciona con verificador reabierto y también con uno nuevo que valida la historia |
+| B modifica el cuerpo | Se rechaza específicamente por ausencia de anclaje aceptado para esos bytes; al restaurar el cuerpo correcto puede verificarse |
+| B entrega cuerpo correcto sin historia validada | Un verificador nuevo lo rechaza; después lo acepta al validar los eventos firmados disponibles |
+| B sustituye al titular por otra identidad con firmas válidas | Se rechaza específicamente por no coincidir con la identidad esperada independiente |
+| B entrega una revisión antigua | El observador que ya conoce la posterior la clasifica como histórica, sin confundirla con la cabeza de su vista |
+
+Los rechazos exigen el error de validación previsto, no simplemente que el proceso falle. Las respuestas se limitan a 1 MiB en este arnés, sin proxies ni redirecciones; no es un dimensionado de producto. El servicio estándar HTTP de Python usado aquí es únicamente un medio de transporte de laboratorio, sin despliegue público ni evaluación de seguridad de un servidor de producción.
+
+### Qué se ha conseguido y qué falta
+
+Se demuestra recuperación de **entrega** desde una copia preparada antes del corte, preservando la referencia verificable del perfil. No existe una solicitud de traslado, cambio autorizado de ubicación, descubrimiento automático de B ni revocación de una capacidad de escritura de A. A y B son almacenes de solo lectura: no se puede presentar que A «perdió permiso de editar» cuando nunca recibió ese permiso.
+
+Las direcciones de A/B las proporciona el coordinador; la autorización de roles se probó separadamente y aún no está unida a estas peticiones HTTP. El origen permanece apagado durante la recuperación. No se prueba su retorno hostil, pérdida de todas las copias, actualización después del corte, traslado de publicaciones o datos privados ni recuperación de la clave del titular. Las pruebas de conflicto persistido son otra suite; esta entrega HTTP no recibe ni registra nuevas ramas contradictorias por sí misma.
+
+El campo `globally_current` permanece desconocido. `accepted_copy` solo indica cuerpo coincidente con un anclaje de una historia validada en la vista local; no es autorización de traslado ni confirmación de actualidad. Los esquemas experimentales de perfil no se convierten en formatos de producción por superar este ensayo.
+
+Próxima unidad: unir resolución de servicios autorizados con la entrega HTTP, sin aceptar una URL anunciada por el proveedor como autorización del titular. Después comprobar actualizaciones con origen apagado y retorno del origen con copia anterior. No se modifica el simulador social.

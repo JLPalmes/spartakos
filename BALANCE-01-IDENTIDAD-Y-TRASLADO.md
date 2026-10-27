@@ -3,7 +3,7 @@ title: Spartakos — Balance de identidad y preparación del traslado
 lang: es-ES
 license: CC-BY-SA-4.0
 date: 2026-10-27
-version: 0.4
+version: 0.6
 status: Evaluación de laboratorio; sin elección de arquitectura de producción
 ---
 
@@ -13,7 +13,7 @@ status: Evaluación de laboratorio; sin elección de arquitectura de producción
 
 KERIpy sigue siendo una candidata razonable para investigar el control de identidad. Las pruebas actuales no permiten elegirla como infraestructura de producción ni afirmar que Spartakos ya permite cambiar de proveedor. El ensayo de rol y dirección demuestra autorización de proveedores en la vista del observador, pero no exclusividad ni autoridad única para escribir el perfil. La siguiente unidad debe estudiar orden, vigencia y mensajes incompatibles antes de copiar un perfil entre dos alojamientos.
 
-El [laboratorio](laboratorio-identidad/README.md) contiene 38 comprobaciones ejecutadas con KERIpy 1.3.6 fijada por commit. Incluye una reproducción de un comportamiento defectuoso, H01: que esa reproducción pase no significa que el defecto esté corregido. Las 109 pruebas del simulador social son otra batería y no añaden garantías distribuidas.
+El [laboratorio](laboratorio-identidad/README.md) contiene 46 comprobaciones ejecutadas con KERIpy 1.3.6 fijada por commit. Incluye una reproducción de un comportamiento defectuoso, H01: que esa reproducción pase no significa que el defecto esté corregido. Las 109 pruebas del simulador social son otra batería y no añaden garantías distribuidas.
 
 **Ninguno de los quince casos E ni de los diez casos T se considera completado.** Algunas pruebas proporcionan evidencia parcial útil, que se detalla a continuación. La comparación de [nueve familias de identidad](ARQUITECTURA-04-CANDIDATOS-DE-IDENTIDAD.md) sigue vigente como investigación; este balance no acredita superioridad global de KERI.
 
@@ -137,3 +137,19 @@ Siete pruebas adicionales verifican el enlace experimental entre bytes del perfi
 El resultado no completa E02, E08 ni T01–T03: no existen servicios A/B de perfil en este ensayo. Sigue pendiente persistir el enlace y el estado duradero de conflicto antes de presentar un traslado. La cabeza local del perfil no demuestra actualidad global ni ausencia de bifurcaciones; tampoco concede permiso automático para una acción sensible. Las pruebas de vista atrasada y ramas firmadas conservan ese límite.
 
 Siguiente unidad: persistencia de revisiones y señalización de conflicto del perfil; después entrega desde dos servicios locales, separada del control del titular, con origen apagado. No se amplían permisos comunitarios ni se trasladan datos privados en ese primer flujo.
+
+## 11. Persistencia de perfil y conflicto local
+
+Tres pruebas adicionales verifican reapertura del cuerpo y su vínculo con el historial KERI en procesos distintos, bloqueo por conflicto conservado después de caducar la cola temporal y rechazo de firma ajena al registrar evidencia. Se usa un registro SQLite local del arnés, separado de las colas de KERI; no es consenso ni registro distribuido. Su verificación de ramas se limita a dos interacciones sn=1 sin rotación, testigos o delegación.
+
+Se añade evidencia parcial a E07, sin completar persistencia de cliente o cifrado. No se completa ningún E/T. Los cortes entre detección en KERI y registro SQLite siguen pendientes, así como pérdida del registro, corrupción y recuperación general. No estar bloqueado por ese registro no confirma actualidad ni concede permiso de actuar.
+
+Próximo ensayo: servir el mismo perfil público desde A y B mediante HTTP local, recuperar la entrega con A apagado y verificarlo desde un tercero con estado propio. Se registrará como recuperación de entrega, sin elevarla a traslado completo ni a actualización globalmente confirmada. La autoridad del titular sigue separada de las funciones de almacenamiento.
+
+## 12. Entrega HTTP recuperada con origen apagado
+
+Cinco pruebas adicionales ejecutan dos servicios de perfil público de solo lectura y verificadores en procesos separados. Con A apagado y la copia de B preparada previamente, se obtiene el mismo perfil y su historia firmada. El observador valida la identidad esperada por separado; rechaza cuerpo alterado, ausencia de anclaje validado y sustitución por otra identidad aun con firmas válidas. Una revisión antigua queda histórica cuando el observador conoce la nueva.
+
+La prueba aporta evidencia parcial a T01, T03 y T04, sin completar esos casos: solo hay perfil público, sin publicaciones, relaciones ni inventario de traslado; no se cambia el destino mediante el mecanismo de identidad y no se activa una autoridad de escritura de B. E08 sigue sin completarse. No se confunde redundancia de entrega con traslado ni se revoca un permiso que los servicios de solo lectura nunca recibieron.
+
+El siguiente paso es componer autorización de rol y resolución de dirección con la petición HTTP, preservando que múltiples proveedores pueden ser legítimos. Después se ensayará actualización con A apagado y entrega antigua cuando vuelva. La actualidad global seguirá declarándose desconocida si no puede probarse. No se adopta una arquitectura de producción.
