@@ -2,7 +2,7 @@
 title: Spartakos — Recorrido de revisión del prototipo
 lang: es-ES
 license: CC-BY-SA-4.0
-date: 2026-10-26
+date: 2026-10-27
 status: Guion para revisión; no acta de aceptación
 ---
 
@@ -30,6 +30,7 @@ Un cliente que ya estaba abierto puede conservar una versión anterior del progr
 | Conflictos | Abrir el mismo borrador en dos pestañas y guardar versiones distintas | El segundo guardado obsoleto se rechaza. Guardar como copia permite conservar ambas variantes |
 | Programación | Elegir una fecha próxima, revisar zona y margen y cerrar el cliente | El servidor encendido ejecuta el pendiente; Programadas muestra bloqueos o vencimientos. No depende de mantener abierta la pestaña |
 | Edición | Editar una publicación propia tras recibir una respuesta y Me gusta | Cambia la versión; las referencias previas siguen identificadas y no se renuevan las aprobaciones |
+| Respuesta o edición pendiente | Usar Guardar borrador de respuesta o de edición y retomarlo en Borradores | Conserva texto y destino. Si el original cambió, exige revisión expresa antes de enviar o aplicar |
 | Edición simultánea | Guardar un cambio desde una segunda pestaña mientras la primera escribe | La primera conserva su texto; el envío obsoleto no sobrescribe la versión nueva |
 | Pérdida de permisos | Reducir a lectura y después probar una baja completa mientras hay una edición abierta | Sin permiso no se ofrece guardar. El texto local queda para copiar; tras la baja hay acceso a Mi cuenta sin recuperar historial ajeno |
 | Retirada | En el escenario desechable, revisar la confirmación de retirada de texto propio | El servicio deja marcador y conserva respuestas independientes. La retirada del cuerpo no se restaura aquí ni borra copias o respaldos |
@@ -42,7 +43,8 @@ La última acción elimina el cuerpo activo de ese escenario: revisar primero la
 | --- | --- |
 | Borrador guardado explícitamente | En el servidor, privado para su cuenta; disponible tras recargar y reiniciar |
 | Publicación o programación aceptada por el servidor | En el estado persistente del laboratorio |
-| Texto del editor que nunca se guardó, respuesta en curso o edición local rescatada | En memoria de la pestaña; no garantizado tras recargar, cerrar o volver a entrar |
+| Respuesta o edición guardada explícitamente | Borrador privado persistente, con destino y versión de origen; se recupera en Borradores |
+| Texto de publicación, respuesta o edición que nunca se guardó | En memoria de la pestaña; no garantizado tras recargar, cerrar o volver a entrar |
 | Referencia de borrador ya utilizada | Conserva estado y versión de referencia; restaurarla no vuelve a ejecutar el envío |
 | Cuerpo retirado | Se vacía del estado activo; esto no garantiza borrar borradores independientes, exportaciones, respaldos o copias externas |
 
@@ -52,10 +54,10 @@ Antes de cerrar sesión, copiar el texto local que se quiera conservar o guardar
 
 Las estadísticas son un [catálogo propuesto](DISENO-ESTADISTICAS.md), sin implementación ni captación nueva. También siguen pendientes la identidad soberana real, migración desde redes populares, red distribuida, recuperación de cuentas, cifrado de extremo a extremo, operación voluntaria a escala y servicios comerciales. La especificación de estas materias no equivale a su desarrollo.
 
-La batería vigente suma 92 pruebas automáticas y hay recorridos sintéticos de navegador registrados. No equivale a ejecutar los 148 criterios completos, una auditoría de seguridad, un ensayo de carga o una evaluación completa de accesibilidad. La prueba de una acción concreta no acredita todos los casos de esa función.
+La batería vigente suma 109 pruebas automáticas y hay recorridos sintéticos de navegador registrados. No equivale a ejecutar los 148 criterios completos, una auditoría de seguridad, un ensayo de carga o una evaluación completa de accesibilidad. La prueba de una acción concreta no acredita todos los casos de esa función.
 
 ## 5. Decisiones para revisar
 
-Revisar primero si los recorridos son comprensibles y si se conserva correctamente el contexto. Después decidir qué carencias impiden una nueva prueba con participantes y cuáles pueden esperar. El catálogo estadístico requiere revisión propia de indicadores y permisos antes de programarlo. Las ediciones persistentes y respuestas recuperables requieren un diseño específico; no deben confundirse con los borradores iniciales ya implementados.
+Revisar primero si los recorridos son comprensibles y si se conserva correctamente el contexto. Después decidir qué carencias impiden una nueva prueba con participantes y cuáles pueden esperar. El catálogo estadístico requiere revisión propia de indicadores y permisos antes de programarlo. Las respuestas y ediciones guardadas ya pueden retomarse desde Borradores; revisar su comprensión y la confirmación de versión cuando el original cambia. No confundir esta persistencia explícita con guardado automático.
 
 Registrar cada incidencia con cuenta ficticia, espacio, pasos, resultado esperado y resultado observado. Compartir únicamente capturas de escenarios sintéticos. La aceptación de la propuesta y la integración en main siguen siendo decisiones posteriores a la revisión.

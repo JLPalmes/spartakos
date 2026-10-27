@@ -3,7 +3,7 @@ title: Spartakos — Prototipo local con varias cuentas
 lang: es-ES
 license: CC-BY-SA-4.0
 version: 0.9
-date: 2026-10-26
+date: 2026-10-27
 status: Laboratorio funcional de un solo servidor; identidades ficticias
 ---
 
@@ -66,7 +66,7 @@ python3 verificar.py
 node --test prototipo/modelo.test.mjs simulacion/*.test.mjs
 ```
 
-Hay 92 pruebas: diez de la maqueta anterior, 34 HTTP, cuatro de selección y recorrido de conversaciones, diez de programación, siete de citas y límites, ocho de recuentos horarios, ocho de borradores y once de edición y retirada. Cubren separación entre sesiones, permisos, audiencia, consentimiento, revocación, privacidad de guardados, persistencia, exportación, escrituras simultáneas, reacciones reversibles, migración de datos y lectura de historiales con 2.001 mensajes (no creación de nuevos hilos de esa profundidad), límite de tres niveles, citas, avisos y su privacidad. Estas pruebas no constituyen una auditoría de seguridad ni ejecutan la matriz completa A01–A148.
+Hay 109 pruebas: diez de la maqueta anterior, 37 HTTP, cuatro de selección y recorrido de conversaciones, diez de programación, siete de citas y límites, ocho de recuentos horarios, ocho de borradores iniciales, catorce de borradores de respuesta y edición y once de edición y retirada. Cubren separación entre sesiones, permisos, audiencia, consentimiento, revocación, privacidad de guardados, persistencia, exportación, escrituras simultáneas, reacciones reversibles, migración de datos y lectura de historiales con 2.001 mensajes (no creación de nuevos hilos de esa profundidad), límite de tres niveles, citas, avisos y su privacidad. Estas pruebas no constituyen una auditoría de seguridad ni ejecutan la matriz completa A01–A148.
 
 Código bajo AGPL-3.0-or-later y documentación bajo CC-BY-SA-4.0, según el [mapa de licencias](../LICENCIAS.md). La [maqueta anterior](../prototipo/README.md) se conserva como antecedente descartable.
 
@@ -102,7 +102,7 @@ Escribe y pulsa Guardar borrador. La acción envía el texto al servidor local, 
 
 En dos pestañas, un conflicto no sobrescribe: conserva el texto y ofrece Guardar como copia. Si pierdes permiso para publicar, puedes seguir guardando el pendiente en el mismo destino, pero no publicarlo ni cambiarlo automáticamente a público. Al publicar o programar, el servidor controla versión y marca el borrador como utilizado junto con el resultado. Las versiones utilizadas quedan consultables como referencia y la exportación incluye solo las propias.
 
-Por ahora se guardan publicaciones iniciales de texto, no respuestas ni la selección tentativa de fecha. Programar confirma fecha y hora por separado. Las ediciones sin guardar se pierden al recargar. Hay papelera recuperable y restauración; el borrado definitivo y el historial completo de versiones siguen pendientes.
+Se guardan publicaciones iniciales, respuestas y ediciones de texto mediante sus botones explícitos. Retomar desde Borradores conserva tipo, destino y versión de origen. Si el original cambió, hay que revisarlo y confirmar He revisado la versión actual antes de enviar o aplicar. No se guarda la selección tentativa de fecha; Programar confirma fecha y hora por separado y solo admite publicaciones iniciales. El texto que nunca se guardó puede perderse al recargar. Hay papelera recuperable y restauración; el borrado definitivo y el historial completo de versiones siguen pendientes.
 
 Mover a papelera conserva el borrador y permite restaurarlo. La papelera se abre desde Borradores; no se vacía automáticamente. Si se aparta una referencia ya publicada o programada, su publicación o programación sigue existiendo: esta acción solo organiza los borradores. Restaurar conserva su estado anterior y no repite el envío.
 
@@ -113,3 +113,10 @@ Editar publicación abre el texto propio y conserva destino, audiencia y referen
 Retirar publicación abre una explicación antes de Confirmar retirada del texto. Vacía el cuerpo en el estado activo y deja un marcador; no hay restauración del texto aquí. No elimina respuestas ajenas, citas independientes ni respaldos o copias externas. Las citas dejan de mostrar el cuerpo retirado, y una programación que lo necesite se bloquea. Los borradores privados independientes no se purgan automáticamente.
 
 Desde Mi cuenta puedes retirar texto propio de una comunidad a la que ya no tienes acceso, sin recuperar contenido ajeno. El borrado completo con política de copias y la moderación por terceros siguen fuera de esta implementación. Las ediciones locales no guardadas pueden copiarse ante conflictos, pero no sobreviven a recargar.
+
+
+### Respuestas y ediciones recuperables
+
+En Responder aparece Guardar borrador de respuesta; en Editar publicación, Guardar borrador de edición. Recupera ambos desde Borradores → Retomar borrador. La pantalla conserva el destino y permite guardar, copiar, enviar la respuesta o aplicar la edición según los permisos y la versión. He revisado la versión actual actualiza expresamente la referencia, sin publicar. El rescate propio de Mi cuenta también puede guardarse como borrador de edición. No hay guardado automático ni programación de respuestas o ediciones.
+
+El esquema de datos pasa de 7 a 8 y la exportación de simulación a `spartakos-local-simulation-v7`. La migración conserva los borradores previos como publicaciones iniciales; no usar una versión anterior del servidor sobre datos ya migrados. Las pruebas de migración y reinicio se realizan con directorios temporales separados.

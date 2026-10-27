@@ -40,7 +40,7 @@ test('programar traslada una vez a pendientes; un error mantiene el borrador',()
 });
 test('migrar preserva datos y guardar rechaza citas privadas fuera de su comunidad',()=>{
  const old=initialData();old.schema=5;delete old.drafts;delete old.nextDraftId;
- const data=migrateData(old);assert.equal(data.schema,7);assert.deepEqual(data.posts,old.posts);assert.deepEqual(data.drafts,[]);
+ const data=migrateData(old);assert.equal(data.schema,8);assert.deepEqual(data.posts,old.posts);assert.deepEqual(data.drafts,[]);
  assert.throws(()=>command(data,'bruno',{...input,community:null,audience:'public'}),{status:403});
  assert.throws(()=>command(data,'bruno',{...input,text:' '}),{status:400});
  const saved=save();assert.deepEqual(migrateData(saved).drafts,saved.drafts);

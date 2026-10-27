@@ -2,7 +2,7 @@
 title: Spartakos — Notas de revisión del prototipo
 lang: es-ES
 license: CC-BY-SA-4.0
-date: 2026-10-24
+date: 2026-10-27
 status: N01–N10 y N12 implementadas; N11 en estudio; validación de producto pendiente
 ---
 
@@ -74,7 +74,7 @@ Inicio general y comunidades privadas muestran una indicación fija. Solo una co
 
 ## N10. Borradores recuperables y guardado explícito
 
-**Criterio de implementación:** cerrar la pérdida de texto al recargar mediante Guardar borrador, sin enviar el editor automáticamente al servidor. **Estado:** implementado para publicaciones iniciales con texto y cita. Borradores es privado por cuenta, conserva contexto y permite recuperación, actualización con versión, copia ante conflictos y papelera recuperable. Publicar o programar consume una sola vez el pendiente y revalida permisos. Se mantienen como limitaciones explícitas las respuestas no recuperables y las ediciones sin guardar.
+**Criterio de implementación:** cerrar la pérdida de texto al recargar mediante Guardar borrador, sin enviar el editor automáticamente al servidor. **Estado:** implementado para publicaciones iniciales con texto y cita, respuestas y ediciones guardadas explícitamente. Borradores es privado por cuenta, conserva contexto y permite recuperación, actualización con versión, copia ante conflictos y papelera recuperable. Publicar o programar consume una sola vez el pendiente y revalida permisos. Respuestas y ediciones conservan su destino y versión de origen; retomar no publica. Una referencia obsoleta requiere revisión expresa. Cualquier texto que nunca se guardó sigue expuesto a pérdida al recargar.
 
 ## N11. Estadísticas útiles para personas, comunidades y sistema
 

@@ -195,7 +195,7 @@ test('los datos de la primera versión migran sin perder publicaciones ni guarda
   assert.equal(state.revision,7);assert.equal(state.posts.length,2);assert.deepEqual(state.saved,['p1']);
   assert(state.posts.every(p=>p.likedByMe===false&&!Object.hasOwn(p,'likes')));
   const persisted=JSON.parse(await readFile(path.join(f.directory,'estado.json'),'utf8'));
-  assert.equal(persisted.schema,7);assert.deepEqual(persisted.posts,legacy.posts);
+  assert.equal(persisted.schema,8);assert.deepEqual(persisted.posts,legacy.posts);
 });
 test('las reacciones persisten y la exportación solo atribuye las propias',async t=>{
   const f=await fixture(t);
@@ -206,7 +206,7 @@ test('las reacciones persisten y la exportación solo atribuye las propias',asyn
   assert.equal(state.posts.find(p=>p.id==='p2').likedByMe,true);
   const exported=(await f.request('/api/export',{token})).data;
   assert.deepEqual(exported.liked,['p2']);assert.deepEqual(exported.saved,[]);
-  assert.equal(exported.format,'spartakos-local-simulation-v6');
+  assert.equal(exported.format,'spartakos-local-simulation-v7');
 });
 test('abrir la comunidad no publica las reacciones de su historial restringido',async t=>{
   const f=await fixture(t);
@@ -372,4 +372,40 @@ test('bloqueo programado persiste y recuperar permisos exige una nueva acción e
  await f.restart();const token=await f.login('bruno');
  const state=(await f.request('/api/state',{token})).data;
  assert.equal(state.posts.filter(p=>p.text===text).length,1);assert.equal(state.scheduled[0].status,'published');assert.equal(state.posts.find(p=>p.text===text).audience,'members');
+});
+test('borrador de respuesta persiste privado y publica una sola vez tras reiniciar',async t=>{
+ const f=await fixture(t);const text='Respuesta privada recuperable';
+ const saved=await f.cmd('bruno',{type:'save-draft',kind:'reply',parent:'p2',targetVersion:1,text});assert.equal(saved.status,200);assert.equal(saved.data.state.posts.length,2);
+ for(const actor of ['alicia','carla','diego'])assert(!JSON.stringify((await f.request('/api/state',{token:f.tokens[actor]})).data).includes(text));
+ await f.restart();const token=await f.login('bruno');
+ const state=(await f.request('/api/state',{token})).data;assert.equal(state.drafts[0].kind,'reply');assert.equal(state.drafts[0].parent,'p2');assert.equal(state.drafts[0].targetVersion,1);assert.equal(state.drafts[0].text,text);
+ const exported=(await f.request('/api/export',{token})).data;assert.equal(exported.drafts[0].audience,'members');
+ const body={type:'publish',parent:'p2',text,draftId:'d1',draftVersion:1};
+ const sent=await f.request('/api/commands',{method:'POST',token,body});assert.equal(sent.status,200);assert.equal(sent.data.state.drafts[0].status,'published');
+ assert.equal((await f.request('/api/commands',{method:'POST',token,body})).status,409);
+ await f.restart();const again=await f.login('bruno');const after=(await f.request('/api/state',{token:again})).data;
+ assert.equal(after.posts.filter(p=>p.text===text).length,1);assert.equal(after.posts.find(p=>p.text===text).parentVersion,1);
+});
+test('edición pendiente recupera texto y exige revisar el original nuevo antes de aplicarlo',async t=>{
+ const f=await fixture(t);
+ assert.equal((await f.cmd('bruno',{type:'save-draft',kind:'edit',editPost:'p1',targetVersion:1,text:'Edición recuperada'})).status,200);
+ await f.restart();f.tokens.bruno=await f.login('bruno');
+ assert.equal((await f.cmd('bruno',{type:'edit-post',post:'p1',version:1,text:'Cambio de otra pestaña'})).status,200);
+ const apply={type:'edit-post',post:'p1',version:1,text:'Edición recuperada',draftId:'d1',draftVersion:1};
+ assert.equal((await f.cmd('bruno',apply)).status,409);
+ let state=(await f.request('/api/state',{token:f.tokens.bruno})).data;assert.equal(state.drafts[0].text,'Edición recuperada');assert.equal(state.drafts[0].status,'draft');
+ assert.equal((await f.cmd('bruno',{type:'save-draft',kind:'edit',id:'d1',version:1,editPost:'p1',text:'Edición revisada',reviewedVersion:2})).status,200);
+ assert.equal((await f.cmd('bruno',{...apply,version:2,draftVersion:2,text:'Edición revisada'})).status,200);
+ await f.restart();const token=await f.login('bruno');state=(await f.request('/api/state',{token})).data;
+ assert.equal(state.posts[0].text,'Edición revisada');assert.equal(state.posts[0].version,3);assert.equal(state.drafts[0].status,'published');
+});
+test('borradores contextuales conservan texto tras baja sin exponer historial o permitir el envío',async t=>{
+ const f=await fixture(t);await f.cmd('bruno',{type:'save-draft',kind:'reply',parent:'p2',targetVersion:1,text:'Privado antes de la baja'});
+ await f.cmd('alicia',{type:'remove',community:'cuaderno',member:'bruno'});
+ await f.restart();const token=await f.login('bruno');
+ const body={type:'save-draft',kind:'reply',id:'d1',version:1,parent:'p2',text:'Texto privado tras la baja'};
+ assert.equal((await f.request('/api/commands',{method:'POST',token,body})).status,200);
+ const state=(await f.request('/api/state',{token})).data;assert.equal(state.drafts[0].text,body.text);assert(!state.posts.some(p=>p.id==='p2'));assert(!JSON.stringify(state).includes('Este cuaderno es privado.'));
+ assert.equal((await f.request('/api/commands',{method:'POST',token,body:{type:'publish',parent:'p2',text:body.text,draftId:'d1',draftVersion:2}})).status,404);
+ const other=await f.login('alicia');assert(!(await f.request('/api/export',{token:other})).data.drafts.length);
 });

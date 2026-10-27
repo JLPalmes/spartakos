@@ -2,7 +2,7 @@
 title: Spartakos — Revisión de continuidad para el lunes 26 de octubre
 lang: es-ES
 license: CC-BY-SA-4.0
-date: 2026-10-26
+date: 2026-10-27
 status: Registro de trabajo en curso; no aprobación ni versión de producción
 ---
 
@@ -13,7 +13,7 @@ La revisión prevista es el lunes 26 de octubre de 2026. Este registro reúne re
 ## Estado vigente antes de la revisión
 
 - Funcionalidad disponible: borradores privados con papelera, edición con versión, retirada del cuerpo, citas y tres niveles, programación, Me gusta con cortes horarios y rescate local al perder permisos o membresía.
-- Validación vigente: 92 pruebas automáticas superadas y recorridos sintéticos registrados; 49 documentos verificados. Los recuentos menores de los bloques anteriores son resultados históricos.
+- Validación vigente: 109 pruebas automáticas superadas y recorridos sintéticos registrados; 49 documentos verificados. Los recuentos menores de los bloques anteriores son resultados históricos.
 - Estadísticas: catálogo propuesto, sin aprobar ni implementar. La identidad distribuida, migración real y operación con proveedores siguen fuera del simulador.
 - Preparación: seguir la [guía de revisión](GUIA-REVISION-PROTOTIPO.md) con un escenario separado. Antes de recargar un cliente abierto para cargar la versión actual, copiar el texto local que no se haya guardado.
 - Rama de #2 sin integrar en main. No hay despliegue público ni nueva captación. Los datos del laboratorio del usuario se mantienen separados de los ensayos.
@@ -117,3 +117,12 @@ Inspeccionar rama, cambios locales y propuesta de revisión antes de continuar. 
 Reanudadas las comprobaciones por indicación del usuario, sin exigirle ejecutar ensayos funcionales automatizables. Al comenzar, árbol limpio y rama sincronizada tras fetch. Los ajustes documentales anteriores ya figuran en el remoto; su condición pendiente en los bloques históricos queda superada. El ajuste del cursor al final fue confirmado por el usuario y publicado en el commit `93aae8a`.
 
 La nueva prueba integrada de programación verifica bloqueo sin cliente, persistencia tras reinicio, rechazo sin permisos, ausencia de reactivación al recuperarlos y publicación única solo por acción explícita. Resultado global: **92 pruebas superadas**, 34 de ellas HTTP. No cambia el comportamiento del producto ni se accede a datos del usuario. La nueva prueba y el recuento documental se reúnen en esta unidad para su incorporación autorizada a la rama de la propuesta #2. La revisión estadística y las limitaciones estructurales siguen pendientes. No se integra en main.
+
+
+## Borradores de respuesta y edición — 27 de octubre
+
+Implementados los guardados explícitos privados de respuesta y edición, recuperación en Borradores, conservación de contexto/versión, copias ante conflictos y revisión expresa cuando cambia el original. Enviar o aplicar consume el pendiente de manera atómica con el resultado y revalida permisos. La migración a esquema 8 conserva los borradores anteriores. Programación y guardado automático de estos tipos no se añaden.
+
+**109 pruebas superadas**, incluidas tres HTTP nuevas con reinicios reales y catorce de dominio. No se usa ni modifica el escenario de prueba del usuario o su almacenamiento anterior. La comprobación visual de la ampliación queda pendiente porque no hay herramienta de control del navegador disponible; la sintaxis y el comportamiento del servicio sí se han verificado. La nueva unidad se incorpora a la rama de la propuesta #2 con autorización para guardar y publicar. La comprobación visual permanece pendiente; no integrar en main.
+
+Siguiente comprobación: recorrido visual de Guardar, Retomar, copia y revisión de versión cuando vuelva a estar disponible el control del navegador. Después revisar las decisiones de producto pendientes, sin pedir al usuario ejecutar las pruebas de permisos o persistencia que ya están automatizadas.

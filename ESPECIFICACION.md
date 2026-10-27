@@ -2,8 +2,8 @@
 title: Spartakos — Especificación integral
 lang: es-ES
 license: CC-BY-SA-4.0
-version: 0.28
-date: 2026-10-24
+version: 0.29
+date: 2026-10-27
 status: Diseño funcional y simulador local multicuenta; sin red distribuida ni laboratorio estructural
 ---
 
@@ -601,3 +601,5 @@ La [resolución propuesta de Q01–Q29](RESOLUCION-DE-PENDIENTES.md) concreta re
 - [Prototipo de experiencia](prototipo/README.md).
 - [Resultados de comprobaciones locales](RESULTADOS-DEL-PROTOTIPO.md).
 - [Preparación de apertura y licencias](PREPARACION-DE-APERTURA.md).
+
+La ampliación local de borradores incorpora respuestas y ediciones guardadas explícitamente, con destino fijo, referencia de versión y revisión expresa de originales modificados, conforme a la sección 14 de [Publicaciones y conversaciones](FUNCIONAL-03-PUBLICACIONES-Y-CONVERSACIONES.md). No implica programación de esos tipos ni guardado automático.

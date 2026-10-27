@@ -59,7 +59,7 @@ test('cita programada se bloquea si el original fue retirado sin publicar ni avi
 });
 test('migrar versiones previas conserva cuerpos y referencias sin inventar historial',()=>{
  const old=initialData();old.schema=6;delete old.likeVersions;delete old.posts[0].version;old.likes.p1=['carla'];
- const data=migrateData(old);assert.equal(data.schema,7);assert.equal(data.posts[0].text,old.posts[0].text);assert.equal(data.posts[0].version,1);assert.equal(data.likeVersions.p1.carla,1);assert.equal(data.posts[0].history,undefined);
+ const data=migrateData(old);assert.equal(data.schema,8);assert.equal(data.posts[0].text,old.posts[0].text);assert.equal(data.posts[0].version,1);assert.equal(data.likeVersions.p1.carla,1);assert.equal(data.posts[0].history,undefined);
 });
 test('retirar una cita suprime su aviso, sin retirar el original citado',()=>{
  let data=command(initialData(),'alicia',{type:'publish',quote:'p1',audience:'public',text:'Mi cita'}).data;

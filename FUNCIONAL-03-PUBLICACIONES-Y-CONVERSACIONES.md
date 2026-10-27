@@ -2,8 +2,8 @@
 title: Spartakos — Publicaciones, audiencias y conversaciones
 lang: es-ES
 license: CC-BY-SA-4.0
-version: 0.8
-date: 2026-10-24
+version: 0.9
+date: 2026-10-27
 status: Diseño funcional propuesto; decisiones pendientes identificadas
 ---
 
@@ -159,7 +159,7 @@ El historial previo con más de tres niveles se conserva sin eliminar, aplanar n
 
 ## 12. Borradores recuperables
 
-Guardar borrador es una acción explícita distinta de Guardar una publicación ajena. No se envía texto al servidor mientras se escribe. El editor distingue cambios sin guardar y versión guardada, y Borradores permite retomar una publicación inicial después de recargar, cerrar el cliente o reiniciar el servidor. Se conserva texto, espacio, audiencia y referencia de cita. El contenido pendiente solo se entrega a su autor en la aplicación; el operador local puede leer el almacenamiento, que no tiene cifrado de extremo a extremo.
+Guardar borrador es una acción explícita distinta de Guardar una publicación ajena. No se envía texto al servidor mientras se escribe. El editor distingue cambios sin guardar y versión guardada, y Borradores permite retomar publicaciones iniciales, respuestas y ediciones guardadas después de recargar, cerrar el cliente o reiniciar el servidor. Se conserva texto, espacio, audiencia y referencia de cita. El contenido pendiente solo se entrega a su autor en la aplicación; el operador local puede leer el almacenamiento, que no tiene cifrado de extremo a extremo.
 
 Retomar abre el editor en el espacio original. Si se perdieron permisos o acceso, el texto sigue disponible para su autor y puede continuar guardándose, pero publicar o programar queda bloqueado. No se convierte en publicación general ni cambia automáticamente a público. Una cita privada sigue restringida incluso si la comunidad se abre. La interfaz no revela el contenido citado si ya no hay acceso; conserva su referencia para que el autor decida.
 
@@ -167,7 +167,7 @@ Los borradores tienen versión. Una pestaña con una versión obsoleta no puede 
 
 Publicar o programar desde un borrador comprueba versión, propiedad, estado y permisos en el servidor. La transición se guarda junto con el resultado: el borrador pasa a Ya publicado o Transferido a Programadas y un reintento no lo ejecuta otra vez. La versión utilizada queda consultable como referencia. Cancelar una programación se gestiona en Programadas; no reactiva silenciosamente el borrador original. La exportación incluye solo los borradores propios.
 
-Alcance del simulador: publicaciones iniciales de texto, con o sin cita. No se guarda la selección tentativa de fecha al guardar un borrador; la fecha se confirma en Programar. Las respuestas en curso siguen en memoria de la pestaña. Las ediciones no guardadas se pierden al recargar y no se anuncia recuperación de texto anterior a esta función. Quedan pendientes recuperación de respuestas, borrado definitivo con política de retención, historial de versiones completo y pruebas con participantes. El guardado no sustituye copias independientes ni un servicio de alta disponibilidad.
+Alcance del simulador: publicaciones iniciales, respuestas y ediciones de texto guardadas explícitamente. No se guarda la selección tentativa de fecha; la fecha se confirma en Programar y solo se programan publicaciones iniciales. Cualquier texto que no se haya guardado sigue en memoria de la pestaña y puede perderse al recargar o volver a entrar. Quedan pendientes borrado definitivo con política de retención, historial de versiones completo y pruebas con participantes. El guardado no sustituye copias independientes ni un servicio de alta disponibilidad.
 
 ### 12.1 Papelera recuperable de borradores
 
@@ -198,3 +198,18 @@ Perder acceso a una comunidad impide editar allí, pero no impide al autor retir
 Retirar del objeto activo no garantiza eliminar copias externas, exportaciones anteriores, respaldos o textos que otras personas hayan copiado por su cuenta. Los borradores privados propios e independientes tampoco se purgan automáticamente por retirar una publicación. Se distingue esta función de una política completa de borrado y retención, aún pendiente antes de producción.
 
 Si otra pestaña modifica la versión mientras se edita, se conserva el texto local y se rechaza guardar sobre la versión nueva. Si otra pestaña retira la publicación o se pierde el acceso, la edición local puede copiarse desde el marcador propio o Mi cuenta. Sigue siendo memoria del cliente: recargar puede perderla; no se anuncia recuperación de ediciones que nunca se guardaron como borrador. Las copias de texto hechas por el propio autor permanecen bajo su decisión, sin volver a publicarse por sí mismas.
+
+
+## 14. Borradores recuperables de respuestas y ediciones
+
+Cada borrador declara su tipo. Una respuesta conserva mensaje padre, espacio, audiencia y versión de origen; una edición conserva publicación propia y versión pública de partida. No guarda una copia del cuerpo ajeno como contexto. Los borradores iniciales anteriores migran como publicaciones iniciales, sin inventar referencias ni modificar texto o estado.
+
+Guardar borrador de respuesta o Guardar borrador de edición envía únicamente una intención explícita. Borradores permite retomar el texto, actualizarlo, guardar como copia y consultar el original actual solo si sigue autorizado. El editor recuperado mantiene fijo el destino: no convierte una respuesta en publicación independiente ni una edición en respuesta. La programación de estos tipos queda fuera del alcance. La papelera conserva su comportamiento reversible.
+
+Si el original ha cambiado, Enviar respuesta o Aplicar edición no puede ejecutarse sobre la referencia antigua. El original actual se muestra con su versión; He revisado la versión actual guarda expresamente la nueva referencia sin enviar ni aplicar nada. Una carrera posterior vuelve a producir conflicto. La revisión no restaura permisos ni amplía audiencia. No hay sobrescritura automática ni elección implícita de la versión nueva.
+
+Al publicar una respuesta o aplicar una edición desde el borrador se comprueban propietario, versión del borrador, estado pendiente, versión del original y permisos actuales. Resultado y consumo del borrador se persisten juntos. Un reintento no duplica la respuesta ni aplica otra vez la edición. Si la edición es idéntica al texto público vigente, puede finalizar el pendiente sin incrementar la versión pública.
+
+Perder membresía o permisos permite seguir guardando un borrador propio ya conservado, pero no consultar texto ajeno, enviar ni revisar un original inaccesible. El rescate local de una edición propia puede guardarse también desde Mi cuenta, incluso tras la retirada del cuerpo; ese borrador no permite restaurar la publicación. Los guardados permanecen privados para su cuenta y legibles para el operador local. Retirar un cuerpo no purga borradores privados independientes.
+
+Los conflictos entre pestañas conservan las variantes locales y permiten Guardar como copia. Un borrador usado o movido a papelera desde otra pestaña no vuelve a ser pendiente por retomarlo. Restaurar una referencia de edición aplicada tampoco repite el cambio. No se recupera texto que nunca se guardó.

@@ -12,7 +12,7 @@ export const accounts = [
   {id:'diego', name:'Diego', description:'No pertenece a la comunidad privada'},
 ];
 export function initialData(now=Date.now()) {
-  return {schema:7,likeVersions:{},drafts:[],nextDraftId:1,likeBatch:{baselineAt:new Date(now).toISOString(),updatedAt:null,generatedAt:null,counts:{},changes:[]},seenQuotes:{}, revision:0, nextId:3,likes:{},scheduled:[],nextScheduleId:1,
+  return {schema:8,likeVersions:{},drafts:[],nextDraftId:1,likeBatch:{baselineAt:new Date(now).toISOString(),updatedAt:null,generatedAt:null,counts:{},changes:[]},seenQuotes:{}, revision:0, nextId:3,likes:{},scheduled:[],nextScheduleId:1,
     communities:[{id:'cuaderno',name:'Cuaderno compartido',visibility:'private',
       members:{alicia:'admin',bruno:'contributor',carla:'reader'},
       protected:['alicia','bruno','carla'],proposal:null,proposalVersion:0}],
@@ -22,7 +22,7 @@ export function initialData(now=Date.now()) {
     ],saved:Object.fromEntries(accounts.map(a=>[a.id,[]]))};
 }
 export function migrateData(original,now=Date.now()) {
-  if(![1,2,3,4,5,6,7].includes(original.schema))throw Error('Versión de datos no compatible.');
+  if(![1,2,3,4,5,6,7,8].includes(original.schema))throw Error('Versión de datos no compatible.');
   const data=structuredClone(original);
   if(data.schema===1){data.schema=2;data.likes={};}
   if(data.schema===2){data.schema=3;data.scheduled=[];data.nextScheduleId=1;}
@@ -36,6 +36,7 @@ export function migrateData(original,now=Date.now()) {
     for(const [id,actors] of Object.entries(data.likes))data.likeVersions[id]=Object.fromEntries(actors.map(actor=>[actor,data.posts.find(p=>p.id===id)?.version??1]));
     for(const s of data.scheduled)if(s.publication.quote)s.publication.quoteVersion??=data.posts.find(p=>p.id===s.publication.quote)?.version??1;
   }
+  if(data.schema===7){data.schema=8;for(const d of data.drafts)Object.assign(d,{kind:'publication',parent:null,editPost:null,targetVersion:null});}
   if(!data.likeVersions||typeof data.likeVersions!=='object')throw Error('Registro de versiones de reacciones no válido.');
   if(!Array.isArray(data.drafts)||!Number.isSafeInteger(data.nextDraftId))throw Error('Registro de borradores no válido.');
   if(!data.likeBatch||!Array.isArray(data.likeBatch.changes))throw Error('Registro de recuentos no válido.');
@@ -82,11 +83,18 @@ export function command(original, actor, input, now=Date.now()) {
   const data=structuredClone(original);
   let message='Cambios guardados.';
   let sourceDraft=null;
-  if(['publish','schedule'].includes(input.type)&&input.draftId){
+  if(['publish','schedule','edit-post'].includes(input.type)&&input.draftId){
     sourceDraft=data.drafts.find(d=>d.id===input.draftId&&d.author===actor);
     if(!sourceDraft)fail(404,'Borrador no disponible.');
     if(sourceDraft.status!=='draft'||sourceDraft.version!==input.draftVersion)fail(409,'El borrador ha cambiado o ya se ha utilizado. Se conserva tu texto; revisa la versión guardada.');
-    if((input.community??null)!==sourceDraft.community||input.parent)fail(400,'El borrador debe conservar su espacio de publicación.');
+    if(sourceDraft.kind==='reply'||sourceDraft.kind==='edit'){
+      const expected=sourceDraft.kind==='reply'?'publish':'edit-post';
+      if(input.type!==expected||(sourceDraft.kind==='reply'?input.parent!==sourceDraft.parent:input.post!==sourceDraft.editPost))fail(400,'Conserva el tipo y el destino del borrador.');
+      if(input.quote||(Object.hasOwn(input,'community')&&input.community!==sourceDraft.community)||(Object.hasOwn(input,'audience')&&input.audience!==sourceDraft.audience))fail(400,'El borrador no puede cambiar de contexto ni audiencia.');
+      const target=data.posts.find(p=>p.id===(sourceDraft.parent??sourceDraft.editPost));
+      if(!target||!canRead(data,actor,target))fail(404,'Publicación no disponible.');
+      if(target.version!==sourceDraft.targetVersion||(sourceDraft.kind==='edit'&&input.version!==sourceDraft.targetVersion))fail(409,'La publicación de origen ha cambiado. Revisa la versión actual antes de continuar; tu borrador se conserva.');
+    }else if(input.type==='edit-post'||(input.community??null)!==sourceDraft.community||input.parent)fail(400,'El borrador debe conservar su espacio y tipo de publicación.');
   }
   if(['edit-post','withdraw-post'].includes(input.type)){
     const post=data.posts.find(p=>p.id===input.post);
@@ -100,8 +108,8 @@ export function command(original, actor, input, now=Date.now()) {
       if(post.community){const c=findCommunity(data,actor,post.community);if(!(post.parent?['admin','contributor','commenter']:['admin','contributor']).includes(c.members[actor]))fail(403,'Ya no tienes permiso para editar en este espacio.');}
       const text=typeof input.text==='string'?input.text.trim():'';
       if(!text||text.length>3000)fail(400,'Escribe entre 1 y 3000 caracteres.');
-      if(text===post.text)return {data:original,message:'No hay cambios de texto que guardar.'};
-      post.text=text;post.updatedAt=new Date(now).toISOString();message='Publicación editada. Las respuestas y aprobaciones anteriores conservan su contexto de versión.';
+      if(text===post.text&&!sourceDraft)return {data:original,message:'No hay cambios de texto que guardar.'};
+      if(text!==post.text){post.text=text;post.updatedAt=new Date(now).toISOString();post.version++;}message='Publicación editada. Las respuestas y aprobaciones anteriores conservan su contexto de versión.';
     }else{
       const current=data.likes[post.id]??[];
       if(current.length)data.likeBatch.changes.push({post:post.id,delta:-current.length,at:Math.max(now,Date.parse(data.likeBatch.updatedAt??data.likeBatch.baselineAt))});
@@ -109,7 +117,7 @@ export function command(original, actor, input, now=Date.now()) {
       post.text='';post.quote=null;delete post.quoteVersion;post.withdrawn=true;post.withdrawnAt=new Date(now).toISOString();
       message='Texto retirado de este servicio. Se conservan el marcador y las respuestas ajenas. No se garantiza borrar copias externas o respaldos.';
     }
-    post.version++;
+    if(input.type==='withdraw-post')post.version++;
   }else if(['trash-draft','restore-draft'].includes(input.type)){
     const draft=data.drafts.find(d=>d.id===input.id&&d.author===actor);
     if(!draft)fail(404,'Borrador no disponible.');
@@ -127,7 +135,6 @@ export function command(original, actor, input, now=Date.now()) {
   }else if(input.type==='save-draft'){
     const text=typeof input.text==='string'?input.text:'';
     if(!text.trim()||text.length>3000)fail(400,'Escribe entre 1 y 3000 caracteres para guardar el borrador.');
-    if(input.parent)fail(400,'Esta versión guarda borradores de publicaciones iniciales, no respuestas.');
     let draft=null,source=null;
     if(input.id||input.copyOf){
       source=data.drafts.find(d=>d.id===(input.id??input.copyOf)&&d.author===actor);
@@ -135,8 +142,32 @@ export function command(original, actor, input, now=Date.now()) {
       if(source.status==='trashed')fail(409,'Restaura el borrador antes de utilizarlo.');
       if(input.id&&source.status!=='draft')fail(409,'El borrador ya se ha utilizado.');
       if(input.id){draft=source;if(draft.version!==input.version)fail(409,'Hay otra versión guardada. Tu texto se conserva; puedes guardarlo como copia.');}
-      if((input.community??null)!==source.community)fail(400,'Conserva el espacio del borrador original.');
+      if((source.kind==='publication'||Object.hasOwn(input,'community'))&&(input.community??null)!==source.community)fail(400,'Conserva el espacio del borrador original.');
     }
+    const kind=input.kind??source?.kind??(input.parent?'reply':input.editPost?'edit':'publication');
+    if(!['publication','reply','edit'].includes(kind)||source&&kind!==source.kind)fail(400,'Tipo de borrador no válido.');
+    if(kind!=='publication'){
+      const parent=kind==='reply'?input.parent??source?.parent:null,editPost=kind==='edit'?input.editPost??source?.editPost:null;
+      if(input.quote||(kind==='reply'&&input.editPost)||(kind==='edit'&&input.parent)||source&&(parent!==source.parent||editPost!==source.editPost))fail(400,'Conserva las referencias del borrador.');
+      const target=data.posts.find(p=>p.id===(parent??editPost));
+      const retained=Boolean(source);
+      if(!target||(!retained&&!canRead(data,actor,target)&&!(kind==='edit'&&target.author===actor)))fail(404,'Publicación no disponible.');
+      if(kind==='edit'&&target.author!==actor)fail(403,'Solo puedes preparar ediciones de tus aportaciones.');
+      if(!retained&&kind==='reply'&&(target.withdrawn||replyDepth(data.posts,target.id)>=2))fail(409,'El destino ya no admite este borrador.');
+      const community=source?.community??target.community,audience=source?.audience??target.audience;
+      if((Object.hasOwn(input,'community')&&input.community!==community)||(Object.hasOwn(input,'audience')&&input.audience!==audience))fail(400,'Conserva el espacio y la audiencia de origen.');
+      let targetVersion=source?.targetVersion??input.targetVersion;
+      if(input.reviewedVersion!==undefined){
+        if(!canRead(data,actor,target)||target.withdrawn)fail(404,'Publicación no disponible para revisión.');
+        if(input.reviewedVersion!==target.version)fail(409,'La versión revisada ha cambiado otra vez.');
+        targetVersion=input.reviewedVersion;
+      }else if(source&&Object.hasOwn(input,'targetVersion')&&input.targetVersion!==source.targetVersion)fail(400,'Revisa explícitamente la versión actual antes de cambiar la referencia.');
+      if(!Number.isSafeInteger(targetVersion)||targetVersion<1||targetVersion>target.version)fail(400,'Indica una versión de origen válida.');
+      const values={kind,text,community,audience,parent,editPost,targetVersion,quote:null,destinationName:source?.destinationName??(community?data.communities.find(c=>c.id===community)?.name:'Inicio general')??'Comunidad no disponible',updatedAt:new Date(now).toISOString()};
+      if(draft){Object.assign(draft,values);draft.version++;}
+      else data.drafts.push({id:`d${data.nextDraftId++}`,author:actor,version:1,status:'draft',createdAt:new Date(now).toISOString(),...values});
+    }else{
+    if(input.parent||input.editPost)fail(400,'Una publicación inicial no puede convertirse en respuesta o edición.');
     const community=input.community??null,audience=input.audience;
     let destinationName='Inicio general';
     if(community){
@@ -154,9 +185,10 @@ export function command(original, actor, input, now=Date.now()) {
     }
     // Una cita conservada tampoco puede ampliar audiencia tras abrirse la comunidad.
     if(quote){const target=data.posts.find(p=>p.id===quote);if(target&&target.audience!=='public'&&(community!==target.community||audience!=='members'))fail(403,'La cita debe conservar su audiencia restringida.');}
-    const values={text,community,audience,quote,destinationName,updatedAt:new Date(now).toISOString()};
+    const values={kind:'publication',parent:null,editPost:null,targetVersion:null,text,community,audience,quote,destinationName,updatedAt:new Date(now).toISOString()};
     if(draft){Object.assign(draft,values);draft.version++;}
     else data.drafts.push({id:`d${data.nextDraftId++}`,author:actor,version:1,status:'draft',createdAt:new Date(now).toISOString(),...values});
+    }
     message='Borrador guardado en el servidor. Solo tú lo ves; no está publicado ni programado.';
   }else if(['schedule','edit-schedule','cancel-schedule','publish-schedule'].includes(input.type)) {
     let item;
@@ -278,10 +310,10 @@ export function command(original, actor, input, now=Date.now()) {
   } else fail(400,'Acción desconocida.');
   if(sourceDraft){
     const stored=data.drafts.find(d=>d.id===sourceDraft.id);
-    const publication=input.type==='publish'?data.posts.at(-1):data.scheduled.at(-1).publication;
+    const publication=input.type==='edit-post'?data.posts.find(p=>p.id===input.post):input.type==='publish'?data.posts.at(-1):data.scheduled.at(-1).publication;
     Object.assign(stored,{text:publication.text,audience:publication.audience,quote:publication.quote??null});
-    stored.status=input.type==='publish'?'published':'scheduled';stored.version++;stored.updatedAt=new Date(now).toISOString();
-    if(input.type==='publish')stored.postId=data.posts.at(-1).id;else stored.scheduleId=data.scheduled.at(-1).id;
+    stored.status=input.type==='schedule'?'scheduled':'published';stored.version++;stored.updatedAt=new Date(now).toISOString();
+    if(input.type==='schedule')stored.scheduleId=data.scheduled.at(-1).id;else{stored.postId=publication.id;stored.postVersion=publication.version;}
   }
   data.revision++;
   return {data,message};

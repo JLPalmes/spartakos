@@ -7,7 +7,7 @@ const storageKey=`spartakos-lab:${params.get('panel')??'principal'}`;
 const esc=text=>String(text).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let token=sessionStorage.getItem(storageKey),state=null,page='inicio',selectedCommunity=null,busy=false,connectionLost=false;
 let activeDraftId=null;
-const loadedDrafts=new Map(),postEdits=new Map();
+const loadedDrafts=new Map(),postEdits=new Map(),inlineDrafts=new Map(),replyContexts=new Map(),contextDrafts=new Map();
 const drafts=new Map(),replyDrafts=new Map(),expandedReplies=new Set(),scheduleDrafts=new Map();
 const localZone=Intl.DateTimeFormat().resolvedOptions().timeZone;
 const dateLabel=(value,zone=localZone)=>new Intl.DateTimeFormat('es-ES',{dateStyle:'medium',timeStyle:'long',timeZone:zone}).format(new Date(value));
@@ -29,7 +29,7 @@ async function enter(account){
     token=null;
     const result=await api('/api/sessions',{method:'POST',body:{account}});
     token=result.token;sessionStorage.setItem(storageKey,token);state=await api('/api/state');
-    drafts.clear();loadedDrafts.clear();postEdits.clear();activeDraftId=null;replyDrafts.clear();expandedReplies.clear();scheduleDrafts.clear();page='inicio';selectedCommunity=null;
+    drafts.clear();loadedDrafts.clear();postEdits.clear();inlineDrafts.clear();replyContexts.clear();contextDrafts.clear();activeDraftId=null;replyDrafts.clear();expandedReplies.clear();scheduleDrafts.clear();page='inicio';selectedCommunity=null;
     $('login').hidden=true;$('session').hidden=false;render();status('Sesión ficticia abierta.');
   }catch(error){status(error.message,true);}
 }
@@ -44,7 +44,8 @@ function mayReply(p){const c=state.communities.find(c=>c.id===p.community);retur
 function mayQuote(p){const c=state.communities.find(c=>c.id===p.community);return !p.withdrawn&&(p.audience==='public'||['admin','contributor'].includes(c?.role));}
 function mayEdit(p){const c=state.communities.find(c=>c.id===p.community);return !p.withdrawn&&p.author===state.user.id&&(!p.community||(p.parent?['admin','contributor','commenter']:['admin','contributor']).includes(c?.role));}
 function contextLabel(p){const c=state.communities.find(c=>c.id===p.community);return `${p.community?c?.name??'Comunidad':'General'} · ${p.audience==='public'?'Público':'Solo integrantes · Operador con acceso'}`;}
-function editRescue(id){const edit=postEdits.get(id);return edit?`<p class="notice">Conservas una edición local sin guardar. Puedes copiarla antes de salir; no restaura ni publica contenido y no recupera permisos.</p><label for="post-rescue-${id}">Edición local conservada</label><textarea id="post-rescue-${id}" data-local-rescue readonly>${esc(edit.text)}</textarea>`:'';}
+function inlineCopyButton(kind,id){return inlineDrafts.has(`${kind}:${id}`)?`<button type="button" data-copy-inline="${kind}" data-target="${id}">Guardar como copia</button>`:'';}
+function editRescue(id){const edit=postEdits.get(id);return edit?`<p class="notice">Conservas una edición local sin guardar. Puedes copiarla antes de salir; no restaura ni publica contenido y no recupera permisos.</p><label for="post-rescue-${id}">Edición local conservada</label><textarea id="post-rescue-${id}" data-local-rescue readonly>${esc(edit.text)}</textarea><button data-save-inline="edit" data-target="${id}">Guardar borrador de edición</button>${inlineCopyButton('edit',id)}`:'';}
 function postMarkup(p,{depth=0,savedView=false}={}){
   const saved=state.saved.includes(p.id),liked=p.likedByMe===true;
   const parent=state.posts.find(q=>q.id===p.parent);
@@ -65,8 +66,8 @@ function postMarkup(p,{depth=0,savedView=false}={}){
     </div>
     <p class="hint approval-count">${p.likeCount===null||p.likeCount===undefined?'Recuento pendiente del próximo corte horario.':`${p.likeCount} ${p.likeCount===1?'aprobación':'aprobaciones'} · <time datetime="${esc(p.likesUpdatedAt)}" title="${esc(`Corte: ${dateLabel(p.likesUpdatedAt)}. Calculado: ${dateLabel(p.likesGeneratedAt)} (${localZone}).`)}">Recuento a las ${esc(new Intl.DateTimeFormat('es-ES',{hour:'2-digit',minute:'2-digit',timeZone:localZone}).format(new Date(p.likesUpdatedAt)))} · ${esc(new Intl.DateTimeFormat('es-ES',{day:'2-digit',month:'2-digit',timeZone:localZone}).format(new Date(p.likesUpdatedAt)))}</time>`}</p>
     ${replyDepth(state.posts,p.id)>=2?'<p class="hint">Último nivel de respuestas. Para continuar, inicia una publicación con cita.</p>':''}
-    ${edit&&!mayEdit(p)?editRescue(p.id):''}${edit&&mayEdit(p)?`<form data-post-editor="${p.id}"><label for="post-edit-${p.id}">Editar texto propio · Se conserva destino y audiencia</label><textarea id="post-edit-${p.id}" required maxlength="3000">${esc(edit.text)}</textarea>${edit.version!==p.version?'<p class="notice">Hay una versión más reciente. Conserva tu texto antes de cancelar o revisa la publicación vigente.</p>':''}<button id="save-post-edit-${p.id}" type="submit">Guardar edición</button><button id="cancel-post-edit-${p.id}" type="button" data-cancel-post-edit="${p.id}">Cancelar edición</button></form>`:''}
-    ${mayReply(p)?`<form class="reply-form" data-parent="${p.id}" ${expandedReplies.has(p.id)?'':'hidden'}><label for="reply-${p.id}">Responder a ${esc(p.authorName)} · Misma audiencia</label><textarea id="reply-${p.id}" maxlength="3000" required>${esc(replyDrafts.get(p.id)??'')}</textarea><button type="submit">Enviar respuesta</button></form>`:''}
+    ${edit&&!mayEdit(p)?editRescue(p.id):''}${edit&&mayEdit(p)?`<form data-post-editor="${p.id}"><label for="post-edit-${p.id}">Editar texto propio · Se conserva destino y audiencia</label><textarea id="post-edit-${p.id}" required maxlength="3000">${esc(edit.text)}</textarea>${edit.version!==p.version?'<p class="notice">Hay una versión más reciente. Conserva tu texto antes de cancelar o revisa la publicación vigente.</p>':''}<button id="save-post-edit-${p.id}" type="submit">Guardar edición</button><button type="button" data-save-inline="edit" data-target="${p.id}">Guardar borrador de edición</button>${inlineCopyButton('edit',p.id)}<button id="cancel-post-edit-${p.id}" type="button" data-cancel-post-edit="${p.id}">Cancelar edición</button></form>`:''}
+    ${mayReply(p)?`<form class="reply-form" data-parent="${p.id}" ${expandedReplies.has(p.id)?'':'hidden'}><label for="reply-${p.id}">Responder a ${esc(p.authorName)} · Misma audiencia</label><textarea id="reply-${p.id}" maxlength="3000" required>${esc(replyDrafts.get(p.id)??'')}</textarea><button type="submit">Enviar respuesta</button><button type="button" data-save-inline="reply" data-target="${p.id}">Guardar borrador de respuesta</button>${inlineCopyButton('reply',p.id)}</form>`:''}
   </article>`;
 }
 function quoteMarkup(id,version=null){const q=state.posts.find(p=>p.id===id);return !q?'<p>Cita no disponible.</p>':q.withdrawn?'<blockquote><p>La publicación citada fue retirada. Su texto ya no se muestra.</p></blockquote>':`<blockquote><p>Cita a <button data-context="${q.id}">${esc(q.authorName)}</button>${version&&version!==q.version?' · Cita vinculada a otra versión; se muestra el texto actual del original.':''}</p><p>${esc(q.text.slice(0,300))}${q.text.length>300?'…':''}</p></blockquote>`;}
@@ -126,6 +127,29 @@ function composer(){
   $('audience-help').textContent=!destinationAvailable()?`Destino conservado: ${draft.destinationName??c?.name??'comunidad'} · ${draft.audience.endsWith(':members')?'Solo integrantes':'Público'}. Ya no puedes publicar aquí; el borrador no se cambia de destino.`:draft.audience.endsWith(':members')?'Solo integrantes. El operador puede leer el contenido; no hay cifrado de extremo a extremo.':inCommunity?'Publicación pública dentro de esta comunidad. No aparecerá en Inicio general.':'Publicación pública en el espacio general, fuera de las comunidades.';
   updatePublishDisabled();
 }
+function contextualEditor(stored){
+  const d=contextDrafts.get(stored.id);if(!d)return '';
+  const target=state.posts.find(p=>p.id===(d.parent??d.editPost));
+  const conflict=d.version!==stored.version||stored.status!=='draft';
+  const changed=target&&target.version!==d.targetVersion;
+  const allowed=stored.status==='draft'&&target&&!target.withdrawn&&!changed&&!conflict&&(d.kind==='reply'?mayReply(target):mayEdit(target));
+  return `<form data-context-draft="${stored.id}"><p>Destino fijo · ${d.kind==='reply'?'Respuesta':'Edición'} · Versión de origen ${d.targetVersion}</p>${target&&!target.withdrawn?`<p>Original actual · versión ${target.version}</p><blockquote>${esc(target.text)}</blockquote>`:'<p>El original no está disponible. Puedes conservar tu texto, pero no enviarlo desde aquí.</p>'}${conflict?'<p class="notice">Hay otra versión del borrador. Tu texto se conserva; puedes guardarlo como copia.</p>':''}${changed?'<p class="notice">El original ha cambiado. Revisa el texto actual antes de confirmar otra versión de origen.</p>':''}<label for="context-draft-${stored.id}">Texto del borrador</label><textarea id="context-draft-${stored.id}" required maxlength="3000">${esc(d.text)}</textarea><button type="submit">Guardar borrador</button><button type="button" data-copy-context="${stored.id}">Guardar como copia</button>${changed&&!target.withdrawn?`<button type="button" data-review-context="${stored.id}" data-target-version="${target.version}">He revisado la versión actual</button>`:''}<button type="button" data-apply-context="${stored.id}" ${allowed?'':'disabled'}>${d.kind==='reply'?'Enviar respuesta':'Aplicar edición'}</button><p class="hint">El envío requiere permisos y versión vigentes. Guardar no publica.</p></form>`;
+}
+async function saveContextDraft(id,{copy=false,reviewedVersion}={}){
+  const d=contextDrafts.get(id);if(!d)return;
+  if(await send({...d,type:'save-draft',...(copy?{id:undefined,copyOf:id}:{id,version:d.version}),...(reviewedVersion?{reviewedVersion}: {})})){
+    const saved=copy?state.drafts.at(-1):state.drafts.find(x=>x.id===id);
+    contextDrafts.set(saved.id,{...saved});if(copy)contextDrafts.delete(id);render();$(`context-draft-${saved.id}`)?.focus();
+  }
+}
+async function saveInlineDraft(kind,id,copy=false){
+  const key=`${kind}:${id}`,ref=inlineDrafts.get(key),p=state.posts.find(p=>p.id===id)??state.ownUnavailablePosts?.find(p=>p.id===id);
+  const text=kind==='edit'?postEdits.get(id)?.text:replyDrafts.get(id);
+  const targetVersion=ref?.targetVersion??(kind==='edit'?postEdits.get(id)?.version:replyContexts.get(id)??p?.version);
+  if(await send({type:'save-draft',kind,text,targetVersion,...(kind==='reply'?{parent:id}:{editPost:id}),...(ref?(copy?{copyOf:ref.id}:{id:ref.id,version:ref.version}):{})})){
+    const saved=ref&&!copy?state.drafts.find(d=>d.id===ref.id):state.drafts.at(-1);inlineDrafts.set(key,{...saved});render();
+  }
+}
 function render(){
   if(!state)return;
   const active=document.activeElement;
@@ -144,7 +168,7 @@ function render(){
   }else if(page==='borradores'){
     $('context').innerHTML='<h1>Borradores</h1><p>Guardados en el servidor y visibles solo para ti. Retomarlos no publica ni programa nada.</p>';
     const saved=state.drafts??[];
-    const cards=list=>list.slice().reverse().map(d=>`<article class="post"><p>${esc(d.destinationName)} · ${d.audience==='members'?'Solo integrantes':'Público al publicar'}</p><p class="post-text">${esc(d.text)}</p><p class="hint">Guardado: ${esc(dateLabel(d.updatedAt))}${d.quote?' · Con cita':''}</p>${d.status==='trashed'?`<p>En la papelera. Restaurarlo conserva su estado anterior.</p><button data-restore-draft="${d.id}" data-version="${d.version}">Restaurar borrador</button>`:`${d.status==='draft'?`<button data-load-draft="${d.id}">Retomar borrador</button>`:`<p>${d.status==='published'?'Ya publicado':'Transferido a Programadas'}. Se conserva esta versión como referencia.</p>`}<button data-trash-draft="${d.id}" data-version="${d.version}">Mover a papelera</button>`}</article>`).join('');
+    const cards=list=>list.slice().reverse().map(d=>`<article class="post"><p>${d.kind==='reply'?'Respuesta · ':d.kind==='edit'?'Edición · ':''}${esc(d.destinationName)} · ${d.audience==='members'?'Solo integrantes':'Público al publicar'}</p><p class="post-text">${esc(d.text)}</p><p class="hint">Guardado: ${esc(dateLabel(d.updatedAt))}${d.quote?' · Con cita':''}</p>${d.status==='trashed'?`<p>En la papelera. Restaurarlo conserva su estado anterior.</p><button data-restore-draft="${d.id}" data-version="${d.version}">Restaurar borrador</button>`:`${d.status==='draft'?`<button data-load-draft="${d.id}">Retomar borrador</button>`:`<p>${d.status==='published'?(d.kind==='edit'?'Edición aplicada':'Ya publicado'):'Transferido a Programadas'}. Se conserva esta versión como referencia.</p>`}<button data-trash-draft="${d.id}" data-version="${d.version}">Mover a papelera</button>`}${contextualEditor(d)}</article>`).join('');
     $('content').innerHTML=(cards(saved.filter(d=>d.status==='draft'))||'<p>No tienes borradores pendientes.</p>')+(saved.some(d=>['published','scheduled'].includes(d.status))?`<details data-panel="used-drafts"><summary>Borradores ya utilizados</summary>${cards(saved.filter(d=>['published','scheduled'].includes(d.status)))}</details>`:'')+(saved.some(d=>d.status==='trashed')?`<details data-panel="draft-trash"><summary>Papelera de borradores</summary><p>Recuperable, sin borrado automático. Mover una referencia aquí no retira una publicación ni cancela una programación.</p>${cards(saved.filter(d=>d.status==='trashed'))}</details>`:'');
   }else if(page==='avisos'){
     $('context').innerHTML='<h1>Avisos</h1><p>Citas a tus publicaciones, dentro de su audiencia. Sin correos ni avisos externos.</p>';
@@ -196,15 +220,30 @@ function finishComposition(draft,key){
   if(draft.id){loadedDrafts.delete(draft.id);activeDraftId=null;}else{const local=drafts.get(key);if(local){local.text='';delete local.quote;local.scheduling=false;local.publishAt='';}}
 }
 function bindActions(){
+  document.querySelectorAll('[data-copy-inline]').forEach(b=>b.onclick=()=>saveInlineDraft(b.dataset.copyInline,b.dataset.target,true));
+  document.querySelectorAll('[data-save-inline]').forEach(b=>b.onclick=()=>saveInlineDraft(b.dataset.saveInline,b.dataset.target));
+  document.querySelectorAll('[data-context-draft]').forEach(form=>{
+    const id=form.dataset.contextDraft;form.querySelector('textarea').oninput=e=>{contextDrafts.get(id).text=e.target.value;};
+    form.onsubmit=e=>{e.preventDefault();saveContextDraft(id);};
+  });
+  document.querySelectorAll('[data-copy-context]').forEach(b=>b.onclick=()=>saveContextDraft(b.dataset.copyContext,{copy:true}));
+  document.querySelectorAll('[data-review-context]').forEach(b=>b.onclick=()=>saveContextDraft(b.dataset.reviewContext,{reviewedVersion:Number(b.dataset.targetVersion)}));
+  document.querySelectorAll('[data-apply-context]').forEach(b=>b.onclick=async()=>{
+    const d=contextDrafts.get(b.dataset.applyContext);if(!d)return;
+    if(await send({type:d.kind==='reply'?'publish':'edit-post',...draftReference(d),text:d.text,...(d.kind==='reply'?{parent:d.parent}:{post:d.editPost,version:d.targetVersion})})){
+      contextDrafts.delete(d.id);inlineDrafts.delete(`${d.kind}:${d.parent??d.editPost}`);if(d.kind==='edit')postEdits.delete(d.editPost);else replyDrafts.delete(d.parent);render();
+    }
+  });
   if($('show-local-edits'))$('show-local-edits').onclick=()=>{page='cuenta';render();document.querySelector('[data-local-rescue]')?.focus();};
   document.querySelectorAll('[data-edit-post]').forEach(b=>b.onclick=()=>{const p=state.posts.find(p=>p.id===b.dataset.editPost);if(!postEdits.has(p.id))postEdits.set(p.id,{text:p.text,version:p.version});render();const editor=$(`post-edit-${p.id}`);if(editor){editor.focus();editor.setSelectionRange(editor.value.length,editor.value.length);}});
   document.querySelectorAll('[data-cancel-post-edit]').forEach(b=>b.onclick=()=>{postEdits.delete(b.dataset.cancelPostEdit);render();$(`edit-post-${b.dataset.cancelPostEdit}`)?.focus();});
-  document.querySelectorAll('[data-post-editor]').forEach(form=>{const id=form.dataset.postEditor,editor=form.querySelector('textarea');editor.oninput=()=>{postEdits.get(id).text=editor.value;};form.onsubmit=async e=>{e.preventDefault();const draft=postEdits.get(id);if(await send({type:'edit-post',post:id,text:draft.text,version:draft.version})){postEdits.delete(id);render();$(`edit-post-${id}`)?.focus();}};});
+  document.querySelectorAll('[data-post-editor]').forEach(form=>{const id=form.dataset.postEditor,editor=form.querySelector('textarea');editor.oninput=()=>{postEdits.get(id).text=editor.value;};form.onsubmit=async e=>{e.preventDefault();const draft=postEdits.get(id);if(await send({type:'edit-post',post:id,text:draft.text,version:draft.version,...draftReference(inlineDrafts.get(`edit:${id}`)??{})})){postEdits.delete(id);inlineDrafts.delete(`edit:${id}`);render();$(`edit-post-${id}`)?.focus();}};});
   document.querySelectorAll('[data-withdraw-post]').forEach(b=>b.onclick=async()=>{if(await send({type:'withdraw-post',post:b.dataset.withdrawPost,version:Number(b.dataset.version)})){postEdits.delete(b.dataset.withdrawPost);render();}});
 
   document.querySelectorAll('[data-trash-draft],[data-restore-draft]').forEach(b=>b.onclick=()=>send({type:b.dataset.trashDraft?'trash-draft':'restore-draft',id:b.dataset.trashDraft??b.dataset.restoreDraft,version:Number(b.dataset.version)}));
   document.querySelectorAll('[data-load-draft]').forEach(b=>b.onclick=()=>{
     const stored=state.drafts.find(d=>d.id===b.dataset.loadDraft&&d.status==='draft');if(!stored)return;
+    if(stored.kind==='reply'||stored.kind==='edit'){if(!contextDrafts.has(stored.id))contextDrafts.set(stored.id,{...stored});page='borradores';render();const editor=$(`context-draft-${stored.id}`);editor?.focus();if(editor)editor.setSelectionRange(editor.value.length,editor.value.length);return;}
     if(!loadedDrafts.has(stored.id))loadedDrafts.set(stored.id,{...stored,audience:stored.community?`${stored.community}:${stored.audience}`:'public'});
     activeDraftId=stored.id;selectedCommunity=stored.community;page=stored.community?'comunidad':'inicio';render();status('Borrador recuperado. Conserva su destino; no se publica automáticamente.');
   });
@@ -241,12 +280,12 @@ function bindActions(){
   document.querySelectorAll('[data-reply]').forEach(b=>b.onclick=()=>{
     const id=b.dataset.reply,form=document.querySelector(`[data-parent="${id}"]`);
     form.hidden=!form.hidden;b.setAttribute('aria-expanded',String(!form.hidden));
-    if(form.hidden)expandedReplies.delete(id);else{expandedReplies.add(id);form.querySelector('textarea').focus();}
+    if(form.hidden)expandedReplies.delete(id);else{expandedReplies.add(id);if(!replyContexts.has(id))replyContexts.set(id,state.posts.find(p=>p.id===id)?.version);form.querySelector('textarea').focus();}
   });
   document.querySelectorAll('.reply-form').forEach(form=>{
     const editor=form.querySelector('textarea'),id=form.dataset.parent;
     editor.oninput=()=>replyDrafts.set(id,editor.value);
-    form.onsubmit=async e=>{e.preventDefault();if(await send({type:'publish',parent:id,text:editor.value})){replyDrafts.delete(id);expandedReplies.delete(id);render();}};
+    form.onsubmit=async e=>{e.preventDefault();if(await send({type:'publish',parent:id,text:editor.value,...draftReference(inlineDrafts.get(`reply:${id}`)??{})})){replyDrafts.delete(id);replyContexts.delete(id);inlineDrafts.delete(`reply:${id}`);expandedReplies.delete(id);render();}};
   });
   if($('logout'))$('logout').onclick=async()=>{await api('/api/session',{method:'DELETE'}).catch(()=>{});showLogin();status('Sesión cerrada.');};
   if($('export'))$('export').onclick=async()=>{

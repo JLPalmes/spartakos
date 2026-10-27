@@ -3,8 +3,8 @@ title: Spartakos — Resultados de la primera comprobación del prototipo
 lang: es-ES
 license: CC-BY-SA-4.0
 version: 0.10
-date: 2026-10-26
-status: 92 pruebas automáticas superadas; bloqueo programado y recuperación de permisos
+date: 2026-10-27
+status: 109 pruebas automáticas superadas; borradores de respuesta y edición
 ---
 
 # Primera comprobación del prototipo
@@ -150,3 +150,12 @@ Comprobado en navegador con datos sintéticos separados: baja de Bruno aplicada 
 Resultado del 26 de octubre: **92 pruebas automáticas superadas, 0 fallos**, incluidas 34 HTTP. Se añade un recorrido integrado con servidor real de loopback, reloj inyectado y almacenamiento temporal separado. Programa una aportación restringida, revoca permisos y comprueba en disco que el temporizador bloquea el envío sin consultas del cliente. Reiniciar conserva el bloqueo. Publicar inmediatamente sin permisos se deniega; recuperar permisos no reactiva el envío automáticamente. Una acción explícita posterior del autor publica una sola vez, mantiene la audiencia y persiste tras otro reinicio. Una acción repetida se rechaza y la cuenta externa no recibe el contenido. Los pendientes siguen siendo privados, incluso frente a la administración comunitaria.
 
 No se detectó un fallo de comportamiento ni fue necesario cambiar código de producción. Esta comprobación automatizada no evalúa por sí sola la comprensión del mensaje de bloqueo. Se mantienen los límites de identidad ficticia y operación local. No se accedió al escenario de prueba del usuario ni a sus datos anteriores.
+
+
+## 19. Borradores de respuesta y edición — 27 de octubre
+
+Resultado: **109 pruebas automáticas superadas, 0 fallos**: diez del modelo anterior, 37 HTTP, cuatro de conversaciones, diez de programación, siete de citas, ocho de recuentos horarios, ocho de borradores iniciales, once de edición/retirada y catorce de borradores contextuales. Las tres pruebas HTTP nuevas comprueban guardado privado, exportación, reinicios, consumo único, conflictos con el original, revisión expresa y pérdida completa de membresía. Los casos de dominio añaden inmutabilidad de destino/tipo/audiencia, copias, papelera, roles, apertura con historial protegido, migración conservadora y edición sin cambios que no incrementa la versión pública.
+
+El cliente añade botones para guardar respuestas y ediciones, retomar en Borradores, copiar variantes y confirmar la revisión de una versión actual. El rescate local de edición propia puede guardarse desde Mi cuenta. El esquema 8 migra borradores anteriores como publicaciones iniciales; no se han migrado ni reiniciado los datos del usuario durante las pruebas.
+
+La sintaxis del cliente y servidor y la documentación se comprueban por separado. No se ha ejecutado un recorrido visual de esta ampliación: las herramientas disponibles en esta sesión no permiten controlar el navegador. Los resultados HTTP y de dominio no se presentan como validación visual ni auditoría de accesibilidad. Los 148 criterios completos y las pruebas con participantes siguen pendientes. No hay guardado automático ni programación de respuestas o ediciones.
