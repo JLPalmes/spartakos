@@ -129,3 +129,15 @@ Se propone separar registro de conflictos, colas operativas y cancelaciones. No 
 ## 12. Autorización de rol y dirección de proveedor
 
 Cinco pruebas con mensajes nativos de KERIpy comprueban dirección de proveedor, autorización del titular, revocación persistida y rechazo de declaraciones atribuidas a otra identidad. El rol agent no es exclusivo y el observador sin actualización conserva su autorización anterior. [Resultados y límites](laboratorio-identidad/README.md). Esto acredita una pieza de autorización de servicios, no un traslado ni una autoridad única de escritura del perfil. El balance E/T permanece parcial; sigue pendiente estudiar orden y vigencia de las declaraciones.
+
+## 13. Fechas iguales y rotación en autorizaciones
+
+Cuatro pruebas adicionales observan el orden nativo de respuestas: la fecha posterior prevalece en la misma época del caso probado, pero dos valores opuestos con igual fecha conservan el primero recibido y pueden divergir entre observadores aun tras reabrir. Una nueva época de firma prevalece en el escenario ensayado; la rotación por sí sola no revoca roles. [Detalle reproducible](laboratorio-identidad/README.md).
+
+Los roles múltiples no son por sí mismos una incompatibilidad con Spartakos. La autorización para ofrecer un servicio debe separarse de la autoridad para modificar una revisión del perfil. Las respuestas de rol no se adoptan como consenso exclusivo de destino. Sigue pendiente delimitar la vinculación de revisiones del perfil con eventos ordenados antes del traslado.
+
+## 14. Vinculación experimental de revisiones de perfil
+
+Siete pruebas anclan la huella de un perfil público en eventos firmados del titular y contrastan las copias contra el historial aceptado. No se acepta un cuerpo alterado ni una revisión firmada con clave ajena o anterior tras rotación. Una revisión antigua conserva condición histórica. [Alcance del ensayo](laboratorio-identidad/README.md).
+
+La semántica del perfil es experimental de aplicación, no nativa del componente. Cabeza en una vista no equivale a actualidad global ni a permiso de actuar ante conflicto. A/B aún son copias de bytes, sin servidores de perfil. Pendientes persistencia de ese enlace y registro duradero de conflicto antes del ensayo de entrega con origen apagado.

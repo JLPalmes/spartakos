@@ -212,3 +212,19 @@ Límites observados: agent permite varios proveedores y una vista no actualizada
 ### Publicación autorizada del balance y los destinos
 
 El usuario autoriza commit y push del balance de garantías y del ensayo de roles y direcciones. Repetidas las 27 comprobaciones y la validación de 53 documentos; archivos nuevos revisados sin credenciales, claves privadas ni rutas del entorno temporal. Se prepara la publicación en la rama de la propuesta #2, sin integrar main. Las notas de cambios pendientes anteriores corresponden al estado previo a esta autorización.
+
+## Orden, fechas iguales y época de firma en destinos
+
+Inicio con árbol limpio y remoto comprobado mediante fetch. Cuatro pruebas nuevas elevan el laboratorio a 31 comprobaciones. Con fechas distintas converge el caso concesión/revocación en ambos órdenes; con igual fecha/época cada observador conserva lo primero recibido, incluso tras reapertura y repetición. Una declaración de nueva época prevalece en el escenario probado; rotar sin nueva declaración no revoca roles.
+
+Se precisa el criterio del balance: varios proveedores son compatibles con Spartakos; lo que falta es delimitar autoridad y revisión de cada objeto, no imponer un servidor único. No se adoptan respuestas de rol como registro global exclusivo ni se inventa desempate. Próxima unidad: alcance de autorización del perfil mínimo y su vinculación a eventos ordenados del componente, conservando conflicto y actualidad como límites explícitos. Sin cambios del simulador ni datos del usuario; unidad local pendiente de commit/push.
+
+## Ensayo de autoridad de revisiones de perfil
+
+Inicio preservando cambios locales de orden y vigencia; remoto comprobado mediante fetch. Añadido keri_profiles.py con siete pruebas, total 38 de laboratorio. Un perfil público sintético se vincula mediante huella a eventos KERI validados; el enlace de aplicación es experimental, no un protocolo de perfil nativo. Se comprueban copia, alteración, firma ajena, identidad del cuerpo, historial, rotación, vista atrasada y ramas firmadas incompatibles.
+
+La inspección distingue cabeza en la vista de actualidad global desconocida. No se usa esa cabeza como permiso de actuación ni se oculta el conflicto. A/B son copias de bytes, no servidores; faltan persistencia del enlace y bloqueo duradero por conflicto. Próxima unidad: persistencia y conflicto del perfil antes de entrega A/B con origen apagado. No se modifica el simulador ni datos del usuario. Cambios de orden y perfil locales pendientes de commit/push.
+
+### Publicación autorizada de orden y perfil
+
+El usuario autoriza commit y push de los ensayos de orden y perfil, y continuar después con persistencia y conflicto. Repetidas las 38 comprobaciones y la validación de 53 documentos; archivo nuevo revisado sin secretos ni rutas privadas. Se prepara la publicación en la rama de #2 sin integrar main. Las notas previas de cambios pendientes corresponden al estado anterior a esta autorización.

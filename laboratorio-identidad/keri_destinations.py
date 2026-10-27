@@ -102,6 +102,53 @@ class EndpointAuthorization(unittest.TestCase):
                 owner.makeEndRole(eid=b.pre, role=ROLE, stamp=stamp(2)))
             self.assertEqual(set(destinations(observer, owner)), {a.pre, b.pre})
 
+    def test_distinct_dates_converge_under_reverse_delivery(self):
+        with self.participants() as (root, owner, a, b):
+            add = owner.makeEndRole(eid=a.pre, role=ROLE, stamp=stamp(1))
+            cut = owner.makeEndRole(eid=a.pre, role=ROLE, allow=False, stamp=stamp(2))
+            for name, messages in (('forward', (add, cut)), ('reverse', (cut, add))):
+                with store(root, name) as observer:
+                    self.setup_observer(observer, owner, a, b)
+                    deliver(observer, *messages)
+                    self.assertEqual(observer.fetchEndAllowed(owner.pre, ROLE, a.pre), False)
+
+    def test_equal_dates_keep_first_accepted_role_even_after_reopening(self):
+        with self.participants() as (root, owner, a, b):
+            add = owner.makeEndRole(eid=a.pre, role=ROLE, stamp=stamp(1))
+            cut = owner.makeEndRole(eid=a.pre, role=ROLE, allow=False, stamp=stamp(1))
+            for name, messages, expected in (('add-first', (add, cut), True), ('cut-first', (cut, add), False)):
+                with store(root, name) as observer:
+                    self.setup_observer(observer, owner, a, b)
+                    deliver(observer, *messages)
+                    self.assertEqual(observer.fetchEndAllowed(owner.pre, ROLE, a.pre), expected)
+                with store(root, name) as observer:
+                    deliver(observer, *reversed(messages))
+                    self.assertEqual(observer.fetchEndAllowed(owner.pre, ROLE, a.pre), expected)
+
+    def test_new_signing_epoch_precedes_old_epoch_even_with_earlier_date(self):
+        with self.participants() as (root, owner, a, b), store(root, 'observer') as observer:
+            self.setup_observer(observer, owner, a, b)
+            old_add = owner.makeEndRole(eid=a.pre, role=ROLE, stamp=stamp(100))
+            deliver(observer, old_add)
+            identity = owner.pre
+            rotation = owner.rotate()
+            deliver(observer, rotation)
+            self.assertEqual(observer.kevers[identity].sn, 1)
+            deliver(observer, owner.makeEndRole(eid=a.pre, role=ROLE, allow=False, stamp=stamp(1)))
+            self.assertEqual(observer.fetchEndAllowed(identity, ROLE, a.pre), False)
+            deliver(observer, old_add)
+            self.assertEqual(observer.fetchEndAllowed(identity, ROLE, a.pre), False)
+            self.assertEqual(owner.pre, identity)
+
+    def test_rotation_does_not_automatically_revoke_existing_provider(self):
+        with self.participants() as (root, owner, a, b), store(root, 'observer') as observer:
+            self.setup_observer(observer, owner, a, b)
+            deliver(observer, owner.makeEndRole(eid=a.pre, role=ROLE, stamp=stamp(1)))
+            deliver(observer, owner.rotate())
+            self.assertEqual(observer.kevers[owner.pre].sn, 1)
+            self.assertEqual(observer.fetchEndAllowed(owner.pre, ROLE, a.pre), True)
+            self.assertEqual(set(destinations(observer, owner)), {a.pre})
+
     def test_unupdated_observer_keeps_old_authorization(self):
         with self.participants() as (root, owner, a, b), store(root, 'updated') as updated, store(root, 'stale') as stale:
             for observer in (updated, stale):

@@ -3,7 +3,7 @@ title: Spartakos — Balance de identidad y preparación del traslado
 lang: es-ES
 license: CC-BY-SA-4.0
 date: 2026-10-27
-version: 0.2
+version: 0.4
 status: Evaluación de laboratorio; sin elección de arquitectura de producción
 ---
 
@@ -13,7 +13,7 @@ status: Evaluación de laboratorio; sin elección de arquitectura de producción
 
 KERIpy sigue siendo una candidata razonable para investigar el control de identidad. Las pruebas actuales no permiten elegirla como infraestructura de producción ni afirmar que Spartakos ya permite cambiar de proveedor. El ensayo de rol y dirección demuestra autorización de proveedores en la vista del observador, pero no exclusividad ni autoridad única para escribir el perfil. La siguiente unidad debe estudiar orden, vigencia y mensajes incompatibles antes de copiar un perfil entre dos alojamientos.
 
-El [laboratorio](laboratorio-identidad/README.md) contiene 27 comprobaciones ejecutadas con KERIpy 1.3.6 fijada por commit. Incluye una reproducción de un comportamiento defectuoso, H01: que esa reproducción pase no significa que el defecto esté corregido. Las 109 pruebas del simulador social son otra batería y no añaden garantías distribuidas.
+El [laboratorio](laboratorio-identidad/README.md) contiene 38 comprobaciones ejecutadas con KERIpy 1.3.6 fijada por commit. Incluye una reproducción de un comportamiento defectuoso, H01: que esa reproducción pase no significa que el defecto esté corregido. Las 109 pruebas del simulador social son otra batería y no añaden garantías distribuidas.
 
 **Ninguno de los quince casos E ni de los diez casos T se considera completado.** Algunas pruebas proporcionan evidencia parcial útil, que se detalla a continuación. La comparación de [nueve familias de identidad](ARQUITECTURA-04-CANDIDATOS-DE-IDENTIDAD.md) sigue vigente como investigación; este balance no acredita superioridad global de KERI.
 
@@ -121,3 +121,19 @@ Cinco pruebas adicionales con API existentes elevan el laboratorio a 27 comproba
 La cobertura sigue siendo parcial: no cambia el estado completo de ningún E/T. La primera unidad de la tabla anterior queda **parcialmente ejecutada**. No se ha demostrado su condición de destino vigente con autoridad de escritura: el rol `agent` admite A y B a la vez, y un observador que no recibe la revocación sigue resolviendo A. Autorización de endpoint y exclusividad de escritor son propiedades distintas.
 
 Siguiente paso ajustado: ensayar fechas iguales, orden inverso de entrega y actualización de claves con la política nativa de aceptación. Después precisar el alcance del servicio frente al contrato. No iniciar una copia de perfiles presentándola como traslado con autoridad resuelta, ni convertir por cuenta propia un rol múltiple en una regla de consenso.
+
+## 9. Resultado de orden y vigencia; precisión del criterio
+
+Cuatro pruebas adicionales elevan el laboratorio a 31 comprobaciones. Con fechas distintas y la misma época de firma, el escenario de concesión/revocación converge al entregar los mensajes en ambos órdenes. Con igual fecha y época, los observadores conservan el primer valor aceptado y no convergen al reabrir. Una declaración en una época de claves posterior prevalece en el caso probado incluso con fecha menor; rotar sin nueva declaración no revoca el rol existente.
+
+No se adopta la respuesta de rol como registro exclusivo de alojamiento. Tampoco se exige que Spartakos tenga un único proveedor: la multiplicidad es compatible con servicios separados y réplicas. Las referencias anteriores a autoridad única de escritura deben entenderse como autoridad y revisión de cada objeto, no como prohibición de varios servidores. Lo pendiente es delimitar qué puede modificar cada servicio y cómo se valida el estado del perfil sin confiar en un proveedor por el mero hecho de alojarlo.
+
+La siguiente unidad investigará la vinculación de una revisión del perfil mínimo con eventos ordenados del mecanismo existente, separando autorización, integridad, entrega y actualidad de la vista. El ensayo deberá rechazar una copia sin autoridad y registrar ramas incompatibles o ausencia de actualización sin atribuirse consenso. No se diseña criptografía nueva ni se da por cumplido el traslado con un hash firmado aislado.
+
+## 10. Ensayo del perfil público vinculado a eventos
+
+Siete pruebas adicionales verifican el enlace experimental entre bytes del perfil, ID del titular y huella incluida en eventos KERI aceptados. Las copias mantienen autoridad y referencia; la modificación sin anclaje o firma válida no se acepta. Una revisión anterior queda identificada como histórica después de conocer una posterior. Rotar conserva el ID de perfil y la clave anterior no puede autorizar otra revisión. El enlace semántico y el formato mínimo pertenecen al arnés de aplicación; no se atribuyen a KERI como protocolo nativo de perfil.
+
+El resultado no completa E02, E08 ni T01–T03: no existen servicios A/B de perfil en este ensayo. Sigue pendiente persistir el enlace y el estado duradero de conflicto antes de presentar un traslado. La cabeza local del perfil no demuestra actualidad global ni ausencia de bifurcaciones; tampoco concede permiso automático para una acción sensible. Las pruebas de vista atrasada y ramas firmadas conservan ese límite.
+
+Siguiente unidad: persistencia de revisiones y señalización de conflicto del perfil; después entrega desde dos servicios locales, separada del control del titular, con origen apagado. No se amplían permisos comunitarios ni se trasladan datos privados en ese primer flujo.

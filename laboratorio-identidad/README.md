@@ -185,3 +185,48 @@ El orden de respuestas de KERIpy utiliza su política existente de aceptación d
 Consecuencia: hay un mecanismo existente para atribuir roles y direcciones sin entregar las claves del titular al proveedor. **No hay todavía una demostración de autoridad única de escritura del perfil.** Un `agent` autorizado no es por ese solo hecho el alojamiento vigente ni puede modificar publicaciones. Revocar un rol en la vista de un observador no elimina datos ni capacidad de actuar ante observadores desactualizados.
 
 Antes de trasladar perfil, el siguiente ensayo debe estudiar orden y vigencia de esas declaraciones —incluidos mensajes contradictorios con igual fecha y cambios de claves— y delimitar si el mecanismo permite cumplir el contrato de destino. Si no permite acreditarlo, se conserva como autorización de servicios y se registra la brecha de continuidad, sin escoger arbitrariamente un ganador ni crear consenso propio.
+
+## Orden y época de firma de las declaraciones
+
+Cuatro pruebas adicionales en keri_destinations.py: **31 comprobaciones del laboratorio en total**, nueve dedicadas a destinos. Se mantienen el componente y las claves sintéticas; no hay despliegue ni nueva regla de resolución.
+
+| Escenario | Resultado observado |
+| --- | --- |
+| Conceder con fecha anterior y revocar con fecha posterior, entregando en ambos órdenes | Los dos observadores terminan con el rol revocado |
+| Conceder y revocar con la misma fecha y época de firma, entregando en órdenes opuestos | Cada observador conserva lo primero que aceptó; la discrepancia continúa al reabrir y repetir los mensajes |
+| Conceder con una clave anterior y fecha mayor; revocar con la nueva época y fecha menor | La declaración de la nueva época prevalece en el escenario probado; repetir la anterior no recupera el rol |
+| Rotar claves sin una declaración nueva de rol | La autorización existente del proveedor permanece |
+
+Estos resultados corresponden a la política nativa de aceptación de respuestas firmadas. No equivalen a consenso ni a confirmación de actualidad global. La prueba de fechas iguales observa los registros de autorización; no certifica que no haya trazas o mensajes conservados en otras tablas. No se añade una elección local de ganador que pueda ocultar el desacuerdo entre observadores.
+
+### Separar proveedor y autor del perfil
+
+Que el rol agent admita varios proveedores no es un defecto: Spartakos contempla múltiples servicios y réplicas. La propiedad que falta es la relación explícita entre control del titular, permisos de cada servicio y versión aceptada del perfil. No debe confundirse «misma autoridad válida sobre una revisión» con «solo puede existir un proveedor».
+
+Las declaraciones de rol y dirección son una pieza útil para descubrir servicios autorizados en una vista conocida. Por sí solas no se adoptan como registro exclusivo y globalmente ordenado de alojamiento ni como permiso de editar el perfil. Ningún servidor adquiere las claves del titular por aparecer en estas declaraciones.
+
+Próxima unidad propuesta: definir el alcance de autorización del perfil mínimo con el contrato ya existente y evaluar cómo vincular una revisión de perfil a eventos ordenados del componente, dejando entrega y almacenamiento como funciones separadas. Deben distinguirse integridad, firma, orden validado, ausencia de actualizaciones conocidas y conflicto. Si se necesita una regla nueva de confianza o resolución de ramas, se registrará como decisión pendiente, sin presentarla como propiedad nativa de KERI.
+
+## Perfil público y autoridad de revisión
+
+[Ensayo de perfil](keri_profiles.py): siete pruebas nuevas, **38 comprobaciones en total**. El titular firma eventos de interacción KERI que incluyen la huella de unos bytes de perfil público sintético. El formato `spartakos_profile_lab_v1` es un enlace de aplicación experimental del arnés, no una capacidad de perfil nativa de KERI ni un formato de producción aprobado. No se implementan nuevas firmas, criptografía ni reglas de consenso.
+
+La biblioteca verifica eventos y evolución de claves. El arnés interpreta el perfil mínimo —tipo, ID derivado del titular y nombre mostrado— y contrasta su huella con anclajes del historial aceptado localmente. Se usa una serialización fija del fixture, sin afirmar canonicalización universal. La lectura presupone una base local alimentada por el verificador: importar una base ofrecida por un proveedor sin validar su historia no está autorizado por este ensayo.
+
+| Escenario | Resultado observado |
+| --- | --- |
+| Copiar el mismo cuerpo a A y B | Conserva ID de perfil y evento de autorización; el lugar de la copia no concede autoridad |
+| Alterar el cuerpo y calcular otra huella | Se rechaza al no existir anclaje aceptado del titular para esos bytes |
+| Firmar el supuesto cambio con clave de proveedor ajena | El verificador rechaza el evento; el cambio no pasa a ser una revisión aceptada |
+| Entregar una revisión anterior tras conocer otra posterior | Sigue verificándose como histórica, pero no como cabeza del perfil en esa vista |
+| Anclar un cuerpo que declara otra identidad | El enlace de aplicación rechaza el cuerpo aunque el evento KERI esté aceptado |
+| Rotar y actualizar el perfil | Conserva el ID del perfil; la clave anterior no autoriza la actualización y la nueva sí |
+| Vista aislada o ramas incompatibles | La cabeza local no prueba actualidad global; al intercambiar ramas firmadas aparece la discrepancia y no hay convergencia automática |
+
+Las dos últimas situaciones se verifican en pruebas separadas: una compara vista atrasada/actualizada y otra dos ramas contradictorias; las alteraciones y firmas ajenas se agrupan en una prueba. El total de siete cuenta funciones de prueba, no filas de esta tabla.
+
+La inspección devuelve `head_in_this_view` y `globally_current: null`. El segundo valor indica ausencia de prueba de actualidad, no un error recuperado ni una propiedad inferida del primero. La cabeza local puede existir aun con conflicto conocido; **no es permiso para publicar, trasladar o confirmar un cambio**. El arnés no incorpora todavía un registro duradero de bloqueo por conflicto, ya señalado como pendiente en el ensayo de caducidad.
+
+A y B en esta unidad son copias de bytes dentro de la prueba, no servidores ejecutados. Los verificadores usan bases sintéticas temporales; la persistencia de este enlace de perfil no se ha probado entre procesos. No se transportan contactos, publicaciones, borradores ni datos comunitarios, no hay cifrado de perfil privado y no se prueba recuperación sin medios previos.
+
+Resultado: se ha demostrado una vinculación acotada entre cuerpo público, titular y revisión en una historia validada. **No se ha ejecutado el traslado de un perfil entre alojamientos.** Siguiente unidad: persistir el estado de revisión y conflicto del perfil, después ejecutar A/B como servicios locales de entrega con el origen apagado y con el titular y el verificador separados. La prueba deberá dejar explícito qué actualización falta y rechazar una copia sin anclaje autorizado.
