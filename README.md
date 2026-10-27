@@ -80,3 +80,5 @@ La continuación exige evidencia: participantes para probar recorridos, archivos
 Para preparar la siguiente prueba, consultar la [guía de revisión del prototipo](GUIA-REVISION-PROTOTIPO.md), que distingue los recorridos disponibles, lo persistido y los asuntos pendientes.
 
 El siguiente ensayo estructural se acota en [Traslado individual entre alojamientos](ENSAYO-02-TRASLADO-INDIVIDUAL.md): protocolo preparado, aún no ejecutado ni arquitectura adoptada.
+
+La [comparación de mecanismos de identidad](ARQUITECTURA-04-CANDIDATOS-DE-IDENTIDAD.md) propone KERIpy como primer candidato de laboratorio y documenta nueve familias, revisiones observadas y límites. No hay integración ni arquitectura de producción adoptada.
