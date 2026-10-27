@@ -285,7 +285,7 @@
     "keri_local_tests": 5,
     "libsodium_upstream_tests": 101,
     "keri_witness_receipt_tests": 7,
-    "keri_total_tests": 46,
+    "keri_total_tests": 53,
     "keri_http_tests": 5,
     "http_continuity_scenarios": 2,
     "http_endpoint_diagnostic_reproductions": 1,
@@ -296,7 +296,9 @@
     "keri_destination_authorization_tests": 9,
     "keri_public_profile_binding_tests": 7,
     "keri_profile_state_tests": 3,
-    "keri_profile_http_delivery_tests": 5
+    "keri_profile_http_delivery_tests": 5,
+    "keri_authorized_profile_delivery_tests": 3,
+    "keri_partial_authorized_delivery_tests": 4
   },
   "limitations": [
     "No dependency security audit completed",
@@ -322,9 +324,13 @@
     "KERI/SQLite cross-store crash window, corruption and lost-registry recovery not tested",
     "False confirmation_blocked is not activation permission; global freshness remains unproven",
     "Read-only public-profile HTTP A/B tested with A off; addresses explicitly supplied by test coordinator",
-    "HTTP profile delivery not integrated with endpoint-role authorization or automatic discovery",
     "Profile history supplied by provider validates against independently pinned owner, without global freshness proof",
-    "No destination change, profile writing delegation or complete provider migration tested"
+    "No destination change, profile writing delegation or complete provider migration tested",
+    "Role/location/profile events explicitly delivered to parser by coordinator; no automatic propagation or discovery",
+    "Agent role interpreted as delivery permission only within experimental application harness",
+    "Partial role updates and verifier restart tested with five successive processes; role change is not atomic",
+    "Abrupt verifier exit occurs after committed writes and reads; no in-flight transaction crash tested",
+    "Partial-delivery services stay available; no combined simultaneous provider and verifier outage in that suite"
   ],
   "osv_query": {
     "date": "2026-10-27",

@@ -3,7 +3,7 @@ title: Spartakos — Balance de identidad y preparación del traslado
 lang: es-ES
 license: CC-BY-SA-4.0
 date: 2026-10-27
-version: 0.6
+version: 0.8
 status: Evaluación de laboratorio; sin elección de arquitectura de producción
 ---
 
@@ -13,7 +13,7 @@ status: Evaluación de laboratorio; sin elección de arquitectura de producción
 
 KERIpy sigue siendo una candidata razonable para investigar el control de identidad. Las pruebas actuales no permiten elegirla como infraestructura de producción ni afirmar que Spartakos ya permite cambiar de proveedor. El ensayo de rol y dirección demuestra autorización de proveedores en la vista del observador, pero no exclusividad ni autoridad única para escribir el perfil. La siguiente unidad debe estudiar orden, vigencia y mensajes incompatibles antes de copiar un perfil entre dos alojamientos.
 
-El [laboratorio](laboratorio-identidad/README.md) contiene 46 comprobaciones ejecutadas con KERIpy 1.3.6 fijada por commit. Incluye una reproducción de un comportamiento defectuoso, H01: que esa reproducción pase no significa que el defecto esté corregido. Las 109 pruebas del simulador social son otra batería y no añaden garantías distribuidas.
+El [laboratorio](laboratorio-identidad/README.md) contiene 53 comprobaciones ejecutadas con KERIpy 1.3.6 fijada por commit. Incluye una reproducción de un comportamiento defectuoso, H01: que esa reproducción pase no significa que el defecto esté corregido. Las 109 pruebas del simulador social son otra batería y no añaden garantías distribuidas.
 
 **Ninguno de los quince casos E ni de los diez casos T se considera completado.** Algunas pruebas proporcionan evidencia parcial útil, que se detalla a continuación. La comparación de [nueve familias de identidad](ARQUITECTURA-04-CANDIDATOS-DE-IDENTIDAD.md) sigue vigente como investigación; este balance no acredita superioridad global de KERI.
 
@@ -153,3 +153,19 @@ Cinco pruebas adicionales ejecutan dos servicios de perfil público de solo lect
 La prueba aporta evidencia parcial a T01, T03 y T04, sin completar esos casos: solo hay perfil público, sin publicaciones, relaciones ni inventario de traslado; no se cambia el destino mediante el mecanismo de identidad y no se activa una autoridad de escritura de B. E08 sigue sin completarse. No se confunde redundancia de entrega con traslado ni se revoca un permiso que los servicios de solo lectura nunca recibieron.
 
 El siguiente paso es componer autorización de rol y resolución de dirección con la petición HTTP, preservando que múltiples proveedores pueden ser legítimos. Después se ensayará actualización con A apagado y entrega antigua cuando vuelva. La actualidad global seguirá declarándose desconocida si no puede probarse. No se adopta una arquitectura de producción.
+
+## 13. Composición de autorización y entrega
+
+Tres pruebas nuevas unen rol autorizado, dirección validada y lectura HTTP. Con A apagado, la vista que recibe revocación de A y autorización de B permite obtener el perfil desde B. Una nueva revisión firmada por el titular se verifica con A apagado. Cuando A vuelve con su copia anterior y otra dirección firmada no recupera el rol ni convierte su cuerpo antiguo en la cabeza conocida. La falta de autorización se comprueba antes de abrir HTTP.
+
+Aumenta la evidencia parcial de T02, T03, T05 y T06: hay composición y reapertura de almacenes, pero no inventario de traslado, interrupción entre etapas en procesos nuevos ni autoridad de escritura delegada a los servicios. No se completa ningún E/T. La vigencia se refiere a la vista que ha recibido los cambios; el coordinador distribuye las declaraciones. Siguen pendientes propagación automática, actualidad de observadores y gestión general de ramas.
+
+Próxima unidad: interrupción y reanudación de esa composición entre procesos nuevos y cambios parciales de autorización. No se asumirá atomicidad del par revocar A/autorizar B ni se confundirá coexistencia legítima de servicios con capacidad de editar el perfil.
+
+## 14. Vistas parciales entre procesos
+
+Cuatro pruebas adicionales verifican cinco procesos sucesivos en cada escenario: ninguna declaración nueva conserva A; solo revocación deja sin proveedor autorizado; solo autorización de B mantiene ambos. Un nuevo proceso comprueba cada vista parcial antes de completar mensajes. La entrega repetida de ambas declaraciones termina con B autorizado y A revocado, sin duplicar el cuerpo de perfil almacenado.
+
+También se verifica terminación abrupta del proceso después de commits, sin cierres normales; el proceso nuevo conserva la vista parcial. No se prueba corte durante transacción ni atomicidad distribuida. Los servicios siguen disponibles en este bloque; las caídas de proveedor se ensayaron separadamente.
+
+Se amplía evidencia parcial para T05 y E09, sin completar traslado de objetos, referencias o autoridad de escritura. Las vistas parciales deben expresarse como tales; no se inventa éxito definitivo, actualización global o exclusividad de alojamiento. Próxima unidad: consolidar condiciones de aceptación del perfil público mínimo y comportamiento explícito ante incompletitud antes de extender el inventario social.

@@ -274,3 +274,42 @@ Las direcciones de A/B las proporciona el coordinador; la autorización de roles
 El campo `globally_current` permanece desconocido. `accepted_copy` solo indica cuerpo coincidente con un anclaje de una historia validada en la vista local; no es autorización de traslado ni confirmación de actualidad. Los esquemas experimentales de perfil no se convierten en formatos de producción por superar este ensayo.
 
 Próxima unidad: unir resolución de servicios autorizados con la entrega HTTP, sin aceptar una URL anunciada por el proveedor como autorización del titular. Después comprobar actualizaciones con origen apagado y retorno del origen con copia anterior. No se modifica el simulador social.
+
+## Resolución autorizada y entrega compuestas
+
+[Ensayo de entrega autorizada](keri_authorized_delivery.py): tres pruebas nuevas, **49 comprobaciones en total**. El observador valida primero el rol agent concedido por el titular y obtiene después la dirección anunciada y firmada por el proveedor. Solo entonces consulta `/profile` y contrasta el cuerpo contra su historial KERI validado y su registro local de perfil.
+
+1. Una dirección conocida sin autorización del titular se rechaza antes de efectuar HTTP. La prueba comprueba que la función de transporte no se llama. Tras recibir la autorización, se entrega y verifica el perfil.
+2. Con A autorizado y después apagado, se observa fallo real de conexión. El titular revoca A y autoriza B mediante mensajes nativos entregados al observador. Este rechaza A por autorización y obtiene desde la dirección validada de B el mismo perfil. Al reabrir su almacén se conserva el resultado.
+3. Con A apagado, el titular firma una nueva revisión, B recibe el cuerpo y el observador recibe el evento firmado. La revisión nueva se verifica desde B. A vuelve con su copia anterior y anuncia su nuevo puerto mediante una declaración propia válida: eso no restaura su rol revocado. La lectura autorizada lo rechaza; una lectura directa de diagnóstico muestra que su cuerpo antiguo es histórico en la vista actualizada.
+
+Los servicios HTTP son de solo lectura y no poseen la clave del titular. El coordinador conserva esa clave sintética y prepara las actualizaciones; no existe una API de escritura ni se entrega autoridad de edición a B. El rol agent se interpreta como proveedor de entrega **solo para este ensayo de aplicación**; no se aprueba como mapa definitivo de permisos de Spartakos.
+
+Los mensajes de creación de identidad, autorización, revocación, dirección y revisión se distribuyen mediante el coordinador directamente al parser. La URL usada para la petición ya se toma del estado verificado, pero no se ha demostrado descubrimiento ni propagación automática de esas declaraciones. No se ofrece una garantía de actualidad global, exclusividad de proveedor, resolución de ramas o autenticación TLS de servidores. Los valores de identidad y el estado previo esperado se mantienen separados de las respuestas HTTP.
+
+La persistencia de esta composición se comprueba cerrando y reabriendo los almacenes del observador en el mismo proceso. Los ensayos anteriores de perfiles y entrega prueban por separado procesos nuevos. No se afirma todavía una prueba conjunta con reinicio completo del cliente durante el cambio de proveedores.
+
+Resultado: autorización de entrega y ubicación se componen sin dar claves del titular al proveedor, y se conserva una referencia verificable al volver el origen con contenido antiguo en una vista ya actualizada. Sigue siendo una integración local acotada, no traslado completo: faltan publicaciones, inventario, relaciones, estado privado, interrupciones durante el cambio y prueba de dependencia de la autoridad de identidad. Ningún E/T se da por completo.
+
+Siguiente unidad propuesta: interrumpir y reanudar esa composición con procesos verificadores nuevos, incluyendo cambios recibidos parcialmente. No se inventará un cambio atómico de roles: habrá que mostrar qué vista queda al recibir solo la revocación, solo la autorización o ninguna de ambas.
+
+## Cambios parciales e interrupción del verificador
+
+[Ensayo de entrega parcial](keri_partial_delivery.py): cuatro pruebas nuevas, **53 comprobaciones de laboratorio en total**. Cada escenario inicia servicios HTTP A/B separados y ejecuta cinco procesos verificadores sucesivos sobre los mismos almacenes: inicializar, recibir cambios parciales, verificar la vista parcial sin modificarla, completar cambios y comprobar el resultado. Cada proceso valida autorización antes de acceder al perfil.
+
+| Cambios recibidos en la fase parcial | Vista comprobada y persistida |
+| --- | --- |
+| Solo revocación de A | Ningún proveedor autorizado; las lecturas de A y B se rechazan por autorización |
+| Solo autorización de B | A y B autorizados; ambas entregas se verifican como el mismo perfil |
+| Ninguno | A sigue autorizado y B no; no se infiere que la vista esté actualizada |
+| Autorización de B y terminación abrupta posterior del verificador | El siguiente proceso conserva A y B antes de recibir la revocación faltante |
+
+Después se entregan ambas declaraciones firmadas dos veces deliberadamente. En los cuatro casos se alcanza y persiste B autorizado y A revocado, conservando una única copia del cuerpo en el almacén del arnés. Esto no prueba deduplicación general de publicaciones o notificaciones: solo la persistencia del cuerpo de perfil indexado por huella y la repetición de declaraciones de rol.
+
+La salida abrupta usa terminación inmediata del proceso después de los commits y las lecturas, sin ejecutar cierres normales; el nuevo proceso comprueba primero la vista parcial, antes de completarla. No se interrumpe una transacción en curso ni se simula pérdida de alimentación, corrupción o disco lleno. Los servidores permanecen disponibles en este bloque para distinguir la falta de autorización de la falta de conectividad; su caída se comprueba en los ensayos anteriores.
+
+Las declaraciones son mensajes públicos sintéticos prefirmados por el coordinador; ningún proceso verificador dispone de la clave del titular. Las direcciones provienen de declaraciones verificadas. El coordinador sigue controlando la distribución y el momento de reanudación: no existe sincronización automática ni una transacción distribuida que abarque revocar A y autorizar B.
+
+La multiplicidad temporal no concede a los proveedores permiso de editar. La ausencia temporal de proveedor tampoco elimina el perfil conservado. `globally_current` continúa desconocido en todas las vistas. Ningún estado parcial se presenta como traslado confirmado ni como error de consenso resuelto.
+
+Próximo bloque propuesto: consolidar las condiciones de aceptación del ensayo público mínimo y el tratamiento explícito de estado incompleto, antes de ampliar a objetos y referencias sociales. No se cambia la interfaz del simulador ni se da por completo un caso E/T.

@@ -246,3 +246,21 @@ Es recuperación de entrega, no traslado completo: direcciones proporcionadas po
 ### Publicación autorizada de persistencia y entrega
 
 El usuario autoriza commit y push y continuar después. Repetidas las 46 comprobaciones y la validación de 53 documentos; archivos nuevos revisados sin claves privadas ni rutas privadas. Se prepara la publicación de persistencia y entrega HTTP en la rama de #2, sin integrar main. Las notas previas de trabajo local corresponden al estado anterior a esta autorización.
+
+## Publicación y composición de resolución autorizada con HTTP
+
+Publicado 9d94a47 con persistencia y entrega HTTP tras repetir 46 comprobaciones y verificar 53 documentos. Árbol limpio y remoto coincidente antes de continuar; propuesta #2 asociada, sin integrar main.
+
+Continuación autorizada: añadido keri_authorized_delivery.py con tres pruebas, total 49 de laboratorio. Dirección sin autorización se rechaza antes de abrir HTTP. Con A apagado, revocación recibida y B autorizado se obtiene el perfil; el titular firma una nueva revisión y B la entrega. A vuelve y anuncia dirección nueva, pero no restaura el rol; su copia anterior se reconoce histórica en la vista actualizada. Se verifica reapertura de almacenes del observador, sin reinicio completo en esta composición.
+
+Roles, direcciones y revisiones se distribuyen explícitamente al parser por el coordinador. No hay descubrimiento automático, escritura delegada, actualidad global ni E/T completado. Próxima unidad: cambios parciales e interrupción con procesos verificadores nuevos. La continuación queda local pendiente de commit/push; la autorización de publicación anterior ya se ejecutó para los cambios que existían antes de continuar. Sin cambios del simulador ni datos del usuario.
+
+## Pruebas de cambios parciales e interrupciones solicitadas
+
+Inicio con la composición local anterior conservada y remoto comprobado mediante fetch. Añadido keri_partial_delivery.py con cuatro pruebas, total 53 de laboratorio. Cinco procesos sucesivos comprueban inicialización, recepción parcial, persistencia de la vista parcial, completado repetido y persistencia final. Solo revocación deja sin proveedor autorizado; solo autorización deja ambos; ninguna conserva A. Los cuatro escenarios terminan con B y sin A tras completar mensajes, sin duplicar el cuerpo del perfil.
+
+Una salida abrupta después de commits y lecturas, sin cierres normales, conserva la vista parcial en el proceso siguiente. No se interrumpe una transacción ni se simula fallo de alimentación. Los proveedores permanecen disponibles en este bloque; su caída se prueba separadamente. No hay sincronización automática ni cambio atómico de roles. La composición anterior y este ensayo quedan locales pendientes de commit/push, sin cambios del simulador ni datos del usuario. Próxima unidad: consolidar condiciones de aceptación y estados incompletos del perfil público mínimo.
+
+### Publicación autorizada de composición e interrupciones
+
+El usuario autoriza commit y push y continuar después. Repetidas las 53 comprobaciones y la validación de 53 documentos; archivos nuevos revisados sin secretos ni rutas privadas. Se prepara la publicación de entrega autorizada y estados parciales en la rama de #2, sin integrar main. Las notas previas de cambios locales se refieren al estado anterior a esta autorización.
