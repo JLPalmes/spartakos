@@ -78,3 +78,5 @@ La [resolución propuesta de los 29 pendientes](RESOLUCION-DE-PENDIENTES.md) con
 La continuación exige evidencia: participantes para probar recorridos, archivos consentidos para importación, operadores comprometidos y ensayos técnicos. Las licencias iniciales y el destino público están adoptados. La autoridad de gobierno de la red, los operadores y la validación siguen pendientes. El simulador es una implementación local experimental; no adopta todavía la arquitectura de producción.
 
 Para preparar la siguiente prueba, consultar la [guía de revisión del prototipo](GUIA-REVISION-PROTOTIPO.md), que distingue los recorridos disponibles, lo persistido y los asuntos pendientes.
+
+El siguiente ensayo estructural se acota en [Traslado individual entre alojamientos](ENSAYO-02-TRASLADO-INDIVIDUAL.md): protocolo preparado, aún no ejecutado ni arquitectura adoptada.

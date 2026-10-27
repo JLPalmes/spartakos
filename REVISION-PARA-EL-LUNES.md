@@ -126,3 +126,10 @@ Implementados los guardados explícitos privados de respuesta y edición, recupe
 **109 pruebas superadas**, incluidas tres HTTP nuevas con reinicios reales y catorce de dominio. No se usa ni modifica el escenario de prueba del usuario o su almacenamiento anterior. La comprobación visual de la ampliación queda pendiente porque no hay herramienta de control del navegador disponible; la sintaxis y el comportamiento del servicio sí se han verificado. La nueva unidad se incorpora a la rama de la propuesta #2 con autorización para guardar y publicar. La comprobación visual permanece pendiente; no integrar en main.
 
 Siguiente comprobación: recorrido visual de Guardar, Retomar, copia y revisión de versión cuando vuelva a estar disponible el control del navegador. Después revisar las decisiones de producto pendientes, sin pedir al usuario ejecutar las pruebas de permisos o persistencia que ya están automatizadas.
+
+
+## Cierre de borradores y preparación estructural — 27 de octubre
+
+Ampliación de borradores revisada y publicada en `64bf832` en la rama de #2, sin integrar en main. Repetida la batería final: **109 pruebas superadas**, 49 documentos verificados antes de añadir el protocolo estructural. La comprobación visual sigue pendiente por falta de herramienta de navegador. La actualización del título/descripción de #2 mediante el conector fue denegada por permisos de la integración (403); esto no impidió publicar el código mediante Git. No se modificó la autenticación ni se contactó con terceros.
+
+Preparado [el ensayo de traslado individual](ENSAYO-02-TRASLADO-INDIVIDUAL.md), con diez casos, condiciones de control de identidad, interrupción, autoridad caducada, pérdida del directorio, privacidad y reanudación. Es un protocolo no ejecutado: no convierte una copia de archivos ni una identidad ficticia en prueba de soberanía. El siguiente bloque ejecutable requiere inventariar y comparar componentes existentes antes de elegir la integración de laboratorio; no se adopta una arquitectura de producción. Verificación documental ampliada a 50 documentos con idioma es-ES.
