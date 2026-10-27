@@ -84,3 +84,5 @@ El siguiente ensayo estructural se acota en [Traslado individual entre alojamien
 La [comparación de mecanismos de identidad](ARQUITECTURA-04-CANDIDATOS-DE-IDENTIDAD.md) propone KERIpy como primer candidato de laboratorio y documenta nueve familias, revisiones observadas y límites. No hay integración ni arquitectura de producción adoptada.
 
 El [laboratorio aislado de identidad](laboratorio-identidad/README.md) recoge el primer resultado ejecutado con KERIpy y sus límites.
+
+El [balance de identidad y traslado](BALANCE-01-IDENTIDAD-Y-TRASLADO.md) relaciona las pruebas ejecutadas con los casos estructurales E/T y delimita el siguiente ensayo de autorización de destino.

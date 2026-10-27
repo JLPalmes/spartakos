@@ -125,3 +125,7 @@ La revisión de desarrollo posterior conserva por inspección estática el flujo
 Tres escenarios nuevos comprueban la frontera de caducidad de pendientes, la persistencia de evidencia de contradicción tras reinicio y caducidad de la cola, y el contraste de dos verificadores con ramas distintas después de reiniciar. [Resultados reproducibles](laboratorio-identidad/README.md). La cola de posible duplicidad puede quedar vacía mientras la evidencia sigue almacenada; su vaciado no significa resolución. Caducar un pendiente tampoco revoca su firma: el reenvío completo puede aceptarse.
 
 Se propone separar registro de conflictos, colas operativas y cancelaciones. No se adopta todavía una política de retención o consenso ni se anuncia convergencia automática. La candidata necesita un balance de garantías frente a los ensayos E y T antes de abordar el traslado de identidad.
+
+## 12. Autorización de rol y dirección de proveedor
+
+Cinco pruebas con mensajes nativos de KERIpy comprueban dirección de proveedor, autorización del titular, revocación persistida y rechazo de declaraciones atribuidas a otra identidad. El rol agent no es exclusivo y el observador sin actualización conserva su autorización anterior. [Resultados y límites](laboratorio-identidad/README.md). Esto acredita una pieza de autorización de servicios, no un traslado ni una autoridad única de escritura del perfil. El balance E/T permanece parcial; sigue pendiente estudiar orden y vigencia de las declaraciones.

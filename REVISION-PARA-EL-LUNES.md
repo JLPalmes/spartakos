@@ -196,3 +196,19 @@ Hallazgos: salir de una cola no revoca un evento ni resuelve una contradicción.
 ### Publicación autorizada del ciclo de vida
 
 El usuario autoriza commit y push de las pruebas de caducidad y contraste persistido. Repetidas las 22 comprobaciones y la validación de 52 documentos; archivo nuevo revisado sin credenciales, claves privadas ni rutas locales. Se prepara la publicación en la rama de la propuesta #2, sin integrar main. Las notas de cambios pendientes anteriores describen el estado previo a esta autorización.
+
+## Balance de viabilidad de identidad y traslado
+
+Inicio con árbol limpio y sincronización remota comprobada mediante fetch. Preparado BALANCE-01-IDENTIDAD-Y-TRASLADO.md: conclusión provisional, garantías observadas y límites, cobertura individual de E01–E15 y T01–T10 y condiciones de paso. Ningún caso estructural se da por completo. Las 22 comprobaciones siguen siendo de componentes; no hay traslado ejecutado ni arquitectura de producción adoptada.
+
+Próxima unidad concreta: investigar y ensayar autorización y resolución de destinos con mecanismos existentes de KERIpy, separando claves del titular y autoridad del servicio. Solo después preparar perfil público A/B, observador y origen apagado. Se conserva H01 abierto, firma de distribución nativa pendiente y límites de confianza/operación. Documento y enlaces locales preparados; no se modifica código ni datos del simulador. Cambios locales pendientes de commit/push. No se necesita decisión del usuario para el siguiente ensayo reversible; una dependencia común obligatoria sí exigiría decisión explícita antes de adoptarla.
+
+## Roles y direcciones de proveedores con mecanismos existentes
+
+Inicio conservando el balance documental local pendiente y con remoto verificado mediante fetch. Añadido keri_destinations.py: cinco pruebas con makeEndRole, makeLocScheme y verificación nativa. Total de laboratorio: 27 comprobaciones, sin cambios del simulador ni datos del usuario. Se comprueban autorización independiente de dirección, revocación tras reabrir almacenes, reenvío antiguo y declaraciones falsas de proveedor.
+
+Límites observados: agent permite varios proveedores y una vista no actualizada conserva A. No se demuestra exclusividad de escritura ni traslado; los endpoints son valores sintéticos sin servidores de perfil. Se actualiza el balance a cobertura parcial de autorización, sin dar por completo ningún E/T. Próxima unidad: orden, igualdad de fechas y cambios de claves en declaraciones de destino. Cambios del balance y esta unidad locales, pendientes de commit/push; sin adopción de arquitectura de producción.
+
+### Publicación autorizada del balance y los destinos
+
+El usuario autoriza commit y push del balance de garantías y del ensayo de roles y direcciones. Repetidas las 27 comprobaciones y la validación de 53 documentos; archivos nuevos revisados sin credenciales, claves privadas ni rutas del entorno temporal. Se prepara la publicación en la rama de la propuesta #2, sin integrar main. Las notas de cambios pendientes anteriores corresponden al estado previo a esta autorización.

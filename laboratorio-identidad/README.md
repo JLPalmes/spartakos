@@ -163,3 +163,25 @@ Otro escenario comienza con dos bases independientes que aceptan ramas diferente
 - Antes de escoger KERI para producción, deben concretarse retención de evidencia, contraste entre fuentes y comportamiento ante conflicto, además de resolver los límites de H01.
 
 Son propuestas derivadas de los resultados; no se han añadido estados al cliente social ni se ha aprobado una política de consenso. Próximo bloque: elaborar el balance de garantías demostradas y pendientes frente a los ensayos E y T, para decidir qué falta antes del traslado de identidad entre alojamientos. No se requieren decisiones del usuario para completar ese balance documental.
+
+El [balance de garantías frente a E/T](../BALANCE-01-IDENTIDAD-Y-TRASLADO.md) registra la cobertura parcial y las condiciones antes del primer traslado. Ningún caso E/T completo se da por superado por estas 22 comprobaciones.
+
+## Autorización de proveedores y resolución de direcciones
+
+[Ensayo de destinos](keri_destinations.py): cinco pruebas nuevas, **27 comprobaciones de laboratorio en total**. Se usan identidades de titular, proveedores A/B y observadores en almacenes separados. La biblioteca genera y verifica los mensajes existentes `/loc/scheme` y `/end/role/add` o `/end/role/cut`. El rol estudiado es `agent`; no se crea un rol de alojamiento propio ni se le atribuyen permisos de publicación de Spartakos.
+
+| Prueba | Resultado observado |
+| --- | --- |
+| Dirección sin autorización | La dirección anunciada por A queda conocida, pero no aparece como destino autorizado del titular hasta que este concede el rol |
+| Revocar A y autorizar B | El observador actualizado resuelve B; tras cerrar y reabrir sus almacenes, repetir la autorización antigua de A no la restablece |
+| A suplanta al titular o a B | A no logra concederse el rol, revocar a B en nombre del titular ni sustituir la dirección firmada de B |
+| Añadir B sin revocar A | Ambos proveedores quedan autorizados: la operación no sustituye automáticamente al anterior |
+| Observador sin actualización | Conserva A mientras otro observador que recibió el cambio resuelve B |
+
+El titular firma sus autorizaciones desde su almacén propio. Los proveedores no reciben sus claves y sus almacenes no registran la identidad del titular como identidad propia. Las direcciones son valores ficticios de bucle local: no se abren servicios de perfil ni se comprueba la conectividad. Los mensajes se entregan directamente al parser; esta prueba no demuestra descubrimiento, distribución de revocaciones, traslado ni resistencia a la censura.
+
+El orden de respuestas de KERIpy utiliza su política existente de aceptación de datos disponibles. En esta prueba se usan firmas de la misma época y fechas ordenadas, con microsegundos en el formato requerido por Dater. No se deduce una secuencia global independiente del reloj ni exclusión mutua de destinos. La reapertura del observador se prueba cerrando y abriendo los almacenes en el mismo proceso; los escenarios anteriores cubren por separado otros reinicios en procesos nuevos.
+
+Consecuencia: hay un mecanismo existente para atribuir roles y direcciones sin entregar las claves del titular al proveedor. **No hay todavía una demostración de autoridad única de escritura del perfil.** Un `agent` autorizado no es por ese solo hecho el alojamiento vigente ni puede modificar publicaciones. Revocar un rol en la vista de un observador no elimina datos ni capacidad de actuar ante observadores desactualizados.
+
+Antes de trasladar perfil, el siguiente ensayo debe estudiar orden y vigencia de esas declaraciones —incluidos mensajes contradictorios con igual fecha y cambios de claves— y delimitar si el mecanismo permite cumplir el contrato de destino. Si no permite acreditarlo, se conserva como autorización de servicios y se registra la brecha de continuidad, sin escoger arbitrariamente un ganador ni crear consenso propio.

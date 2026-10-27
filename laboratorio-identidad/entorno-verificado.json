@@ -285,14 +285,15 @@
     "keri_local_tests": 5,
     "libsodium_upstream_tests": 101,
     "keri_witness_receipt_tests": 7,
-    "keri_total_tests": 22,
+    "keri_total_tests": 27,
     "keri_http_tests": 5,
     "http_continuity_scenarios": 2,
     "http_endpoint_diagnostic_reproductions": 1,
     "keri_pending_recovery_tests": 2,
     "experimental_guard_tests": 2,
     "combined_http_persisted_recovery_tests": 1,
-    "keri_lifecycle_tests": 3
+    "keri_lifecycle_tests": 3,
+    "keri_destination_authorization_tests": 5
   },
   "limitations": [
     "No dependency security audit completed",
@@ -304,7 +305,11 @@
     "Combined test uses explicit endpoint rediscovery and normal verifier shutdown; witness crash occurs after response",
     "Expiry tested with controlled clock only; not real wall-clock soak testing",
     "Two persisted verifiers exchange branches through explicit API delivery; no automatic observer network",
-    "No power loss, mid-write crash, indefinite retention or full provider migration tested"
+    "No power loss, mid-write crash, indefinite retention or full provider migration tested",
+    "Endpoint agent role is non-exclusive; no unique profile writer established",
+    "Endpoint declarations delivered directly to parser; no profile hosts or automatic discovery",
+    "Unupdated observer retains previous endpoint authorization",
+    "Endpoint authorization persistence tested by reopening stores in same process"
   ],
   "osv_query": {
     "date": "2026-10-27",
