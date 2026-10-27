@@ -86,3 +86,5 @@ La [comparación de mecanismos de identidad](ARQUITECTURA-04-CANDIDATOS-DE-IDENT
 El [laboratorio aislado de identidad](laboratorio-identidad/README.md) recoge el primer resultado ejecutado con KERIpy y sus límites.
 
 El [balance de identidad y traslado](BALANCE-01-IDENTIDAD-Y-TRASLADO.md) relaciona las pruebas ejecutadas con los casos estructurales E/T y delimita el siguiente ensayo de autorización de destino.
+
+Las [condiciones del ensayo de perfil público](PERFIL-01-ACEPTACION-DEL-ENSAYO-PUBLICO.md) distinguen copia verificada, autorización, conflicto y actualidad, y delimitan la ampliación a inventario y referencias públicas.

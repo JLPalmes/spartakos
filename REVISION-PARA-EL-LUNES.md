@@ -264,3 +264,13 @@ Una salida abrupta después de commits y lecturas, sin cierres normales, conserv
 ### Publicación autorizada de composición e interrupciones
 
 El usuario autoriza commit y push y continuar después. Repetidas las 53 comprobaciones y la validación de 53 documentos; archivos nuevos revisados sin secretos ni rutas privadas. Se prepara la publicación de entrega autorizada y estados parciales en la rama de #2, sin integrar main. Las notas previas de cambios locales se refieren al estado anterior a esta autorización.
+
+## Publicación y cierre de alcance del perfil público
+
+Publicado f1f121d con entrega autorizada y vistas parciales tras repetir las 53 comprobaciones y verificar 53 documentos. Rama limpia y coincidencia remota confirmadas antes de continuar, con la propuesta #2 asociada y sin integrar main.
+
+Continuación documental: preparado PERFIL-01-ACEPTACION-DEL-ENSAYO-PUBLICO.md con doce criterios trazables, estados independientes y límites explícitos de integridad, autoridad, historial, conflicto y actualidad. Propuestas de comportamiento aún no implementadas; no se eleva el total de 53 comprobaciones ni se completa un E/T. Siguiente bloque: inventario público firmado, objetos y referencias estables desde observador independiente, con origen apagado, ausencias, alteración y retiradas. No se incluyen datos privados ni migración externa en ese ensayo. La unidad documental queda local pendiente de commit/push; no se modifican código ni datos del simulador.
+
+### Publicación autorizada del cierre público mínimo
+
+El usuario autoriza commit y push y continuar después. Validados 54 documentos, enlaces e idioma; esta unidad solo modifica documentación y no requiere repetir las 53 comprobaciones de código ya superadas. Se prepara su publicación en la rama de #2, sin integrar main. Las notas de cambios pendientes anteriores corresponden al estado previo a esta autorización.

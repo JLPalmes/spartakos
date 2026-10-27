@@ -313,3 +313,5 @@ Las declaraciones son mensajes públicos sintéticos prefirmados por el coordina
 La multiplicidad temporal no concede a los proveedores permiso de editar. La ausencia temporal de proveedor tampoco elimina el perfil conservado. `globally_current` continúa desconocido en todas las vistas. Ningún estado parcial se presenta como traslado confirmado ni como error de consenso resuelto.
 
 Próximo bloque propuesto: consolidar las condiciones de aceptación del ensayo público mínimo y el tratamiento explícito de estado incompleto, antes de ampliar a objetos y referencias sociales. No se cambia la interfaz del simulador ni se da por completo un caso E/T.
+
+El [cierre de alcance del perfil público](../PERFIL-01-ACEPTACION-DEL-ENSAYO-PUBLICO.md) relaciona doce criterios con evidencia ejecutada y define estados independientes. No incrementa las 53 comprobaciones ni aprueba el componente para producción.

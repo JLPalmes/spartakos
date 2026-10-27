@@ -169,3 +169,9 @@ Cuatro pruebas adicionales verifican cinco procesos sucesivos en cada escenario:
 También se verifica terminación abrupta del proceso después de commits, sin cierres normales; el proceso nuevo conserva la vista parcial. No se prueba corte durante transacción ni atomicidad distribuida. Los servicios siguen disponibles en este bloque; las caídas de proveedor se ensayaron separadamente.
 
 Se amplía evidencia parcial para T05 y E09, sin completar traslado de objetos, referencias o autoridad de escritura. Las vistas parciales deben expresarse como tales; no se inventa éxito definitivo, actualización global o exclusividad de alojamiento. Próxima unidad: consolidar condiciones de aceptación del perfil público mínimo y comportamiento explícito ante incompletitud antes de extender el inventario social.
+
+## 15. Cierre del alcance público mínimo
+
+Preparadas [las condiciones de aceptación del perfil público](PERFIL-01-ACEPTACION-DEL-ENSAYO-PUBLICO.md): doce criterios con evidencia y límites, dimensiones separadas de cuerpo, historia, autorización, entrega, conflicto y actualidad, y propuestas de integración. No se implementa un indicador agregado ni se atribuye actualidad global a una cabeza local. Tampoco se exige un servidor único o una elección técnica del usuario para resolver estados parciales.
+
+El banco local puede continuar con inventario de objetos públicos y referencias estables desde un observador que no se traslada. Debe incorporar autoridad del inventario, alteración/ausencias y retiradas antes de atribuir traslado completo. Ningún E/T se completa y el total de comprobaciones ejecutadas permanece en 53. Esta unidad es documental y no cambia la adopción provisional de componentes.
