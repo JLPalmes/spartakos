@@ -8,12 +8,15 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import urllib.error
+from urllib.parse import urlparse
 
 from keri import core, kering
 from keri.core import eventing, serdering
 from keri.db import basing, dbing
 
 from keri_witnesses import fixture, receipts
+from keri_http import WitnessProcess
 
 
 def run_phase(root, phase):
@@ -43,14 +46,33 @@ def run_phase(root, phase):
                 raise AssertionError('Se aceptó sin suficientes recibos.')
             assert db.cntPwes(key) == 1
             assert kvy.kevers[pending.pre].sn == 0
-        elif phase == 'resume':
+        elif phase in ('resume', 'unavailable'):
             assert kvy.kevers[pending.pre].sn == 0
             assert db.cntPwes(key) == 1
             # No se reenvía el evento: se añade el recibo y se procesa el escrow persistido.
             receipt = eventing.receipt(pre=pending.pre, sn=pending.sn, said=pending.said)
-            extra = json.loads((root / 'later-receipt.json').read_text())
+            if 'http_witness' in data:
+                endpoint = data['http_witness']
+                url = urlparse(endpoint['url'])
+                if url.scheme != 'http' or url.hostname != '127.0.0.1' or url.path != '/receipts':
+                    raise RuntimeError('El ensayo solo admite el endpoint local de recibos.')
+                witness = WitnessProcess(root)
+                witness.identifier, witness.index, witness.url = endpoint['identifier'], endpoint['index'], endpoint['url']
+                if phase == 'unavailable':
+                    try:
+                        witness.request(query=f'pre={pending.pre}&sn={pending.sn}')
+                    except urllib.error.URLError:
+                        assert kvy.kevers[pending.pre].sn == 0
+                        assert db.cntPwes(key) == 1
+                        print(json.dumps({'phase': phase, 'ok': True}))
+                        return
+                    raise AssertionError('El testigo detenido respondió.')
+                extra_receipts = witness.request(query=f'pre={pending.pre}&sn={pending.sn}')
+            else:
+                extra = json.loads((root / 'later-receipt.json').read_text())
+                extra_receipts = [core.Siger(qb64=extra['receipt'])]
             try:
-                kvy.processReceipt(serder=receipt, wigers=[core.Siger(qb64=extra['receipt'])], local=False)
+                kvy.processReceipt(serder=receipt, wigers=extra_receipts, local=False)
             except kering.UnverifiedReceiptError:
                 pass  # La API guarda primero el recibo en su propio escrow.
             kvy.processEscrowUnverWitness()
@@ -92,10 +114,63 @@ class PendingRecovery(unittest.TestCase):
                 self.assertEqual(json.loads(result.stdout), {'phase': phase, 'ok': True})
 
 
+class HttpPendingRecovery(unittest.TestCase):
+    def test_http_receipt_recovers_persisted_verifier_after_witness_crash(self):
+        with tempfile.TemporaryDirectory(prefix='spartakos-combined-') as path:
+            root = Path(path)
+            observer = root / 'observer'
+            observer.mkdir(mode=0o700)
+            (observer / 'SOLO-ENSAYO-SINTETICO').write_text('spartakos\n')
+            witnesses = []
+            try:
+                for index in range(3):
+                    directory = root / f'witness-{index}'
+                    directory.mkdir(mode=0o700)
+                    (directory / 'SOLO-ENSAYO-SINTETICO').write_text('spartakos\n')
+                    witness = WitnessProcess(directory, guarded=True)
+                    witness.index = index
+                    witnesses.append(witness)
+                    witness.start()
+                owner, following = core.Signer(), core.Signer()
+                inception = eventing.incept(keys=[owner.verfer.qb64],
+                    ndigs=[core.Diger(ser=following.verfer.qb64b).qb64],
+                    wits=[w.identifier for w in witnesses], toad=2)
+                inception_receipts = [s.qb64 for witness in witnesses for s in witness.request(inception, owner)]
+                pending = eventing.interact(pre=inception.pre, dig=inception.said, sn=1)
+                first_receipt = witnesses[0].request(pending, owner)[0].qb64
+                witnesses[1].request(pending, owner)
+                def save_events():
+                    data = {'inception': inception.raw.decode(), 'pending': pending.raw.decode(),
+                        'inception_owner': [owner.sign(inception.raw, index=0).qb64],
+                        'inception_witnesses': inception_receipts,
+                        'pending_owner': [owner.sign(pending.raw, index=0).qb64],
+                        'first_receipt': first_receipt,
+                        'http_witness': {'url': witnesses[1].url, 'identifier': witnesses[1].identifier, 'index': 1}}
+                    (observer / 'events.json').write_text(json.dumps(data))
+                save_events()
+                def stage(phase):
+                    result = subprocess.run([sys.executable, str(Path(__file__).resolve()),
+                        '--phase', phase, '--state-dir', str(observer)], capture_output=True, text=True, timeout=20)
+                    self.assertEqual(result.returncode, 0, result.stderr[-2000:])
+                    self.assertEqual(json.loads(result.stdout), {'phase': phase, 'ok': True})
+                stage('wait')
+                witnesses[1].stop(abrupt=True)
+                stage('unavailable')
+                witnesses[1].start()
+                save_events()  # Solo actualiza la dirección efímera; no añade el recibo faltante.
+                stage('resume')
+                stage('verify')
+                # Otro proceso confirma que el estado final permanece persistido.
+                stage('verify')
+            finally:
+                for witness in witnesses:
+                    witness.stop()
+
+
 if __name__ == '__main__':
     os.umask(0o077)
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--phase', choices=['wait', 'resume', 'verify'])
+    parser.add_argument('--phase', choices=['wait', 'resume', 'verify', 'unavailable'])
     parser.add_argument('--state-dir', type=Path)
     args = parser.parse_args()
     if args.phase:

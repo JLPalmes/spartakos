@@ -285,11 +285,13 @@
     "keri_local_tests": 5,
     "libsodium_upstream_tests": 101,
     "keri_witness_receipt_tests": 7,
-    "keri_total_tests": 16,
-    "keri_http_tests": 3,
+    "keri_total_tests": 19,
+    "keri_http_tests": 5,
     "http_continuity_scenarios": 2,
     "http_endpoint_diagnostic_reproductions": 1,
-    "keri_pending_recovery_tests": 1
+    "keri_pending_recovery_tests": 2,
+    "experimental_guard_tests": 2,
+    "combined_http_persisted_recovery_tests": 1
   },
   "limitations": [
     "No dependency security audit completed",
@@ -298,8 +300,8 @@
     "Divergent isolated verifiers detect conflict only when shown the other branch; no automatic convergence",
     "HTTP ReceiptEnd only on loopback; no complete witness deployment",
     "Native source signature not verified; OSV query excludes native dependencies",
-    "Coordinator escrow recovery verified separately from HTTP; no combined end-to-end restart test",
-    "No power loss, mid-write crash, expiry or full provider migration tested"
+    "No power loss, mid-write crash, expiry or full provider migration tested",
+    "Combined test uses explicit endpoint rediscovery and normal verifier shutdown; witness crash occurs after response"
   ],
   "osv_query": {
     "date": "2026-10-27",
@@ -314,7 +316,8 @@
       "id": "H01",
       "status": "reproduced",
       "summary": "ReceiptEnd returns a signed receipt for an author-invalid interaction absent from its accepted log; full event verifier rejects the event",
-      "production_endpoint_approved": false
+      "production_endpoint_approved": false,
+      "local_mitigation": "Experimental accepted-history gate tested; upstream unchanged; not approved for production"
     }
   ]
 }

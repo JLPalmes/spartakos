@@ -170,3 +170,19 @@ Añadida una prueba de persistencia de escrow: guardar con un recibo, cerrar, re
 ### Cierre autorizado del laboratorio para revisión
 
 El usuario autoriza commit y push de esta unidad. Repetidas las 16 comprobaciones del laboratorio y la validación de los 52 documentos; revisión de archivos nuevos sin claves privadas, credenciales, datos del usuario ni rutas del entorno temporal. Se prepara su publicación en la rama de la propuesta #2, sin integrar main. Las anotaciones anteriores de cambios pendientes describen el estado previo a esta autorización. H01 sigue reproducido y sin resolver; no se aprueba el endpoint para producción.
+
+## Revisión de H01 y protección local de laboratorio
+
+Inicio con árbol limpio y remoto verificado mediante fetch. Leída por SHA una revisión oficial posterior de desarrollo: conserva el flujo relevante por inspección, sin acreditar una corrección ejecutada. Se mantiene KERIpy 1.3.6; no se instala código de desarrollo.
+
+Añadido AcceptedHistoryHab como adaptador experimental opcional: exige coincidencia de digest por secuencia y bytes almacenados antes de delegar la firma del recibo. Dos pruebas nuevas verifican rechazos de eventos no aceptados y continuidad con caída/rotación. Total: 18 comprobaciones, incluida la reproducción del problema original. No se aprueba concurrencia ni servicio completo para producción; no se modifica código ajeno, simulador ni datos del usuario. Fuentes y hashes en laboratorio-identidad/revision-h01.json. Unidad local pendiente de commit/push, separada del commit 9184af4 ya publicado. Próximo bloque: combinar HTTP, escrow persistido y reinicio del verificador.
+
+## Ensayo combinado de HTTP y recuperación persistida
+
+Inicio con cambios locales del adaptador conservados y remoto verificado mediante fetch. Añadida una prueba que combina testigos HTTP, terminación abrupta de un testigo y procesos verificadores separados sobre la misma base. Se conserva el evento pendiente mientras falla la conexión; tras reabrir el testigo, un verificador nuevo obtiene por HTTP el recibo persistido y completa el evento sin reenviarlo. Otros procesos confirman el resultado. Total: 19 comprobaciones, incluida la reproducción de H01, con el simulador intacto.
+
+El coordinador de pruebas actualiza explícitamente el puerto del testigo reiniciado; no se afirma descubrimiento automático. Los procesos verificadores cierran normalmente y el testigo se termina después de responder: no se simula pérdida de alimentación durante escritura. Pendientes caducidad y contraste persistido de fuentes discrepantes. Cambios locales de esta unidad y del adaptador pendientes de commit/push; no se integra main ni se cambia una política de confianza.
+
+### Publicación autorizada de la protección y el ensayo combinado
+
+El usuario autoriza commit y push de ambas ampliaciones. Repetidas las 19 comprobaciones y la validación de 52 documentos; inventarios JSON revisados sin credenciales, claves privadas ni rutas del entorno temporal. Se prepara la publicación en la rama de la propuesta #2, sin integrar main. Las notas anteriores de cambios pendientes corresponden al estado previo a esta autorización; la mitigación de H01 sigue siendo experimental.

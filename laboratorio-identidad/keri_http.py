@@ -21,12 +21,30 @@ from hio.help import decking
 from keri import core, kering
 from keri.app import configing, habbing, indirecting
 from keri.core import coring, eventing, serdering
-from keri.db import basing
+from keri.db import basing, dbing
 
 MARKER = 'SOLO-ENSAYO-SINTETICO'
 
 
-def serve(root):
+class AcceptedHistoryHab:
+    """Adaptador experimental: delega la validación y exige aceptación persistida."""
+    def __init__(self, hab):
+        self.hab = hab
+
+    def __getattr__(self, name):
+        return getattr(self.hab, name)
+
+    def receipt(self, serder):
+        accepted = self.hab.db.getKeLast(dbing.snKey(serder.pre, serder.sn))
+        if accepted is None or bytes(accepted).decode() != serder.said:
+            raise falcon.HTTPConflict(description='El evento no consta en el historial aceptado.')
+        raw = self.hab.db.getEvt(dbing.dgKey(serder.pre, serder.said))
+        if raw is None or bytes(raw) != serder.raw:
+            raise falcon.HTTPConflict(description='El contenido no coincide con el evento aceptado.')
+        return self.hab.receipt(serder)
+
+
+def serve(root, guarded=False):
     root = root.resolve()
     if (root / MARKER).read_text() != 'spartakos\n':
         raise RuntimeError('Falta el marcador del directorio sintético.')
@@ -38,7 +56,7 @@ def serve(root):
                 raise RuntimeError('Recurso fuera del ensayo.')
         hab = hby.habByName('witness') or hby.makeHab(name='witness', transferable=False)
         app = falcon.App()
-        app.add_route('/receipts', indirecting.ReceiptEnd(hab=hab))
+        app.add_route('/receipts', indirecting.ReceiptEnd(hab=AcceptedHistoryHab(hab) if guarded else hab))
         # hio interpreta port=0 como puerto 80; obtener uno efímero explícito.
         for _ in range(5):
             with socket.socket() as reservation:
@@ -59,13 +77,14 @@ def serve(root):
 
 
 class WitnessProcess:
-    def __init__(self, root):
+    def __init__(self, root, guarded=False):
+        self.guarded = guarded
         self.root = root
         self.process = None
         self.identifier = None
 
     def start(self):
-        self.process = subprocess.Popen([sys.executable, str(Path(__file__).resolve()), '--serve', str(self.root)],
+        self.process = subprocess.Popen([sys.executable, str(Path(__file__).resolve()), '--serve', str(self.root)] + (['--guarded'] if self.guarded else []),
                                         stdout=subprocess.PIPE, stderr=None, text=True)
         if not select.select([self.process.stdout], [], [], 15)[0]:
             self.stop()
@@ -160,13 +179,59 @@ class HttpWitnessRecovery(unittest.TestCase):
             finally:
                 witness.stop()
 
+    def test_guarded_service_preserves_crash_recovery_and_rotation(self):
+        self.scenario(abrupt=True, guarded=True)
+
+    def test_guarded_service_rejects_unaccepted_events(self):
+        with tempfile.TemporaryDirectory(prefix='spartakos-http-guarded-') as directory:
+            root = Path(directory)
+            (root / MARKER).write_text('spartakos\n')
+            witness = WitnessProcess(root, guarded=True)
+            witness.index = 0
+            try:
+                witness.start()
+                owner, following = core.Signer(), core.Signer()
+                inception = eventing.incept(keys=[owner.verfer.qb64],
+                    ndigs=[coring.Diger(ser=following.verfer.qb64b).qb64],
+                    wits=[witness.identifier], toad=1)
+                witness.request(inception, owner)
+                first = eventing.interact(pre=inception.pre, dig=inception.said, sn=1)
+                with self.assertRaises(urllib.error.HTTPError) as rejected:
+                    witness.request(first, core.Signer())
+                self.assertEqual(rejected.exception.code, 409)
+                rejected.exception.close()
+                with self.assertRaises(urllib.error.HTTPError) as absent:
+                    witness.request(query=f'pre={inception.pre}&sn=1')
+                self.assertEqual(absent.exception.code, 404)
+                absent.exception.close()
+                good = witness.request(first, owner)
+                self.assertTrue(coring.Verfer(qb64=witness.identifier).verify(good[0].raw, first.raw))
+                conflict = eventing.interact(pre=inception.pre, dig=inception.said, sn=1,
+                                             data=[{'branch': 'conflict'}])
+                with self.assertRaises(urllib.error.HTTPError) as rejected:
+                    witness.request(conflict, owner)
+                self.assertEqual(rejected.exception.code, 409)
+                rejected.exception.close()
+                wrong_parent = eventing.interact(pre=inception.pre, dig=inception.said, sn=2)
+                with self.assertRaises(urllib.error.HTTPError) as rejected:
+                    witness.request(wrong_parent, owner)
+                self.assertEqual(rejected.exception.code, 409)
+                rejected.exception.close()
+                persisted = witness.request(query=f'pre={inception.pre}&sn=1')
+                self.assertTrue(coring.Verfer(qb64=witness.identifier).verify(persisted[0].raw, first.raw))
+                # Repetir el evento aceptado sí puede volver a obtener su recibo.
+                replay = witness.request(first, owner)
+                self.assertTrue(coring.Verfer(qb64=witness.identifier).verify(replay[0].raw, first.raw))
+            finally:
+                witness.stop()
+
     def test_graceful_outage_and_persisted_recovery(self):
         self.scenario(abrupt=False)
 
     def test_crash_and_persisted_recovery(self):
         self.scenario(abrupt=True)
 
-    def scenario(self, abrupt):
+    def scenario(self, abrupt, guarded=False):
         with tempfile.TemporaryDirectory(prefix='spartakos-http-witness-') as directory:
             witnesses = []
             try:
@@ -174,7 +239,7 @@ class HttpWitnessRecovery(unittest.TestCase):
                     root = Path(directory) / str(index)
                     root.mkdir(mode=0o700)
                     (root / MARKER).write_text('spartakos\n')
-                    witness = WitnessProcess(root)
+                    witness = WitnessProcess(root, guarded=guarded)
                     witness.index = index
                     witnesses.append(witness)
                     witness.start()
@@ -245,9 +310,10 @@ if __name__ == '__main__':
     os.umask(0o077)
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--serve', type=Path)
+    parser.add_argument('--guarded', action='store_true')
     args = parser.parse_args()
     if args.serve:
         signal.signal(signal.SIGTERM, lambda *_: sys.exit(0))
-        serve(args.serve)
+        serve(args.serve, guarded=args.guarded)
     else:
         unittest.main(argv=[sys.argv[0]], verbosity=2)

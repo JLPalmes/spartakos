@@ -115,3 +115,7 @@ Dos verificadores aislados aceptan ramas distintas si el titular y un testigo co
 Dos escenarios con procesos y HTTP locales verifican cierre normal y caída abrupta, persistencia del testigo, bloqueo sin recibos suficientes, reenvío explícito y rotación posterior. Una tercera prueba reproduce H01: ReceiptEnd firma el recibo de una interacción cuya firma de autor es inválida, aunque el evento no conste en su historial aceptado; el verificador completo sí lo rechaza. Véanse [resultados y límites](laboratorio-identidad/README.md).
 
 KERI continúa como candidata de investigación. El endpoint de esta revisión no queda aprobado para producción; el hallazgo exige revisar la implementación y el límite de validación, sin deducir que se haya roto la autoridad del titular. No se sustituye el componente ni se inventa un protocolo propio. La consulta OSV de 34 versiones PyPI no devuelve avisos, con el alcance limitado indicado en el laboratorio.
+
+## 10. Mitigación experimental de H01
+
+La revisión de desarrollo posterior conserva por inspección estática el flujo relevante; no se ha verificado una corrección oficial. Se mantiene la versión fijada para no mezclar cambios de protocolo con la investigación. Dos pruebas nuevas verifican un adaptador local que solo firma recibos del evento exacto ya aceptado en el almacén, conservando recuperación y rotación. [Alcance, fuentes y límites](laboratorio-identidad/README.md). No se aprueba para producción ni se da por resuelto H01 en la biblioteca; la concurrencia y las configuraciones completas siguen pendientes.

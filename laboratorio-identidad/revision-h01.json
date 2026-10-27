@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-27",
+  "license": "CC-BY-SA-4.0",
+  "finding": "H01",
+  "fixed_runtime_revision": "4ce4cc79e06653f77342be1bf604086b89b1f090",
+  "reviewed_upstream_revision": "bd5a0bb7a7b105fcd3951f6dda838dc89d3b5281",
+  "reviewed_upstream_version": "2.1.0-dev1",
+  "review_type": "Static source inspection only; development revision not installed or executed",
+  "sources": [
+    {
+      "url": "https://raw.githubusercontent.com/WebOfTrust/keripy/bd5a0bb7a7b105fcd3951f6dda838dc89d3b5281/src/keri/app/indirecting.py",
+      "sha256": "cca82f4615a2a315f6a33e79b08c66b41680b73feaba3cc5d4a423909fb1bdf9"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/WebOfTrust/keripy/bd5a0bb7a7b105fcd3951f6dda838dc89d3b5281/setup.py",
+      "sha256": "024d5712f8fb2dcb68f051db55ed01f30cc406f0330837857b7d99d19c33d09e"
+    }
+  ],
+  "conclusion": "Same parseOne / known-identity / receipt flow remains visible; no verified upstream fix established",
+  "local_mitigation": "Experimental AcceptedHistoryHab gate on persisted sequence digest and exact event bytes before delegating receipt signing",
+  "production_approved": false,
+  "third_parties_contacted": false
+}

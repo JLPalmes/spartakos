@@ -100,7 +100,7 @@ Próximos bloques técnicos: comprobar las colas pendientes tras reiniciar tambi
 
 [Ensayo de escrow persistido](keri_pending.py): una comprobación adicional, **16 en total**. Se ejecutan tres procesos independientes sobre la misma base sintética: el primero guarda el evento sin recibos suficientes y termina; el segundo reabre la base, comprueba que sigue pendiente, recibe únicamente el recibo faltante y procesa las colas oficiales; el tercero verifica el estado final y que no quedan pendientes. No se reenvía el evento ni se copian claves privadas entre procesos.
 
-La reanudación requiere invocar las tareas oficiales de procesamiento de recibos y de eventos pendientes. No es una garantía de recuperación autónoma de un servicio que todavía no existe. Esta prueba entrega el recibo a la API directamente; la prueba HTTP anterior valida separadamente el transporte. Queda pendiente unir reinicio del coordinador y recibos HTTP en un mismo escenario, ensayar caducidad y cortes durante escritura y contrastar fuentes discrepantes después de reiniciar.
+La reanudación requiere invocar las tareas oficiales de procesamiento de recibos y de eventos pendientes. No es una garantía de recuperación autónoma de un servicio que todavía no existe. Esta prueba entrega el recibo a la API directamente; la prueba HTTP anterior valida separadamente el transporte. La ampliación combinada siguiente une el reinicio del verificador con recibos HTTP. Siguen pendientes caducidad, cortes durante escritura y contraste de fuentes discrepantes después de reiniciar.
 
 Para ejecutar el conjunto en el entorno privado preparado, desde la raíz del proyecto:
 
@@ -109,3 +109,33 @@ DYLD_LIBRARY_PATH="/ruta/privada/native/lib" PYTHONPYCACHEPREFIX="/ruta/privada/
 ```
 
 Las 16 comprobaciones incluyen la reproducción de H01. No deben describirse como 16 garantías de seguridad superadas. El simulador social sigue sin cambios y conserva su batería independiente de 109 pruebas.
+
+## H01: revisión posterior y mitigación experimental
+
+El 27 de octubre se leyó el código oficial de la revisión `bd5a0bb7a7b105fcd3951f6dda838dc89d3b5281`, cuyo manifiesto declara 2.1.0-dev1. En ReceiptEnd.on_post sigue visible el flujo parsear → comprobar identidad conocida → firmar recibo, sin exigir en ese punto la coincidencia del evento con la secuencia aceptada. Es inspección estática: no se instaló esa revisión y no se afirma haber reproducido H01 en ella. No se ha acreditado una corrección oficial. Las fuentes inmutables y hashes figuran en [la revisión registrada](revision-h01.json).
+
+Se ensaya localmente AcceptedHistoryHab, un adaptador explícito en keri_http.py que delega en KERIpy y, antes de firmar, exige dos condiciones: el digest aceptado para esa secuencia coincide con el solicitado y los bytes del evento almacenado coinciden exactamente. Si no se cumplen devuelve HTTP 409 y no llama a la firma del recibo. No implementa criptografía ni sustituye la validación de la biblioteca. El servicio original continúa disponible en el ensayo para reproducir H01; el modo protegido se activa solo con `--guarded` en el proceso de laboratorio.
+
+Dos pruebas adicionales, **18 comprobaciones en total**, verifican:
+
+- Rechazo de firma inválida en un evento nuevo, rama contradictoria firmada por el titular y enlace incorrecto al evento anterior; conservación del recibo aceptado y repetición legítima.
+- Escenario completo de caída abrupta, reinicio persistido y rotación usando el servicio con adaptador.
+
+La mitigación supera estos casos concretos, pero no supone aprobación para producción. Quedan por estudiar concurrencia entre comprobación y firma, configuración completa del servicio, delegación, cambios de testigos, eventos pendientes y compatibilidad con otros transportes. El servidor del ensayo atiende secuencialmente; no demuestra seguridad frente a escrituras concurrentes. H01 permanece abierto en la implementación fijada. No se ha modificado código ajeno ni contactado con terceros.
+
+Conclusión provisional: mantener KERI como candidata de laboratorio, conservar la reproducción original y continuar con el ensayo combinado de transporte, cola persistida y reinicio del coordinador. No se conecta todavía este adaptador al simulador ni se cambia la política de confianza de Spartakos.
+
+## Ensayo combinado: HTTP y verificador persistente
+
+Añadida una prueba completa en keri_pending.py, **19 comprobaciones en total**. Mantiene tres servicios de recibos en procesos separados con el adaptador experimental activado y una base persistente propia del verificador. Todos los datos son sintéticos y temporales.
+
+1. Los testigos reciben la creación de identidad por HTTP; dos reciben también la interacción siguiente.
+2. Un primer proceso verificador recibe solo un recibo de esa interacción, la deja en la cola persistida y termina.
+3. Se termina abruptamente el segundo testigo. Un nuevo proceso verificador intenta consultarlo por HTTP: la conexión falla y conserva el estado anterior y el evento pendiente.
+4. Se reinicia el testigo sobre su almacén anterior. Se conserva su identidad y se comunica al ensayo su nuevo puerto local.
+5. Otro proceso verificador reabre la misma base y consulta por HTTP el recibo del evento ya guardado. No recibe de nuevo el evento ni dispone de las claves del autor o del testigo. Procesa las colas oficiales y acepta el evento al completar los recibos necesarios.
+6. Otros procesos verificadores confirman el estado aceptado y la ausencia del pendiente.
+
+El ensayo compone las piezas que antes se verificaban por separado. No demuestra descubrimiento automático del nuevo puerto: el coordinador de pruebas actualiza explícitamente esa dirección. El verificador se reinicia tras un cierre normal; la terminación abrupta corresponde al testigo y ocurre después de haber respondido. No se prueban pérdida de disco, caída durante transacción, caducidad del pendiente ni traslado entre proveedores. La mitigación de H01 sigue siendo experimental.
+
+Siguiente bloque técnico: comprobar caducidad de pendientes y contraste persistido de historiales discrepantes. Las pruebas de laboratorio no obligan todavía a elegir umbrales, operadores o mecanismos de recuperación de cuentas para Spartakos.
