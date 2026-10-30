@@ -2,8 +2,8 @@
 title: Spartakos — Especificación integral
 lang: es-ES
 license: CC-BY-SA-4.0
-version: 0.20
-date: 2026-10-22
+version: 0.29
+date: 2026-10-27
 status: Diseño funcional y simulador local multicuenta; sin red distribuida ni laboratorio estructural
 ---
 
@@ -250,7 +250,7 @@ Permisos de lectura no equivalen a indexación pública, descarga masiva o uso p
 
 El [diseño funcional de publicaciones, audiencias y conversaciones](FUNCIONAL-03-PUBLICACIONES-Y-CONVERSACIONES.md) desarrolla editor común, permisos de respuesta, contexto, difusión y tratamiento de versiones. Las propuestas de citas, redistribución e historial de edición se mantienen pendientes de revisión; no se asume viralidad como objetivo. Una señal de acuerdo no se reinterpreta como apoyo a un texto modificado posteriormente.
 
-Primera versión: texto, enlaces, imágenes, respuestas en hilos, edición, retirada, guardados privados, seguimiento y notificaciones. Perfil y comunidades comparten un editor coherente. Se propone posponer vídeo alojado y mensajería instantánea hasta dimensionar recursos; vídeos mediante enlace no se presentan como alojados.
+Primera versión: texto, enlaces, imágenes, respuestas en hilos, edición, retirada, guardados privados, seguimiento y notificaciones. El simulador incorpora borradores privados guardados explícitamente, recuperables tras recargar y sujetos a control de versión, con papelera y restauración reversibles. Se conservan destino y audiencia; publicar y programar revalidan permisos. La recuperación de respuestas aún no está implementada. La edición propia comprueba versión y permisos y conserva referencias de respuestas, citas y aprobación propia. La retirada vacía el cuerpo activo y deja marcador, sin borrar aportaciones ajenas ni prometer eliminación de respaldos o copias externas. Se incorpora publicación programada por fecha y hora, con zona explícita, gestión privada de pendientes, margen de retraso y comprobación de permisos al ejecutar. Las condiciones adicionales se estudian en [Publicaciones y conversaciones, sección 10](FUNCIONAL-03-PUBLICACIONES-Y-CONVERSACIONES.md); no se consideran implementadas. Perfil y comunidades comparten un editor coherente. Se propone posponer vídeo alojado y mensajería instantánea hasta dimensionar recursos; vídeos mediante enlace no se presentan como alojados.
 
 La especificación completa incluye adjuntos audiovisuales, pero su admisión depende de cuota y fase. El diseño de datos y exportación debe permitirlos sin cambiar identidad de objetos.
 
@@ -258,7 +258,7 @@ No se exige amistad mutua para todo seguimiento. Las cuentas pueden aprobar segu
 
 No hay rachas, avisos de pérdida de posición, publicación obligatoria ni contadores destinados a presionar. Los contadores de actividad, si se muestran, pueden ocultarse; no se convierten en reputación temática.
 
-El diseño no presupone «me gusta». Se estudian acuerdo graduado dentro de la audiencia de la publicación, interés privado y seguimiento de conversación con significados separados. Ninguna coincidencia se convierte automáticamente en verdad, reputación, privilegios o prioridad. «Me interesa» no avisa al autor ni autoriza publicidad o recomendaciones externas.
+La interacción utiliza «Me gusta» sencillo y reversible, «Guardar» privado y seguimiento de conversación con significados separados. Se descarta el acuerdo graduado. Ninguna reacción se convierte automáticamente en verdad, reputación, privilegios o prioridad. Guardar no avisa al autor ni autoriza publicidad o recomendaciones externas. Las reacciones respetan la audiencia de la publicación. La identidad de quienes reaccionan queda oculta para el autor y otros lectores. Cada cuenta recibe su elección propia inmediata y un total agregado, actualizado por cortes horarios comunes, con hora y fecha del corte. No hay listas de identidades ni avisos individuales. El botón utiliza un check verde de aprobación, sin corazón. El proveedor conserva el vínculo técnico; no se promete anonimato frente a él. El recuento exacto diferido se ensaya sin efecto sobre ordenación o reputación y sin prometer anonimato en grupos pequeños. Inicio general y cada comunidad tienen espacios separados, con destino y audiencia explícitos; las respuestas conservan el contexto y la audiencia del mensaje al que responden, con un máximo de tres niveles contando la publicación inicial. Para continuar, se crea una publicación propia con cita y aviso al autor citado, sin ampliar la audiencia de contenido restringido.
 
 ## 8. Libertad algorítmica y descubrimiento
 
@@ -601,3 +601,5 @@ La [resolución propuesta de Q01–Q29](RESOLUCION-DE-PENDIENTES.md) concreta re
 - [Prototipo de experiencia](prototipo/README.md).
 - [Resultados de comprobaciones locales](RESULTADOS-DEL-PROTOTIPO.md).
 - [Preparación de apertura y licencias](PREPARACION-DE-APERTURA.md).
+
+La ampliación local de borradores incorpora respuestas y ediciones guardadas explícitamente, con destino fijo, referencia de versión y revisión expresa de originales modificados, conforme a la sección 14 de [Publicaciones y conversaciones](FUNCIONAL-03-PUBLICACIONES-Y-CONVERSACIONES.md). No implica programación de esos tipos ni guardado automático.

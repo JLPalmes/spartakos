@@ -2,8 +2,8 @@
 title: Spartakos — Inicio, búsqueda y descubrimiento
 lang: es-ES
 license: CC-BY-SA-4.0
-version: 0.1
-date: 2026-10-22
+version: 0.2
+date: 2026-10-23
 status: Diseño funcional propuesto; alternativas y pruebas pendientes
 ---
 
@@ -109,3 +109,40 @@ Suscripciones a resúmenes periódicos son opcionales; no convertir una cuenta s
 ## 11. Decisiones pendientes
 
 Selección editorial inicial y responsabilidad sobre ella; formas de evitar concentración de recomendaciones; cobertura mínima de búsqueda gratuita; tratamiento de consultas y cachés; profundidad del aprendizaje opcional; accesos de avisos y conversaciones seguidas. Definirlas mediante recorridos, sin elegir motores o algoritmos por anticipado.
+
+## 12. Estadísticas útiles y observabilidad pública
+
+Orientación a estudiar: ofrecer información útil al titular, a las comunidades y, de forma agregada, al público sobre el funcionamiento del sistema. No se adopta todavía un catálogo ni se implementa captación adicional. Cada indicador deberá justificar qué decisión ayuda a tomar, de qué datos procede, a quién se muestra, cuánto se conserva y qué coste exige a los operadores voluntarios.
+
+### 12.1 Estadísticas personales
+
+Primeros candidatos: almacenamiento utilizado y disponible; estado y antigüedad de copias; resultado de exportaciones; número de publicaciones, borradores y programaciones propias y pendientes bloqueados. Sirven para gestionar contenido y continuidad. No implican mostrar al público cuántas veces entra una persona ni premiar rachas, metas de publicación o permanencia. Las cifras son privadas para su titular dentro del servicio; el acceso técnico del proveedor se explica conforme al modelo de privacidad.
+
+No se presupone recoger lecturas individuales, visitas de perfil, tiempo de atención o seguimiento entre dispositivos. Si posteriormente se propone alguna medida de alcance, necesitará justificación y diseño específico; no se incorpora por llamar estadísticas a esta función. Los intereses privados no se convierten en datos públicos ni comerciales.
+
+### 12.2 Estadísticas de comunidad
+
+Candidatos: capacidad y cuota, estado de continuidad, volumen agregado de publicaciones por periodo, conversaciones pendientes y carga de moderación. Lo reservado a la administración no se hace visible a todos los integrantes por defecto; lo accesible a integrantes no se publica fuera. Las denuncias y expedientes requieren protección específica.
+
+Evitar rankings de personas, clasificaciones de comunidades por crecimiento o métricas que conviertan la falta de actividad en defecto. Una cifra de participación no equivale a calidad, representatividad ni reputación. En grupos pequeños incluso un total puede identificar comportamientos: antes de ofrecerlo se decide si se omite, agrupa o retrasa. No se garantiza anonimato por haber quitado los nombres.
+
+### 12.3 Estadísticas globales visibles para todos
+
+Propuesta: panel público de salud y recursos del sistema, con disponibilidad agregada, capacidad declarada, comprometida y disponible, incidencias y cobertura de los servicios que aportan datos. Distinguir declaraciones de operadores de comprobaciones independientes. No mostrar una cifra de disponibilidad o capacidad como garantía de recuperación o alta gratuita para cualquier cuenta.
+
+En una red distribuida no se presupone un censo central exhaustivo. Toda cifra indica servicios participantes, periodo observado, método de recuento, duplicados conocidos o no resueltos y cobertura. Cuando la cobertura sea parcial, describirla como tal; ausencia de datos no significa cero. Los indicadores de cuentas o comunidades, si se estudian, necesitan definiciones y deduplicación y nunca revelan la existencia de espacios privados.
+
+El panel público no debe exponer direcciones internas, ubicación precisa, topología privada, horarios de personas ni detalles que faciliten vigilancia o ataques. La transparencia sobre el funcionamiento no obliga a publicar telemetría sensible. La participación de operadores requiere un formato abierto, mínimo y de coste asumible, sin añadir por defecto seguimiento de usuarios.
+
+### 12.4 Reglas comunes de acceso, publicación y validación
+
+- Reutilizar los datos necesarios para funciones ya autorizadas antes de proponer nueva captación; no enviar información a terceros de analítica por defecto.
+- Comprobar permisos en el servicio y en exportaciones; una gráfica o descarga no puede ampliar la audiencia de los datos de origen.
+- Los agregados de Me gusta utilizarían los mismos cortes horarios ya publicados, sin series más finas, listas de participantes o filtros que permitan recuperar cambios entre cortes.
+- Estudiar inferencias por diferencias entre periodos, consultas repetidas, filtros y celdas pequeñas. Retrasar o aplicar un umbral aislado no garantiza anonimato.
+- Mostrar definiciones, unidades, fecha del dato, frecuencia de actualización y límites de cobertura. No confundir la fecha del corte con la del cálculo.
+- Presentación sobria y opcional: sin avisos de caída de popularidad, metas de actividad, puntuación de personas, privilegios ni optimización emocional.
+
+Pendientes antes de desarrollar: catálogo mínimo por ámbito; audiencias y roles; necesidad real de cada dato; políticas para grupos pequeños y consultas; retención y frecuencia; metodología distribuida, verificación y coste de operación. Validar con tareas concretas —comprobar espacio, continuidad o disponibilidad— y revisar si el beneficio compensa exposición y mantenimiento.
+
+El [catálogo mínimo propuesto](DISENO-ESTADISTICAS.md) concreta una primera fase de gestión personal y recursos, excluye inicialmente recuentos de comportamiento y describe un panel público de declaraciones de servicios con cobertura y caducidad explícitas. Incluye un guion de aceptación todavía sin ejecutar. No autoriza su implementación.

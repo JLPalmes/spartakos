@@ -2,7 +2,7 @@
 title: Spartakos — Documentación del proyecto
 lang: es-ES
 license: CC-BY-SA-4.0
-date: 2026-10-22
+date: 2026-10-27
 ---
 
 # Spartakos
@@ -21,13 +21,13 @@ Para participar: [guía de contribución](CONTRIBUTING.md), [coordinación inici
 
 ## Prototipo con servidor local y varias cuentas
 
-La [simulación funcional](simulacion/README.md) permite abrir cuatro cuentas a la vez o usar pestañas separadas. Comparte publicaciones mediante un servidor local, aplica permisos por sesión y conserva los datos al reiniciar. Alicia administra, Bruno participa, Carla empieza con lectura y Diego no pertenece a la comunidad privada.
+La [simulación funcional](simulacion/README.md) permite abrir cuatro cuentas a la vez o usar pestañas separadas. Comparte publicaciones mediante un servidor local, aplica permisos por sesión y conserva los datos al reiniciar. Alicia administra, Bruno participa, Carla empieza con lectura y reacciones y Diego no pertenece a la comunidad privada. La segunda revisión incorpora Guardar, Me gusta reversible, respuestas encadenadas y espacios separados para Inicio general y cada comunidad. La ampliación añade publicación programada con gestión privada de pendientes y control de retrasos, y borradores guardados explícitamente que pueden retomarse tras recargar. Me gusta utiliza un check verde, oculta identidades a otros usuarios y muestra recuentos agregados solo en cortes horarios. Se puede editar texto propio con versión o retirarlo dejando un marcador, sin eliminar respuestas ajenas. Los hilos tienen tres niveles; para continuar se crea una publicación con cita y aviso al autor citado.
 
 Requisitos: Node.js 22 o posterior y Python 3 para la verificación documental. No hay dependencias de terceros que instalar. Desde la raíz del repositorio:
 
 ```sh
 python3 verificar.py
-node --test prototipo/modelo.test.mjs simulacion/servidor.test.mjs
+node --test prototipo/modelo.test.mjs simulacion/*.test.mjs
 node simulacion/servidor.mjs
 ```
 
@@ -37,7 +37,9 @@ La [maqueta anterior sin servidor](prototipo/README.md) se conserva como anteced
 
 ## Lectura principal
 
-1. [Especificación integral v0.20](ESPECIFICACION.md): primera pasada funcional y contraste comparado; reciprocidad y acreditación como mecanismos candidatos.
+Las [notas de revisión del prototipo](NOTAS-DE-REVISION.md) acumulan observaciones, cambios implementados y asuntos pendientes, distinguiendo decisiones de propuestas todavía abiertas.
+
+1. [Especificación integral v0.28](ESPECIFICACION.md): primera pasada funcional y contraste comparado; reciprocidad y acreditación como mecanismos candidatos.
 2. [Decisiones, dudas y riesgos](DECISIONES-Y-DUDAS.md): qué está confirmado, qué se propone y qué exige ensayo.
 3. [Matriz de aceptación](MATRIZ-DE-ACEPTACION.md): 148 pruebas especificadas, ninguna ejecutada; incluye escenarios condicionados a adoptar reciprocidad.
 4. [Antecedentes y lecciones](ANTECEDENTES-Y-LECCIONES.md): fuentes, cobertura y límites de la investigación.
@@ -45,7 +47,7 @@ La [maqueta anterior sin servidor](prototipo/README.md) se conserva como anteced
 6. [Modelo mixto de privacidad](MODELO-MIXTO-DE-PRIVACIDAD.md): contenido público, espacios cifrados, claves y recuperación.
 7. [Primer ensayo estructural](ENSAYO-01-COMPONENTES-Y-VALIDACION.md): componentes candidatos, 15 casos reproducibles y criterios de descarte; no ejecutado.
 8. [Identidad, perfil y relaciones](FUNCIONAL-01-IDENTIDAD-PERFIL-Y-RELACIONES.md): primer bloque de diseño funcional, con alternativas pendientes.
-9. [Interacción útil y autonomía de atención](FUNCIONAL-02-INTERACCION-UTIL.md): acuerdo, interés privado y seguimiento sin diseño orientado a dependencia.
+9. [Interacción útil y autonomía de atención](FUNCIONAL-02-INTERACCION-UTIL.md): Me gusta, Guardar y seguimiento sin diseño orientado a dependencia.
 10. [Publicaciones, audiencias y conversaciones](FUNCIONAL-03-PUBLICACIONES-Y-CONVERSACIONES.md): editor, respuestas, difusión, edición y retirada.
 11. [Comunidades y permisos](FUNCIONAL-04-COMUNIDADES-Y-PERMISOS.md): plantillas, roles, participación, moderación local y continuidad.
 12. [Inicio, búsqueda y descubrimiento](FUNCIONAL-05-INICIO-BUSQUEDA-Y-DESCUBRIMIENTO.md): lectura, exploración, privacidad de consultas y avisos útiles.
@@ -63,12 +65,28 @@ Los documentos de análisis conservan los antecedentes técnicos. La especificac
 
 ## Prototipo y comprobaciones
 
-La [simulación con varias cuentas](simulacion/README.md) añade catorce pruebas HTTP a las diez de la [maqueta anterior](prototipo/README.md). Se comprueban permisos por sesión, persistencia, audiencia y consentimiento, sin atribuir a esas pruebas garantías de una red distribuida. El [informe de resultados](RESULTADOS-DEL-PROTOTIPO.md) distingue estas comprobaciones de las pruebas de producto, que siguen sin ejecutarse.
+La [simulación con varias cuentas](simulacion/README.md) incluye 37 pruebas HTTP, cuatro de conversaciones, diez de programación, siete de citas y niveles, ocho de recuentos horarios, ocho de borradores iniciales, catorce de borradores de respuesta y edición y once de edición y retirada, además de las diez de la [maqueta anterior](prototipo/README.md). Se comprueban permisos por sesión, persistencia, audiencia y consentimiento, sin atribuir a esas pruebas garantías de una red distribuida. El [informe de resultados](RESULTADOS-DEL-PROTOTIPO.md) distingue estas comprobaciones de las pruebas de producto, que siguen sin ejecutarse.
 
 El [contrato preliminar de datos y autoridad](CONTRATO-DE-DATOS-Y-AUTORIDAD.md) fija separaciones antes de elegir componentes. El [paquete de apertura](PREPARACION-DE-APERTURA.md) documenta el repositorio y las licencias adoptadas, y las condiciones de contribución.
 
 ## Continuación preparada
 
+El [registro de revisión](REVISION-PARA-EL-LUNES.md) reúne el estado de los bloques en curso, sus comprobaciones y los pendientes de revisión.
+
 La [resolución propuesta de los 29 pendientes](RESOLUCION-DE-PENDIENTES.md) concreta recomendaciones, alternativas y dependencias. Se complementa con el [gobierno de la acreditación](GOBIERNO-DE-LA-ACREDITACION.md), el [programa de operadores voluntarios](OPERACION-Y-VOLUNTARIADO.md) y el [protocolo de validación](VALIDACION-Y-PUERTAS-DE-AVANCE.md). Son propuestas listas para revisar, sin ratificación implícita.
 
 La continuación exige evidencia: participantes para probar recorridos, archivos consentidos para importación, operadores comprometidos y ensayos técnicos. Las licencias iniciales y el destino público están adoptados. La autoridad de gobierno de la red, los operadores y la validación siguen pendientes. El simulador es una implementación local experimental; no adopta todavía la arquitectura de producción.
+
+Para preparar la siguiente prueba, consultar la [guía de revisión del prototipo](GUIA-REVISION-PROTOTIPO.md), que distingue los recorridos disponibles, lo persistido y los asuntos pendientes.
+
+El siguiente ensayo estructural se acota en [Traslado individual entre alojamientos](ENSAYO-02-TRASLADO-INDIVIDUAL.md): protocolo preparado, aún no ejecutado ni arquitectura adoptada.
+
+La [comparación de mecanismos de identidad](ARQUITECTURA-04-CANDIDATOS-DE-IDENTIDAD.md) propone KERIpy como primer candidato de laboratorio y documenta nueve familias, revisiones observadas y límites. No hay integración ni arquitectura de producción adoptada.
+
+El [laboratorio aislado de identidad](laboratorio-identidad/README.md) recoge el primer resultado ejecutado con KERIpy y sus límites.
+
+El [balance de identidad y traslado](BALANCE-01-IDENTIDAD-Y-TRASLADO.md) relaciona las pruebas ejecutadas con los casos estructurales E/T y delimita el siguiente ensayo de autorización de destino.
+
+Las [condiciones del ensayo de perfil público](PERFIL-01-ACEPTACION-DEL-ENSAYO-PUBLICO.md) distinguen copia verificada, autorización, conflicto y actualidad, y delimitan la ampliación a inventario y referencias públicas.
+
+El [ensayo de inventario público](ENSAYO-03-INVENTARIO-PUBLICO.md) comprueba objetos, versiones, referencias y retiradas con el origen apagado, y recoge los límites de integración todavía pendientes.
