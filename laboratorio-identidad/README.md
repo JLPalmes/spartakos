@@ -9,6 +9,12 @@ date: 2026-10-27
 
 Primer ensayo ejecutado con KERIpy 1.3.6, revisión `4ce4cc79e06653f77342be1bf604086b89b1f090`. No adopta todavía KERI como arquitectura de Spartakos. No utiliza ni modifica los datos del simulador.
 
+## Estado consolidado de lectura
+
+Última batería completa confirmada: **107 comprobaciones**, incluyendo Poller y cliente HTTP reales con sobre durable anterior al cursor. Recuperación de ese cliente concreto y MailboxDirector completo aún pendientes; la lectura sigue restringida a material público sintético. Los 109 casos sociales son otra batería. Las cifras antiguas de la secuencia técnica siguiente describen cierres anteriores, no el total vigente.
+
+El [balance actual](../BALANCE-01-IDENTIDAD-Y-TRASLADO.md) resume contratos, cobertura E/T y brechas. [El informe de inventario](../ENSAYO-03-INVENTARIO-PUBLICO.md) conserva el detalle de F01–F09. Ningún E/T completo; KERI experimental, H01 abierto y actualidad global sin probar.
+
 ## Resultado comprobado
 
 Cinco pruebas de integración con la biblioteca real, todas superadas:
@@ -315,3 +321,115 @@ La multiplicidad temporal no concede a los proveedores permiso de editar. La aus
 Próximo bloque propuesto: consolidar las condiciones de aceptación del ensayo público mínimo y el tratamiento explícito de estado incompleto, antes de ampliar a objetos y referencias sociales. No se cambia la interfaz del simulador ni se da por completo un caso E/T.
 
 El [cierre de alcance del perfil público](../PERFIL-01-ACEPTACION-DEL-ENSAYO-PUBLICO.md) relaciona doce criterios con evidencia ejecutada y define estados independientes. No incrementa las 53 comprobaciones ni aprueba el componente para producción.
+
+## Inventario público y referencias
+
+Cuatro pruebas adicionales de [keri_inventory.py](keri_inventory.py) elevan el laboratorio a **57 comprobaciones**. El [informe del inventario público](../ENSAYO-03-INVENTARIO-PUBLICO.md) detalla restauración con A apagado, IDs y revisiones estables, referencias del observador, objetos ausentes o alterados y retirada sin resurrección al volver A. El formato es experimental y aún no compone resolución autorizada, registro de conflicto ni recepción incompleta persistida.
+
+## Recepción incompleta persistida
+
+Una prueba adicional de inventario eleva el laboratorio a **58 comprobaciones**. Se guardan estado de recepción, secuencia esperada y secuencia aplicada. Los casos de objeto ausente o alterado comprueban también ese registro desde una conexión nueva. La prueba nueva termina abruptamente el proceso antes de aplicar el catálogo, comprueba la recepción pendiente y el catálogo anterior, y reintenta en otro proceso hasta completar ambas secuencias. El estado complete y el catálogo se aplican en la misma transacción SQLite; la historia KERI sigue separada. [Detalle y límites](../ENSAYO-03-INVENTARIO-PUBLICO.md). La composición con autorización y registro de conflictos permanece pendiente.
+
+## Referencia inmutable y transición del inventario
+
+Una prueba adicional comprueba que incluso un inventario posterior autorizado no puede cambiar los bytes de una revisión ya conocida manteniendo su ID y número. Se conserva el catálogo anterior. La suite de inventario tiene seis pruebas; el conjunto del laboratorio suma 59. [Caso I06 y límites de transición](../ENSAYO-03-INVENTARIO-PUBLICO.md).
+
+## Rechazo persistido de retrocesos y reactivaciones
+
+Dos nuevas regresiones de inventario elevan el laboratorio a **61 comprobaciones**. Los inventarios posteriores válidamente firmados que intentan retroceder una cabeza o reactivar la misma revisión retirada se rechazan sin alterar el catálogo. El estado rejected y el código quedan persistidos; una intención posterior válida puede completar una recepción nueva. La prueba de reescritura también verifica ahora su rechazo registrado. [I07 e I08, alcance y límites](../ENSAYO-03-INVENTARIO-PUBLICO.md). No se implementa todavía una clasificación exhaustiva de todos los errores ni se completa el traslado.
+
+## Inventario con autorización y conflicto conocido
+
+Cuatro pruebas nuevas de [keri_inventory_access.py](keri_inventory_access.py) elevan el laboratorio a **65 comprobaciones**. El envoltorio de restauración obtiene la dirección tras comprobar el rol, bloquea por conflicto persistido antes de HTTP y repite los controles antes de aplicar. Una revocación recibida durante la descarga impide modificar el catálogo. La puerta es experimental y distinta de la entrada básica de restauración; no aporta atomicidad entre almacenes, detección global de conflictos ni despliegue protegido. [Alcance exacto](../ENSAYO-03-INVENTARIO-PUBLICO.md).
+
+## Omisión y bloqueo de acceso persistido
+
+Una nueva regresión I09 comprueba que un inventario autorizado no puede omitir silenciosamente un objeto previo; el rechazo y su código se guardan sin borrar el catálogo. El conjunto suma **66 comprobaciones**. Las pruebas de composición verifican además el registro local del último intento: conflicto/no autorización bloquean antes de red y revocación durante descarga conserva blocked; una nueva autorización válida permite reintentar. [Alcance de ambos registros y límites](../ENSAYO-03-INVENTARIO-PUBLICO.md). No se añade telemetría ni una transacción global entre almacenes.
+
+## Composición autorizada entre procesos
+
+Tres pruebas nuevas elevan el conjunto a **69 comprobaciones**. La restauración autorizada se ejecuta y repite en procesos nuevos; una terminación instrumentada deja recepción pendiente y catálogo sin aplicar; el reintento revalida autorización y una revocación recibida entretanto lo bloquea hasta una nueva autorización válida. [Resultados y límites](../ENSAYO-03-INVENTARIO-PUBLICO.md). El catálogo, resolución y registros siguen separados, con ventana comprobación/commit y sin fallos dentro de una transacción probados.
+
+## Conflicto tras interrupción y errores de entrega
+
+Tres nuevas pruebas elevan el laboratorio a **72 comprobaciones**. Un conflicto recibido entre interrupción y reintento sigue bloqueando procesos nuevos, aun si se renueva el rol del proveedor. El catálogo no se aplica. Los casos de proveedor apagado y prueba HTTP ausente guardan failed con códigos transport_unavailable/http_404 y permiten reintento después de corregir la disponibilidad. [Alcance exacto](../ENSAYO-03-INVENTARIO-PUBLICO.md): no hay resolución automática de conflicto ni clasificación exhaustiva de fallos.
+
+## Interrupción después de aplicar el catálogo
+
+Dos pruebas nuevas elevan el conjunto a **74 comprobaciones**. Se termina el trabajador tras aplicar catálogo/recepción, antes de completar el registro del intento. Un proceso nuevo revalida y repite sin duplicar. Si recibe una revocación antes de reintentar, queda bloqueado y conserva la copia pública ya verificada; una autorización posterior permite completar otro intento. [Estados distintos y límites](../ENSAYO-03-INVENTARIO-PUBLICO.md). No se prueba caída durante transacción ni se crea atomicidad entre almacenes.
+
+## Diagnóstico sin red de registros separados
+
+Tres pruebas nuevas de [keri_diagnostics.py](keri_diagnostics.py) elevan el laboratorio a **77 comprobaciones**. Lee SQLite en modo solo lectura, no crea bases ausentes y distingue registros desconocidos o ilegibles. Las pruebas de composición comprueban además que observa catálogo aplicado con intento pendiente/bloqueado sin modificar las bases ni incluir cuerpos. No revalida firmas, permisos ni actualidad y no ofrece un indicador agregado de traslado completo. [Límites y uso](../ENSAYO-03-INVENTARIO-PUBLICO.md).
+
+El [balance consolidado](../BALANCE-01-IDENTIDAD-Y-TRASLADO.md) contiene la cobertura E/T vigente tras los ensayos de inventario y fija como prioridad una ejecución pública integrada; las notas anteriores conservan la evolución de cada bloque. No se añaden pruebas por esta consolidación documental.
+
+## Flujo público integrado F01
+
+Una prueba nueva de [keri_public_flow.py](keri_public_flow.py) eleva el laboratorio a **78 comprobaciones**. En la misma ejecución se reúnen inventario multiobjeto, referencia previa, autorización de A/B, A apagado, actualización firmada después del corte, retirada, procesos nuevos y regreso bloqueado de A. [Secuencia exacta y límites](../ENSAYO-03-INVENTARIO-PUBLICO.md). Las declaraciones se siguen inyectando por el coordinador; no se completa el traslado social ni se demuestra actualidad global.
+
+## Introducción OOBI por HTTP
+
+Dos pruebas de [keri_oobi_transport.py](keri_oobi_transport.py) elevan el laboratorio a **80 comprobaciones**. El endpoint nativo transporta historia del titular, rol y ubicación con la identidad del proveedor ya conocida. Otra consulta después del corte no revoca por sí sola el rol previo del observador en esta configuración: no se usará esa introducción como sincronización de revocaciones. [Precondiciones y límite observado](../ENSAYO-03-INVENTARIO-PUBLICO.md). El servicio se ejecuta sobre el entorno del controlador; no cambia la separación de claves de los proveedores A/B.
+
+## Ingreso nativo de respuestas firmadas
+
+Tres pruebas de [keri_rpy_ingress.py](keri_rpy_ingress.py) elevan el conjunto a **83 comprobaciones**. Concesión y corte llegan por HTTP nativo; el 204 solo confirma entrada en cola y el parser valida después. Una firma ajena no revoca, y perder la cola RAM tras el acuse puede perder el corte hasta reenviarlo. [Alcance de F03](../ENSAYO-03-INVENTARIO-PUBLICO.md). No se afirma entrega durable, sincronización general ni servicio público seguro.
+
+## Buzón persistido con emisor terminado
+
+Dos pruebas de [keri_mailbox.py](keri_mailbox.py) elevan el conjunto a **85 comprobaciones**. Mailboxer conserva respuestas nativas prefirmadas que otros procesos validan después de terminar el emisor, sin leer sus claves privadas. Mensajes guardados con firma ajena no revocan y la repetición del corte mantiene su efecto. [Límites de F04](../ENSAYO-03-INVENTARIO-PUBLICO.md): lectura local, índices ordinales elegidos por el coordinador, sin cursor durable o transporte de buzón por red todavía.
+
+## Buzón por HTTP y progreso de consumo
+
+Dos pruebas de [keri_mailbox_http.py](keri_mailbox_http.py) elevan el conjunto a **87 comprobaciones**. Con emisor terminado, un servidor entrega tramas del iterador nativo mediante adaptación HTTP finita y consumidores nuevos guardan el cursor después de validar. Las salidas antes/después de aplicar un corte no lo saltan: se repite y conserva su efecto. [Alcance de F05](../ENSAYO-03-INVENTARIO-PUBLICO.md). No es todavía MailboxDirector, acceso autorizado al buzón ni entrega exactamente una vez.
+
+Ampliación de F05: cinco pruebas focalizadas superadas. Firma ajena y hueco ordinal bloquean el avance incluso si hay un corte válido posterior; una fuente obsoleta vacía conserva el permiso anterior hasta consultar otra fuente preparada con índices compatibles. No hay recuperación, descarte ni selección automática de proveedor aprobados. Última batería completa confirmada: 87; total previsto actual: 90.
+
+Revisión del contrato nativo: seis casos focalizados superados, 91 previstos en el conjunto actual y 87 en la última batería completa confirmada. Se reproduce repetición de una trama en el iterador ante un hueco sintético. La inspección de Poller distingue su cursor de transporte del resultado de validación; falta comprobar esa frontera con interrupción en el flujo nativo. Véase F05 para alcance y propuesta de separación de estados.
+
+### Frontera de persistencia del Poller nativo
+
+[keri_poller_checkpoint.py](keri_poller_checkpoint.py) ejecuta eventDo real y su base local con transporte sustituido por dobles. Una prueba con dos subescenarios de terminación de proceso distingue cola en RAM y cursor durable: después de persistir, reabrir puede conservar índice cero con cola nueva vacía, sin haber ejecutado validación. No es MailboxDirector completo ni prueba de pérdida inevitable en su planificador. Véase [F06](../ENSAYO-03-INVENTARIO-PUBLICO.md) para alcance y siguiente integración propuesta.
+
+Cierre consolidado tras F06: **92 comprobaciones completas superadas** y 55 documentos es-ES verificados. Persiste el aviso de deprecación conocido de hio, sin parche a terceros.
+
+### Entrada durable propuesta con generador nativo
+
+[keri_durable_inbox.py](keri_durable_inbox.py) añade una prueba integrada acotada de recepción en SQLite antes del cursor nativo y recuperación en otros procesos. Se valida después y se repite un corte al terminar entre validación y marcador local, conservando revocación. Transporte sustituido por dobles, una fuente/tema fijos y sin sobre general de recepción; no es MailboxDirector completo. [Alcance y límites de F07](../ENSAYO-03-INVENTARIO-PUBLICO.md). Última batería completa confirmada: 92; total previsto: 93; nuevo flujo focalizado superado.
+
+Ampliación de F07: dos pruebas focalizadas superadas, 94 previstas y 92 en la última batería completa confirmada. Un trigger SQLite aborta la inserción del corte; se conserva el cursor previo y el reintento explícito, tras retirar la causa sintética, recupera el corte. No cubre disco lleno o corrupción. El sobre general de recepción queda como propuesta pendiente de integración con transporte real.
+
+### HTTP real y validación desde recepción durable
+
+[keri_http_inbox.py](keri_http_inbox.py) añade un flujo focalizado superado: servicio HTTP finito, sobre y cursor en una transacción SQLite, servidor detenido y validación posterior en procesos nuevos. Repetir el corte tras una terminación antes de su marcador conserva la revocación. Una fuente/tema, sin MailboxDirector completo o formato adoptado. [Alcance de F08](../ENSAYO-03-INVENTARIO-PUBLICO.md). Última batería completa confirmada 92; total previsto actual 95.
+
+F08 ampliado: tres pruebas focalizadas y **97 comprobaciones completas superadas**. Bytes o tema alterados impiden validar; una posición recibida con bytes distintos conserva original y evidencia separada, bloqueando validación sin resolución automática. La segunda respuesta se inyecta en el límite de transporte tras una primera recepción HTTP real. Sin integridad autenticada del almacén ni disponibilidad garantizada frente a una fuente maliciosa.
+
+F08 conectado al resolver de inventario: cuatro pruebas focalizadas superadas. Corte recibido pendiente bloquea la restauración; validarlo en el mismo almacén nativo hace que la puerta existente rechace al proveedor revocado. Se verifica que no se invoca restauración, sin ensayar aquí descarga autorizada completa. Última batería completa 97; total previsto 98. El bloqueo por pendientes es una precaución del ensayo de una fuente, sin política general adoptada.
+
+### Concesión, entrega y revocación desde el buzón
+
+F09, en [keri_http_inbox.py](keri_http_inbox.py), restaura realmente una publicación pública tras recibir y validar creaciones, dirección y concesión. El corte pendiente bloquea otro intento; validarlo revoca al proveedor sin borrar la copia anterior. Cinco pruebas focalizadas superadas; última batería completa 97, total previsto 99. Almacenes sintéticos efímeros, un proveedor/tema y transporte finito; no es traslado social ni MailboxDirector completo. [Detalle de F09](../ENSAYO-03-INVENTARIO-PUBLICO.md).
+
+Diagnóstico integrado de F09: recuentos de recepción/marcas locales/conflictos, progreso de transporte e intento anterior separados. Se comprueba en el flujo real que un intento completo puede coexistir con dos pendientes y que, tras el rechazo, queda la copia anterior. Sin cuerpos/rutas, creación de bases ausentes o revalidación criptográfica. Cuatro pruebas de diagnóstico, cinco del buzón y **100 comprobaciones completas superadas**; 55 documentos es-ES verificados.
+
+F09, frontera de concurrencia: una comprobación opcional antes de aplicar repite el bloqueo por pendientes/conflictos del buzón. Recibir el corte al terminar la descarga real del objeto bloquea el catálogo y registra inbox_pending; validar después lleva a rechazo por revocación. Seis pruebas de buzón, doce de autorización y cuatro de diagnóstico superadas con ResourceWarning como error. Última batería completa 100; total previsto 101. Sin atomicidad entre comprobación y commit o prueba de estrés simultánea.
+
+F09, revisión de estados: siete pruebas de buzón y cuatro de diagnóstico superadas con ResourceWarning como error. Marcas locales desconocidas no se omiten ni se aceptan como validadas: se bloquea la entrega y se rechaza validar sin reparación automática. Cero pendientes con marca cero puede coexistir con estados desconocidos. Última batería completa 100; total previsto 102. No se acredita protección frente a modificación coherente del almacén.
+
+## Siguiente transporte: contrato F10 preparado
+
+F10 delimita consulta nativa mbx, cue de stream, SSE real y conservación del sobre antes de que Poller entregue solo bytes. Es un plan todavía no ejecutado, sin pruebas nuevas o componente actualizado. El primer paso verificará petición/cue/SSE públicos sintéticos; autorización de lectura y MailboxDirector completo se declararán por separado. [Secuencia, fuentes inspeccionadas y criterio de paso](../ENSAYO-03-INVENTARIO-PUBLICO.md).
+
+### Primer paso F10 ejecutado
+
+[keri_native_query.py](keri_native_query.py): una prueba supera consulta mbx firmada, HttpEnd real, parser/cue y SSE nativo por HTTP local; índices cero/uno y consulta posterior desde uno conservan bytes y ordinal. Cliente urllib acotado, sin Poller/MailboxDirector, recepción durable o acceso privado probado. Última batería completa 100; conjunto previsto 103. [Detalle y pendientes de F10](../ENSAYO-03-INVENTARIO-PUBLICO.md).
+
+F10, recepción durable ejecutada: dos pruebas nativas y siete del buzón superadas; **104 comprobaciones completas** confirmadas. Consulta prefirmada, HttpEnd/cue/SSE reales y sobre SQLite en otro proceso; servidor cerrado antes de validar, terminación tras corte y repetición desde pendientes. Progreso local de recepción, sin Poller/MailboxDirector o acceso privado probado. Siguen pendientes rechazo de persistencia en esta ruta y consulta ajena.
+
+F10, frontera de acceso comprobada: otra identidad conocida que firma una consulta para el destinatario obtiene sus mensajes públicos sintéticos sin concesión de lectura emitida. La ruta del ensayo no se considera privada; no se extiende el resultado a todos los despliegues o datos reales. Tres pruebas focalizadas superadas; última batería completa 104, total previsto 105. Política de lectura privada sin adoptar, fallo de persistencia nativo todavía pendiente.
+
+F10, persistencia en ruta nativa: cuatro pruebas focalizadas superadas. Un trigger aborta el tercer INSERT durante SSE y conserva dos entradas/progreso dos. Retirar la causa y firmar explícitamente una consulta desde dos recupera el corte; después se valida y repite sin servidor. No es disco lleno, recuperación automática o Poller/MailboxDirector. Última batería completa 104; total previsto 106. La restricción a material público sigue vigente por el resultado de consulta ajena.
+
+F10, cliente nativo real: cinco pruebas focalizadas y **107 comprobaciones completas superadas**. Poller, cliente HTTP, servidor, cue y SSE reales; adaptador del ensayo confirma sobre antes de retirar eventos, sin parchear dependencias. Dos entradas siguen sin validar y el cursor nativo conserva último ordinal uno, frente al siguiente local dos. No es MailboxDirector ni recuperación tras terminación de este cliente; acceso privado sin acreditar.

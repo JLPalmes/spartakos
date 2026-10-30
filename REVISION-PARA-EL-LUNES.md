@@ -274,3 +274,327 @@ Continuación documental: preparado PERFIL-01-ACEPTACION-DEL-ENSAYO-PUBLICO.md c
 ### Publicación autorizada del cierre público mínimo
 
 El usuario autoriza commit y push y continuar después. Validados 54 documentos, enlaces e idioma; esta unidad solo modifica documentación y no requiere repetir las 53 comprobaciones de código ya superadas. Se prepara su publicación en la rama de #2, sin integrar main. Las notas de cambios pendientes anteriores corresponden al estado previo a esta autorización.
+
+## Publicación documental y ensayo del inventario público
+
+Publicado 8991ea5 con el cierre del perfil tras verificar 54 documentos. La unidad era documental; no se repitieron sin cambios las 53 comprobaciones de código. Árbol limpio y remoto coincidente antes de continuar, con #2 asociada y sin integrar main.
+
+Continuación autorizada: añadido keri_inventory.py con cuatro pruebas, total 57 de laboratorio, e informe ENSAYO-03-INVENTARIO-PUBLICO.md. Inventario público anclado por el titular, servidores A/B de solo lectura y verificador en proceso nuevo por recepción. Con A apagado, se conservan IDs y versiones y se resuelve una referencia preexistente del observador. Ausencia/alteración impide aplicar el catálogo; el reintento corregido funciona. El marcador de retirada elimina el cuerpo anterior del catálogo y un inventario viejo no lo resucita al volver A.
+
+Límites: autorización de servicios y registro de conflicto aún separados del restaurador; incompletitud informada pero no persistida como etapa; anclaje KERI y catálogo no son una transacción conjunta. Sin datos privados ni cambios del simulador. Siguiente unidad: composición y recepción incompleta persistida. Esta continuación queda local pendiente de commit/push, distinta de la unidad documental ya publicada.
+
+## Continuación autónoma hasta nueva interacción
+
+El usuario pide continuar hasta su próxima interacción humana, sin fecha de corte. Reactivada la automatización existente con el directorio correcto /Users/juanluis/Projects/spartakos, comprobación horaria y término por regreso humano; los latidos no cuentan como regreso. Se conserva la política de notificación previa. No se autoriza publicar automáticamente nuevos bloques ni integrar main. Antes de iniciar cada bloque se comprobará si ya ha regresado y se eliminará la automatización al detectarlo.
+
+Revisado Git: cambios locales de inventario preservados y remoto verificado mediante fetch. La sesión de la batería anterior ya no estaba accesible, por lo que no se atribuye un resultado recuperado a aquella ejecución. Se añade y ejecuta una quinta prueba de inventario: intención de recepción persistida, secuencia esperada/aplicada y salida abrupta antes de aplicar. Otra conexión verifica el pendiente y el catálogo anterior; un nuevo proceso reintenta y completa. Ausencia y alteración comprueban también su estado persistido. Total previsto actualizado a 58 y nueva batería completa a ejecutar para confirmación.
+
+Estados receiving/incomplete/complete solo del arnés; KERI y SQLite siguen separados y no se prueba corte durante transacción. Documentación e inventario actualizados. Siguiente unidad autónoma: composición del inventario con autorización de servicio y conflicto duradero, conservando actualidad desconocida. Todos los cambios posteriores a 8991ea5 permanecen locales pendientes de commit/push; no se modifica el simulador ni datos del usuario.
+
+### Verificación final de esta continuación
+
+Confirmadas 58 comprobaciones completas y 55 documentos validados. La ejecución completa mostró avisos por conexiones SQLite de inspección sin cerrar; se corrigió su cierre explícito y se repitieron las cinco pruebas de inventario con ResourceWarning tratado como error, sin avisos. No se repitieron las demás suites por ese cambio limitado al cierre de conexiones de prueba. Automatización actualizada y activa hasta nueva interacción humana; siguiente bloque pendiente: composición de inventario con autorización y conflicto. Cambios locales conservados, sin commit/push adicional ni integración en main.
+
+## Continuación automática: revisiones inmutables — 27/28 de octubre
+
+No se detecta una nueva interacción humana tras la autorización de trabajo autónomo; los cambios de contexto horario no se consideran regreso. Árbol con cambios locales de inventario conservados y fetch completado; rama publicada sin divergencia. La verificación previa confirma 58 comprobaciones y 55 documentos, sin repetir bloques ya cerrados.
+
+Antes de componer nuevas piezas se cierra una brecha de integridad referencial: inventario posterior autorizado no puede cambiar los bytes de una publicación conservando ID y revisión. Añadida I06 y ejecutadas seis pruebas de inventario con ResourceWarning tratado como error, todas correctas. Controles adicionales impiden retroceder cabeza y reactivar revisiones retiradas; sus regresiones dedicadas quedan pendientes y no se presume cobertura. Una transición rechazada puede conservar receiving; queda por clasificar esos errores de forma persistida.
+
+Total del laboratorio actualizado a 59; pendiente repetir batería completa para confirmarlo. Siguiente bloque: regresiones de transición y estado de error persistido, antes de composición con autorización y conflicto. Ningún cambio del simulador, datos del usuario, commit/push, despliegue o contacto con terceros. No se necesita decisión crítica.
+
+Verificación del cierre automático: 59 comprobaciones completas superadas, 55 documentos es-ES y enlaces/licencias verificados; diff sin errores de formato. Trabajo local conservado en la rama de #2, sin publicación. Pendientes inmediatos registrados; no hay decisión crítica ni acción necesaria del usuario.
+
+## Continuación automática: transiciones rechazadas persistidas — 28 de octubre
+
+No hay nueva interacción humana desde la autorización; continúa el latido. Git comprobado con cambios locales conservados y fetch correcto, sin divergencia publicada. Leídos los resultados previos de 59 comprobaciones y 55 documentos para no repetir trabajo.
+
+Añadidas I07 e I08: inventarios posteriores autorizados que intentan retroceder cabeza o reactivar la misma revisión retirada se rechazan antes de modificar el catálogo. InventoryTransitionError guarda rejected y código estable, con secuencia esperada/aplicada conservadas. I06 comprueba también su registro. I07/I08 terminan con una intención posterior válida que se acepta en otro proceso sin retroceder la historia KERI. Ocho pruebas de inventario superadas con ResourceWarning tratado como error; total previsto 61, pendiente confirmación completa.
+
+No se presume clasificación exhaustiva de errores; receiving puede permanecer en otros fallos. Pendiente una regresión para omisión de objeto anterior y composición con autorización y conflicto. Sin decisiones críticas, publicación, cambios del simulador, datos reales, despliegue o contacto con terceros. Documentación en es-ES actualizada y cambios conservados localmente.
+
+Cierre de verificación: 61 comprobaciones completas superadas, 55 documentos validados con idioma es-ES, enlaces y licencias; diff sin errores. Estado local conservado sin commit/push. No se requiere intervención del usuario; siguientes límites y regresiones pendientes registrados.
+
+## Continuación automática: inventario con puerta de autorización y conflicto — 28 de octubre
+
+No hay regreso humano; fetch correcto y cambios locales preservados. Revisados resultados previos de 61 comprobaciones y 55 documentos. Añadido keri_inventory_access.py: cuatro pruebas componen el restaurador con rol/dirección nativos y registro local de conflicto. Una dirección sin permiso y un conflicto previamente verificado bloquean antes de HTTP; la entrega autorizada funciona y una revocación recibida durante descarga impide aplicar el catálogo. El restaurador acepta un callback opcional antes de aplicar, sin romper su entrada básica de laboratorio.
+
+Corregida durante preparación una ausencia del directorio del fixture; las cuatro pruebas focalizadas pasan con ResourceWarning como error. Total previsto 65, pendiente confirmación completa. Alcance: un objeto, reapertura en el mismo proceso, registro acotado de conflicto sn=1 y distribución explícita de declaraciones. Repetir controles no elimina la ventana comprobación/commit ni crea transacción entre almacenes. La entrada básica sigue sin puerta y no es servicio protegido.
+
+Pendientes: omisión de objeto previo, estados de bloqueo persistidos y composición en proceso nuevo/interrupción. No se completa E/T ni se adopta arquitectura. Sin commit/push, main, despliegue, datos reales o terceros; no se requiere decisión crítica.
+
+Cierre confirmado: 65 comprobaciones completas superadas, 55 documentos es-ES validados y diff sin errores de formato. Corrección de la generación documental completada y verificada. Cambios locales conservados; sin commit/push adicional. No hay decisión crítica ni intervención necesaria.
+
+## Continuación automática: omisión y bloqueo persistido — 28 de octubre
+
+Sin interacción humana nueva; estado Git y fetch comprobados, cambios previos conservados. Leído cierre confirmado de 65 comprobaciones/55 documentos. Añadida I09 para omisión de objeto anterior sin retirada: rechazo persistido y catálogo intacto. La composición guarda ahora checking/blocked/incomplete/complete como último intento por identidad/proveedor, con código conocido. Las cuatro pruebas de acceso verifican persistencia desde otra conexión y reintento válido tras nueva autorización del titular.
+
+Nueve pruebas de inventario y cuatro de acceso pasan con ResourceWarning tratado como error; total previsto 66, pendiente confirmación completa. No hay telemetría ni historial de actividad: solo estado sintético del intento local. checking/receiving pueden permanecer en fallos no clasificados y no prueban proceso activo; complete no concede autorización futura. Pendientes composición entre procesos nuevos y cortes entre almacenes.
+
+Sin commit/push, main, servicios públicos, datos del usuario o terceros. Ninguna decisión crítica requerida; documentación es-ES y resumen actualizados.
+
+Cierre confirmado: 66 comprobaciones completas superadas y 55 documentos validados en es-ES; diff sin errores. Trabajo local conservado sin commit/push. Continuar por composición en procesos nuevos e interrupciones, sin repetir estas regresiones salvo cambios relevantes. No se requiere intervención del usuario.
+
+## Continuación automática: composición en procesos nuevos — 28 de octubre
+
+Sin regreso humano; comprobados Git y fetch, preservado el inventario local y revisado cierre anterior de 66 comprobaciones/55 documentos. Añadida entrada de trabajador experimental a keri_inventory_access.py y tres regresiones de composición. Procesos nuevos restauran y repiten sin duplicar objeto; salida abrupta instrumentada antes de aplicar conserva catálogo vacío, recepción receiving uno/cero e intento checking; otro proceso revalida y completa. Una revocación firmada entre interrupción y reintento bloquea hasta una nueva autorización válida.
+
+Siete pruebas de acceso focalizadas superadas con ResourceWarning tratado como error. Total previsto 69, pendiente batería completa. No se interrumpe una escritura activa ni se elimina la ventana comprobación/commit; solo un objeto, mismo equipo y distribución de declaraciones por coordinador. Conflicto entre interrupción y reintento y errores operativos persistidos quedan como siguiente bloque.
+
+Sin commit/push, cambios de main, despliegues, datos reales ni terceros; documentación en es-ES actualizada. No se requiere decisión crítica ni intervención humana.
+
+Cierre confirmado: 69 comprobaciones completas superadas, 55 documentos es-ES verificados y diff sin errores. No se publica ni integra; estado local conservado. Pendientes inmediatos registrados para no repetir bloques al siguiente latido. Sin intervención humana necesaria.
+
+## Continuación automática: conflicto tras interrupción y fallos de entrega — 28 de octubre
+
+No hay regreso humano. Git y fetch correctos, cambios locales preservados y cierre previo de 69 comprobaciones/55 documentos leído. Añadidas tres regresiones: evidencia de conflicto incorporada tras interrupción bloquea dos procesos nuevos, incluso con nueva autorización de proveedor; proveedor apagado y prueba HTTP 404 registran failed con código y completan tras corregir disponibilidad. No se guardan URLs o textos de error en el registro del último intento.
+
+Diez pruebas focalizadas de acceso pasan con ResourceWarning como error; total previsto 72, pendiente confirmación completa. El registro de conflicto sigue limitado a ramas sn=1. No se clasifica todo formato/almacenamiento/validación ni se resuelve el conflicto. Próxima unidad: interrupción después de aplicar catálogo y antes de registrar complete en el último intento, verificando qué estado puede justificarse sin falsa confirmación.
+
+Sin commits, push, main, despliegues, datos reales o terceros. Documentos es-ES actualizados; ninguna decisión crítica requerida.
+
+Cierre confirmado: 72 comprobaciones completas superadas y 55 documentos validados en es-ES; diff sin errores. Cambios locales conservados, sin publicación. Próximo punto de reanudación registrado; no se requiere intervención del usuario.
+
+## Continuación automática: catálogo aplicado e intento pendiente — 28 de octubre
+
+Sin interacción humana nueva. Git y fetch comprobados, cambios locales preservados y cierre anterior de 72 comprobaciones/55 documentos revisado. Dos pruebas nuevas instrumentan salida inmediata tras aplicar catálogo/recepción y antes de marcar complete en el intento. Otra conexión observa objeto verificado, secuencias uno/uno y recepción complete con intento checking; proceso nuevo revalida y repite sin duplicar. Revocación antes de reintentar bloquea sin borrar la copia pública local; solo nueva autorización válida permite completar.
+
+Doce pruebas focalizadas de acceso superadas con ResourceWarning como error. Total previsto 74, pendiente confirmación completa. No se prueban escrituras activas ni se elimina la ventana comprobación/commit. Próxima unidad: diagnóstico local sin red de catálogo, recepción, intento y bloqueo para no inferir un estado agregado falso.
+
+Sin commit/push, main, despliegue, datos del usuario o terceros; documentos es-ES actualizados. No se necesita decisión crítica.
+
+Cierre confirmado: 74 comprobaciones completas superadas, 55 documentos es-ES verificados y diff sin errores. Cambios locales conservados sin commit/push. Siguiente bloque de diagnóstico y límites registrados; no se requiere intervención del usuario.
+
+## Continuación automática: diagnóstico local de estados — 28 de octubre
+
+Sin regreso humano. Git y fetch comprobados, cambios locales preservados y cierre anterior de 74 comprobaciones/55 documentos leído. Añadido keri_diagnostics.py con lectura SQLite mode=ro/query_only de catálogo, recepción, intento y conflicto; no usa red ni gestor de identidad ni crea bases ausentes. Estados desconocidos/ilegibles no se convierten en vacío o éxito. No devuelve cuerpos/URLs/rutas y filtra metadatos ajenos al esquema.
+
+Tres pruebas nuevas de límites y aserciones integradas sobre estados reales de composición: catálogo aplicado con intento checking y con revocación posterior. Verificados bytes/mtime de bases sin cambios en escenario sintético. Tres pruebas diagnósticas y doce de acceso focalizadas pasan con ResourceWarning como error. Total previsto 77, pendiente batería completa.
+
+No es validación criptográfica, permiso, actualidad global o snapshot atómico. No se ha cambiado interfaz del simulador ni captado actividad. Siguiente unidad: balance de integración y brechas E/T antes de más variantes. Sin commit/push, main, despliegue, datos reales o terceros; sin decisión crítica requerida.
+
+Cierre confirmado: 77 comprobaciones completas superadas y 55 documentos es-ES verificados; diff sin errores. Cambios locales conservados sin commit/push. Continuar por balance de integración y prioridades E/T, no por repetir variantes ya cubiertas. Sin intervención humana necesaria.
+
+## Continuación automática: balance consolidado y prioridad de integración — 28 de octubre
+
+No hay regreso humano. Git y fetch correctos; cambios locales conservados. Leído cierre de 77 comprobaciones y 55 documentos. Reescrito BALANCE-01-IDENTIDAD-Y-TRASLADO.md como estado actual coherente, sustituyendo tablas iniciales obsoletas y veinticinco actualizaciones acumuladas. La historia detallada permanece en este resumen y en el informe del inventario.
+
+Cobertura E/T actualizada sin declarar casos completos: perfiles/objetos públicos, referencias, retiradas, autorización y persistencia aportan evidencia parcial. Próxima prioridad concreta: una sola ejecución multiobjeto con autorización, A apagado, inventario actualizado después del corte, referencia independiente, retiro, reapertura y regreso de A. No se presentará suma de suites como esa prueba integrada. Se mantienen H01, actualidad desconocida, confianza, privacidad/MLS y límites de operación como brechas.
+
+Unidad documental: no se repiten sin cambios las 77 pruebas previas ni se incrementa la cifra. Sin commit/push, main, instalación, despliegue, datos reales o terceros. No hace falta decisión crítica para preparar el siguiente flujo acotado.
+
+Cierre documental confirmado: 55 documentos es-ES y enlaces/licencias validados, diff correcto e inventario estático de 77 pruebas coherente con la última ejecución completa. Sin nuevas pruebas ni publicación. Próximo bloque definido con condición de paso observable; no se necesita intervención humana.
+
+## Continuación automática: F01 público integrado — 28 de octubre
+
+Sin regreso humano. Git/fetch correctos, cambios locales conservados y balance consolidado revisado. Añadido keri_public_flow.py con una prueba que reúne perfil genérico, dos publicaciones, referencia previa, resolución autorizada, A apagado, B y verificador en procesos nuevos. El titular firma el inventario posterior después de comprobar que A está apagado; se edita una publicación y se retira otra. La referencia conserva ID/revisión y resuelve el texto original; repetición no duplica. A vuelve con copia vieja y nuevo puerto firmado, pero sigue bloqueado por rol revocado.
+
+F01 focalizada pasa con ResourceWarning como error; total previsto 78, pendiente confirmación completa. Se cumple la condición del flujo público mínimo, sin elevarlo a E/T completo. El coordinador distribuye declaraciones; no hay descubrimiento independiente, actualidad global, TLS, privacidad o consenso. Las variantes de fallo de otras suites no se atribuyen a F01.
+
+Actualizado balance actual y documentación. Siguiente prioridad: transporte de declaraciones nativas sin inyección directa al parser, manteniendo límites de confianza. Sin commit/push, main, servicios públicos, datos reales o terceros; no se necesita decisión crítica.
+
+## Cierre recuperado de F01 y transporte OOBI — 28 de octubre
+
+Los latidos posteriores no son regreso humano. Git y fetch correctos, cambios locales preservados. La salida de herramienta anterior confirma 78 pruebas completas y 55 documentos validados de F01; se registra aquí porque su cierre quedó pendiente de anotar entre latidos. No se repite aquel bloque.
+
+Añadido keri_oobi_transport.py con dos pruebas del endpoint nativo OOBIEnd en HTTP local. Para usar el Habery real, el fixture store admite devolver el entorno opcionalmente sin alterar su interfaz por defecto. Se corrigió la suposición inicial de que Hab expusiera hby; las dos pruebas focalizadas pasan con ResourceWarning como error. Historia/rol/ubicación llegan por red con proveedor previamente conocido. Tras cortar un rol, otra introducción no actualiza la revocación del observador en esta configuración; el corte nativo entregado al parser sí lo hace.
+
+No se adopta OOBI de introducción como sincronización de cortes ni ausencia de lista como revocación. El entorno controlador conserva medios de clave; no se mueve a A/B. Total previsto 80, pendiente confirmación completa. Próxima unidad: investigar transporte nativo de respuestas firmadas con cortes y dependencia de disponibilidad. Sin commits, push, main, despliegues, datos del usuario o terceros; sin decisión crítica necesaria.
+
+Cierre confirmado: 80 comprobaciones completas superadas, 55 documentos es-ES verificados y diff sin errores. Cambios locales conservados sin publicación. El límite de introducción/revocación queda documentado; continuar por transporte nativo de cortes, sin pedir decisión crítica ni repetir F01.
+
+## Continuación automática: ingreso HTTP nativo de cortes — 28 de octubre
+
+No hay regreso humano. Git/fetch correctos y cierre previo de 80 comprobaciones/55 documentos revisado. Inspeccionados HttpEnd, rutas de query y endpoints de ubicación de la revisión fijada. Añadido keri_rpy_ingress.py con tres pruebas: concesión/corte/repetición por HTTP nativo, firma ajena no válida aunque se acuse entrada y pérdida instrumentada de cola RAM tras 204 antes de parsear. Reenvío del corte permite validarlo y revocar.
+
+Corregida una configuración inicial del planificador que no conservaba sus generadores de servicio; las tres pruebas focalizadas pasan con ResourceWarning como error. Total previsto 83, pendiente confirmación completa. 204 no significa validación ni persistencia y la pérdida es por vaciado explícito de cola, no caída real. Consumidor activado explícitamente e identidades previamente conocidas; sin concurrencia del estado, TLS, descubrimiento o acuse firmado probados.
+
+Próximo bloque: investigar buzones/entrega duradera existentes para respuestas ya firmadas con titular desconectado, sin nuevo consenso. Sin commit/push, main, despliegue, datos reales o terceros; documentos es-ES actualizados y sin decisión crítica requerida.
+
+Cierre confirmado: 83 comprobaciones completas superadas, 55 documentos es-ES verificados y diff sin errores. hio emite un aviso de deprecación de datetime.utcnow con Python 3.14; no es fallo de prueba y no se ha modificado ni silenciado código ajeno. Compatibilidad futura pendiente. Cambios locales sin publicación; continuar por buzón/entrega duradera de respuestas firmadas. No se requiere intervención humana.
+
+## Regreso humano y continuación solicitada — 29 de octubre
+
+El mensaje humano «Sigue» marca el regreso posterior a la autorización autónoma. Eliminada la automatización continuar-spartakos-hasta-el-lunes antes de emprender el bloque nuevo. La petición actual autoriza continuar este trabajo; ya no queda el seguimiento horario hasta regreso. Git comprobado con cambios locales conservados y fetch correcto; no se publica sin nueva orden específica.
+
+Añadido keri_mailbox.py con dos pruebas de Mailboxer nativo. Emisor en un proceso crea respuestas firmadas y termina; procesos posteriores reabren buzón y observador, validan concesión/corte, repetición y estado persistido. Segundo escenario prueba que corte de firmante ajeno almacenado no revoca y el correcto posterior sí. No se serializan claves privadas; el fichero auxiliar solo contiene dos identificadores públicos.
+
+Dos pruebas focalizadas superadas con ResourceWarning como error. Total previsto 85, pendiente confirmación completa. Lectura local con índices ordinales elegidos por coordinador, sin cursor de consumo durable, transporte HTTP, acceso de buzón o caída durante escritura probados. Próxima unidad: transporte de lectura y consumo persistido ante interrupción. Sin commit/push, main, despliegue, datos reales ni terceros; el simulador sigue intacto.
+
+Cierre confirmado tras el regreso: 85 comprobaciones completas superadas y 55 documentos es-ES verificados; diff sin errores. Persiste el aviso de deprecación conocido de hio, sin parche ajeno. La automatización está eliminada y la continuación actual queda local pendiente de commit/push, junto con las ampliaciones autónomas previas.
+
+## Nueva continuación programada: buzón HTTP y cursor — 29 de octubre
+
+La nueva petición humana de programación posterior al regreso es la referencia vigente; no se considera que aquel regreso anterior termine esta nueva automatización. No hay otra interacción humana desde la nueva petición. Git y fetch comprobados con cambios locales preservados y cierre anterior de 85 comprobaciones/55 documentos revisado.
+
+Añadido keri_mailbox_http.py: dos pruebas de adaptación HTTP finita del MailboxIterable nativo, con emisor terminado y cursor SQLite del receptor. Procesos nuevos conservan cursor dos al salir antes de validar el corte o después de validarlo antes de guardar cursor; reintentar no lo salta y acaba en cuatro con rol revocado. Consulta posterior sin eventos no altera cursor. Dos pruebas focalizadas superadas con ResourceWarning como error; total previsto 87, pendiente confirmación completa.
+
+No es MailboxDirector/consulta firmada o SSE continuo completo; faltan acceso de buzón, política de mensajes rechazados, huecos, cursor perdido y fallo dentro de escritura. La repetición es deliberada, sin exactamente una vez ni actualidad global. Próximo bloque: lectura obsoleta, mensajes rechazados y huecos sin salto de revocaciones. Sin commit/push, main, despliegue, datos reales o terceros; sin decisión crítica necesaria.
+
+Cierre confirmado de la nueva programación: 87 comprobaciones completas superadas, 55 documentos es-ES verificados y diff sin errores. Sigue el aviso conocido de hio sin parche ajeno. Cambios locales conservados sin publicación; siguiente bloque y límites registrados, sin intervención humana necesaria.
+
+## Buzón: límites comprobados ante rechazo y huecos — 29 de octubre
+
+Git conserva los cambios locales en prototipo-segunda-revision; fetch de origin completado y HEAD sin desfase respecto al remoto verificado. No hay nueva interacción humana desde la última programación; no se considera regreso el contexto del entorno.
+
+Dos casos nuevos del lector HTTP reproducen un corte con firma ajena y un hueco ordinal anterior a un corte válido. Dos consumidores sucesivos rechazan cada situación, conservan cursor dos y la concesión anterior en su vista local. Se documenta el bloqueo de progreso como brecha operativa; no se inventa descarte automático ni una política de confianza. Cuatro pruebas focalizadas superadas con ResourceWarning como error. Última batería completa confirmada: 87; total previsto tras añadir estos casos: 89. Documentación y metadatos actualizados; lectura obsoleta, recuperación y flujo nativo completo siguen pendientes. KERI experimental, H01 abierto, actualidad global sin probar y ningún E/T completo. Sin commit/push ni cambios en datos del simulador.
+
+## Buzón obsoleto y alcance del cursor — 29 de octubre
+
+Fetch de origin completado; rama prototipo-segunda-revision sin desfase en los commits, con cambios locales pendientes conservados. No se detecta regreso humano posterior a la nueva programación.
+
+Quinta prueba focalizada del lector HTTP: dos buzones con los mismos mensajes iniciales; el obsoleto omite el corte y responde vacío después de la concesión. El consumidor conserva cursor dos y permiso anterior. Una URL alternativa elegida explícitamente permite recibir el corte y avanzar a cuatro; volver al buzón antiguo no restablece el permiso. No acredita detección de obsolescencia, descubrimiento o índices universales entre proveedores. La copia parcial se prepara por API nativa y solo contiene material público sintético.
+
+Cinco pruebas focalizadas superadas con ResourceWarning como error. Última batería completa confirmada: 87; total previsto actual: 90. Se corrige la presentación del balance para distinguir ambas cifras y una referencia numérica antigua en garantías. Sigue pendiente integrar el transporte nativo y estudiar el contrato de cursor antes de inventar recuperación o descarte. KERI candidata experimental, H01 abierto, sin actualidad global probada ni E/T completo. Sin commit/push ni datos del usuario modificados.
+
+## Contrato del iterador y cursor nativos — 29 de octubre
+
+Git revisado con cambios conservados; fetch completado y sin desfase de commits respecto a origin. No hay nuevo regreso humano. Revisados balance e informe para evitar repetir escenarios anteriores.
+
+Antes de integrar MailboxDirector, se inspecciona Poller.eventDo de la revisión fijada: encola y posteriormente persiste cursor de recepción, sin comprobar ahí resultado de validación/aplicación. Se documenta como revisión estática, sin afirmar una pérdida reproducida del flujo completo. Una sexta prueba focalizada ejecuta MailboxIterable con hueco preparado: al pedir desde dos y existir tres, devuelve tres dos veces antes de quedar vacío. No se modifican terceros ni se presenta como vulnerabilidad. El consumidor estricto mantiene su rechazo previo del hueco.
+
+Seis casos focalizados superados con ResourceWarning como error; última batería completa confirmada 87 y total previsto actual 91. Siguiente unidad: comprobar el punto de persistencia del Poller con cola pendiente e interrupción. Propuesta de recepción durable separada de validación, todavía sin política adoptada para descarte, recuperación o confianza. Sin commit/push, despliegue, terceros ni datos reales. KERI experimental, H01 abierto y ningún E/T completo.
+
+## F06: cursor nativo y cola pendiente entre procesos — 29 de octubre
+
+Fetch de origin completado tras reintentar una revisión automática que agotó su plazo; commits sin desfase y cambios locales conservados en prototipo-segunda-revision. No se ha producido regreso humano desde la última programación.
+
+Añadido keri_poller_checkpoint.py: generador eventDo real, base persistente real y transporte sustituido por dobles, sin servidor SSE ni MailboxDirector completo. Dos subescenarios terminan un proceso después de encolar: antes de persistir no queda cursor; después de persistir sí queda índice cero, aunque no se haya ejecutado validación y la cola del Poller nuevo esté vacía. Se confirma esta frontera aislada, sin afirmar fallo inevitable del planificador completo. No se modifican terceros ni se adopta descarte, salto o confianza nuevos.
+
+La prueba focalizada supera ambos subescenarios con ResourceWarning como error. Consolidación completa: **92 comprobaciones superadas en 61,476 segundos**, 55 documentos es-ES y diff sin errores. Sigue el aviso conocido de deprecación de hio. Los 109 casos del simulador social siguen separados. Siguiente unidad: comprobar una adaptación de recepción durable y repetición verificable conectada al generador nativo, manteniendo separados recepción, validación y aplicación; no sustituir el cursor nativo por una supuesta aprobación. KERI experimental, H01 abierto, actualidad global no probada y ningún E/T completo. Sin commit/push, main, despliegue, contacto o datos reales.
+
+## F07: recepción durable antes de progreso nativo — 29 de octubre
+
+Estado Git revisado y fetch de origin completado; sin desfase de commits y con cambios locales preservados. No hay interacción humana posterior a la última programación. Revisados balance, informe y cierre anterior de 92 pruebas para evitar repetir bloques.
+
+Añadido keri_durable_inbox.py: propuesta local de append SQLite durable conectada al generador Poller real, con transporte sustituido por dobles y fuente/tema únicos sintéticos. El proceso termina con cursor tres y cuatro mensajes pendientes, sin validar identidad emisora. Otros procesos validan y terminan tras aplicar corte, antes de marcarlo; reabrir repite los pendientes y conserva revocación. No se serializan claves privadas, no hay exactamente una vez ni flujo completo de MailboxDirector. Falta sobre general de recepción y prueba de fallo de persistencia; no se adoptan reglas de descarte o confianza.
+
+Flujo focalizado superado con ResourceWarning como error; última batería completa confirmada 92 y total previsto 93. Se conservan separadas las 109 pruebas del simulador social. Siguiente unidad: fallo de persistencia antes del cursor nativo y alcance del sobre de recepción. KERI experimental, H01 abierto, actualidad global no probada y ningún E/T completo. Sin commit/push ni modificación de datos del usuario.
+
+## F07: fallo de persistencia antes del corte — 29 de octubre
+
+Git revisado, fetch de origin completado y sin desfase de commits; cambios locales pendientes conservados. Sin regreso humano posterior a la última programación. Revisados balance e informe para continuar el bloque pendiente.
+
+Segunda prueba de entrada durable: trigger sintético SQLite aborta el tercer INSERT. El proceso falla y reabrir confirma dos mensajes pendientes y cursor nativo uno, sin identidad emisora validada. Retirar el trigger y reintentar explícitamente recibe desde dos, completa cuatro entradas y permite validar el corte conservando revocación. Es fallo lógico real de transacción, sin afirmar disco lleno, corrupción o recuperación automática. Transporte sigue sustituido por dobles.
+
+Dos pruebas focalizadas superadas con ResourceWarning como error; última batería completa confirmada 92 y total previsto 94. Se acota como propuesta el sobre de fuente/destinatario/tema/ordinal y bytes, con conflictos conservados y sin autoridad inferida de la ruta. No se implementa todavía porque append nativo no entrega esos metadatos. Siguiente unidad: integrar recepción y metadatos con un transporte real acotado, sin políticas automáticas de descarte o consenso. KERI experimental, H01 abierto, actualidad global no probada y ningún E/T completo. Sin commit/push, datos reales o cambios del simulador.
+
+## F08: recepción HTTP real y validación posterior sin servidor — 29 de octubre
+
+Git revisado y fetch de origin completado; sin desfase de commits, con cambios locales pendientes conservados. Sin regreso humano desde la última programación. Revisados balance y ensayo para integrar el bloque pendiente en lugar de repetir variantes aisladas.
+
+Añadido keri_http_inbox.py: servidor HTTP local finito reutilizado, emisor terminado, sobre SQLite y cursor de recepción confirmados juntos. Cuatro entradas conservan fuente URL, destinatario, tema, ordinal, bytes y huella sin validarse. Nueva consulta no duplica entradas. Servidor detenido antes de validar; procesos nuevos validan y terminan tras corte, antes del marcador, y luego repiten pendientes conservando revocación. La fuente es procedencia observada, no autoridad; solo se admite una combinación al validar, sin inventar orden entre fuentes. No es MailboxDirector, consulta firmada o SSE continuo completo.
+
+Flujo focalizado superado con ResourceWarning como error; última batería completa confirmada 92 y total previsto 95. Se conservan las 109 pruebas del simulador como batería separada. Siguiente unidad: alteración de bytes/metadatos y posición repetida con contenido distinto, preservando evidencia sin arbitraje automático. Documentación es-ES y límites actualizados; KERI experimental, H01 abierto, actualidad global sin probar y ningún E/T completo. Sin commit/push, despliegue, terceros o datos reales.
+
+## F08: rechazo de alteraciones y evidencia de posición contradictoria — 29 de octubre
+
+Git revisado, fetch de origin completado y commits sin desfase; cambios locales pendientes conservados. No se ha producido nueva interacción humana desde la programación vigente. Revisados balance, informe y cierre anterior antes del bloque.
+
+Dos pruebas adicionales del módulo HTTP durable: bytes o tema local alterados mantienen entradas pendientes y no validan la identidad emisora. Una respuesta inyectada con índice ya recibido y bytes distintos conserva original y evidencia separada sin avanzar cursor. Un proceso nuevo bloquea validación ante ese conflicto conocido. Primera recepción por HTTP real; respuesta contradictoria inyectada en el límite de transporte, sin afirmar servidor malicioso completo. No se resuelve el conflicto ni se infiere autoridad de la ruta; la huella local no protege modificaciones coherentes del almacén.
+
+Tres pruebas focalizadas superadas con ResourceWarning como error. Consolidación completa: **97 comprobaciones superadas en 65,506 segundos**; persiste aviso conocido de hio sin parche ajeno. Se conservan separadas las 109 pruebas del simulador social. Siguiente bloque: conectar validación durable y autorización de entrega, distinguiendo recepción pendiente o bloqueada de permiso actualizado. KERI experimental, H01 abierto, actualidad global no probada y ningún E/T completo. Sin commit/push, despliegue, contacto o datos reales.
+
+## F08: buzón validado y puerta de autorización conectados — 29 de octubre
+
+Git revisado y fetch de origin completado; sin desfase de commits y cambios locales conservados. No hay regreso humano desde la programación vigente. Revisados balance e informe y conectado el resultado durable con la autorización existente.
+
+Cuarta prueba HTTP durable: validar creación/concesión en access/resolver; recibir corte todavía pendiente conserva el permiso anterior en la vista nativa, pero la precaución experimental del buzón impide iniciar restauración. Un proceso nuevo valida corte en ese mismo resolver y la puerta existente rechaza al proveedor por revocación. Se observa que no se llama a restauración, sin atribuir descarga autorizada completa o actualidad global. El bloqueo por pendientes sigue limitado a la fuente sintética; no es política general de producto ni transacción conjunta. Corregida la inicialización del directorio aislado tras el primer ensayo fallido.
+
+Cuatro pruebas focalizadas del buzón superadas con ResourceWarning como error y 12 pruebas de autorización existentes superadas. Última batería completa confirmada 97; total previsto 98. Próximo bloque: integrar también la ruta de éxito con dirección y contenido público autorizados mediante el buzón, para completar un flujo de concesión, entrega y revocación, sin modificar decisiones de confianza. 109 pruebas sociales separadas; KERI experimental, H01 abierto y ningún E/T completo. Sin commit/push, despliegue, contacto o datos reales.
+
+## F09: flujo integrado de concesión, entrega pública y revocación — 29 de octubre
+
+Git revisado y fetch de origin completado, commits sin desfase y cambios locales pendientes conservados. Sin regreso humano posterior a la programación vigente. Revisados balance e informe antes de completar la ruta de éxito pendiente.
+
+Quinta prueba del módulo HTTP durable: titular y proveedor sintéticos preparan dos creaciones, dirección HTTP, concesión, corte y duplicado en buzón nativo; sus almacenes efímeros se cierran antes del consumo. Receptor HTTP durable y procesos nuevos validan los cuatro mensajes iniciales en resolver y restauran realmente inventario/publicación públicos. Recibir corte pendiente bloquea otro intento; validarlo hace que la puerta existente rechace al proveedor. Filas y bytes del catálogo anterior permanecen intactos. Sin dobles en la restauración de esta ruta; transporte sigue finito, un tema y un proveedor. Corregido el nombre de un argumento de la API nativa en la preparación sintética.
+
+Cinco pruebas focalizadas superadas con ResourceWarning como error. Última batería completa confirmada 97 y total previsto 99; helpers compartidos y dependencias sin modificar, sin repetir batería completa. Las 109 pruebas sociales siguen separadas. Siguiente unidad: diagnóstico consolidado del flujo que distinga recepción, validación y último intento sin cuerpos o falsa actualidad. KERI experimental, H01 abierto, actualidad global no probada y ningún E/T completo. Sin commit/push, despliegue, contacto o datos reales.
+
+## F09: diagnóstico consolidado del flujo — 29 de octubre
+
+Git revisado, fetch de origin completado y commits sin desfase; cambios locales preservados sin publicación. Sin nueva interacción humana posterior a la programación vigente. Revisados balance e informe para consolidar el flujo ya ejecutado.
+
+Diagnóstico de solo lectura ampliado con recuentos de recibidos, pendientes, marcados validados y estados desconocidos; progreso por única secuencia y conflictos. No expone cuerpos, rutas, fuentes o temas ni abre claves. F09 comprueba tres momentos reales: concesión/restauración, corte recibido pendiente con intento anterior aún completo, y corte validado con intento bloqueado y copia anterior en catálogo. Las lecturas no modifican bytes o fechas de las bases. Nuevo caso verifica contenido inesperado oculto, marcas desconocidas separadas y base ilegible no confundida con vacía; ausencia sigue sin crear bases. No es foto atómica ni revalidación criptográfica.
+
+Cuatro pruebas de diagnóstico y cinco del buzón superadas con ResourceWarning como error. Consolidación completa: **100 comprobaciones superadas en 69,172 segundos**, con aviso conocido de hio sin parche ajeno. 55 documentos es-ES y diff verificados; 109 pruebas sociales separadas. Siguiente unidad: revisar contratos y fronteras de concurrencia del flujo, especialmente recepción de corte durante restauración, antes de ampliar funcionalidad. KERI experimental, H01 abierto, actualidad global no probada y ningún E/T completo. Sin commit/push, despliegue, contacto o datos reales.
+
+## F09: corte pendiente recibido durante descarga — 29 de octubre
+
+Git revisado y fetch de origin completado; commits sin desfase y cambios locales conservados. No hay nueva interacción humana posterior a la programación vigente. Revisados balance e informe antes de revisar el contrato de concurrencia.
+
+Se identifica que comprobar pendientes solo al iniciar no cubre su llegada durante la descarga. restore_authorized admite comprobación adicional opcional antes de aplicar; el flujo del buzón vuelve a revisar pendientes/conflictos. Nueva prueba descarga el objeto por HTTP real y coordina recibir corte por buzón al terminar esa lectura: rol nativo aún permitido, pero dos pendientes bloquean aplicar, dejan cero objetos y registro inbox_pending. Validar en otro proceso lleva al rechazo posterior por proveedor no autorizado. Diagnóstico actualizado para el código. No es estrés con escritores simultáneos y sigue existiendo ventana entre última comprobación y commit; no se declara atomicidad o cierre general de carreras.
+
+Seis pruebas de buzón, doce de autorización y cuatro de diagnóstico superadas con ResourceWarning como error: 22 pertinentes. Última batería completa confirmada 100; total previsto 101. Próxima unidad: consolidar contratos y fronteras en una presentación compacta del flujo y revisar el bloqueo local, antes de acumular variantes. 109 pruebas sociales separadas; KERI experimental, H01 abierto, actualidad global no probada y ningún E/T completo. Sin commit/push, despliegue, contacto o datos reales.
+
+## Consolidación de contratos y límites — 30 de octubre
+
+Git revisado, fetch de origin completado y commits sin desfase; cambios locales conservados. El cambio de fecha y el contexto del entorno no son regreso humano: la programación continúa vigente. No se inicia otro bloque de código en esta unidad documental.
+
+Reorganizado el balance para sustituir el apéndice cronológico por contratos actuales: recibir, confirmar recepción, validar, repetir, comprobar entrega, aplicar y diagnosticar. Tabla F02–F09 con límites, alcance del bloqueo de un buzón y orden pendiente. Se corrigen prioridades antiguas que ya se habían ejecutado y cifras históricas que podían confundirse con el total. La secuencia técnica detallada permanece en el informe y en este resumen; el laboratorio identifica al inicio el estado vigente y distingue cifras de cierres anteriores.
+
+No se cambian reglas de confianza, interfaces de producto o pruebas. Última batería completa 100; 22 comprobaciones pertinentes posteriores superadas y conjunto previsto 101. Validación documental es-ES y diff aplicables, sin repetir pruebas de código para una consolidación textual. Siguiente bloque: revisar estados desconocidos e integridad del sobre en el flujo de una fuente; integración MailboxDirector y plan privado siguen pendientes. KERI experimental, H01 abierto, actualidad global no probada y ningún E/T completo. Sin commit/push, despliegue, terceros o datos reales.
+
+## F09: marcas desconocidas no promueven permiso — 30 de octubre
+
+Git revisado y fetch de origin completado; sin desfase de commits y cambios locales preservados. No hay regreso humano desde la programación vigente. Revisados contratos consolidados y último resultado antes del bloque.
+
+Se corrige la omisión de marcas distintas de cero/uno: antes contar solo cero podía ocultarlas. La validación las rechaza sin omitir o reparar; la puerta exige marca uno en todas las entradas. Nueva prueba integrada restaura publicación, recibe corte y altera sus dos marcas a valor desconocido. Procesos nuevos bloquean restauración y rechazan validar; permanecen concesión anterior, marcas originales alteradas y copia pública intacta. El diagnóstico informa dos estados desconocidos y cero pendientes con marca cero: no equivale a validación completa. No se afirma integridad autenticada del dispositivo ni de metadatos de ruta.
+
+Siete pruebas del buzón y cuatro de diagnóstico superadas con ResourceWarning como error: once pertinentes. Última batería completa 100; total previsto 102. Siguiente bloque: delimitar transporte nativo pendiente y conservación de metadatos, evitando más variantes sintéticas aisladas. 55 documentos es-ES y diff aplicables; 109 pruebas sociales separadas. KERI experimental, H01 abierto, actualidad global no probada y ningún E/T completo. Sin commit/push, despliegue, contacto o datos reales.
+
+## F10: contrato de consulta nativa y conservación de metadatos — 30 de octubre
+
+Git revisado, fetch de origin completado y commits sin desfase; cambios locales preservados. No hay regreso humano desde la programación vigente. Revisados balance e informe y fuentes locales fijadas, sin actualizar dependencias.
+
+Se documenta como propuesta no ejecutada la cadena Poller → consulta mbx → HttpEnd → cue/iterador SSE y MailboxDirector → parser. El límite que conserva id/tema/datos está antes de que Poller entregue solo bytes; el sobre durable debe capturarse ahí antes de aceptar progreso. Se distingue consulta firmada de autorización de lectura, sin concluir vulnerabilidad a partir de una función aislada. F10 concreta precondiciones, secuencia y criterio de paso, sin inventar directorio, consenso o política de acceso.
+
+Primer bloque ejecutable pendiente: petición/cue/SSE nativos por HTTP real con mensajes públicos sintéticos. Después se estudiará el adaptador durable en el límite de eventos y recuperación entre procesos; MailboxDirector completo no se dará por supuesto. Preparación documental, sin pruebas nuevas ni repetir baterías: última completa 100, conjunto previsto 102 y once comprobaciones focalizadas anteriores superadas. 55 documentos es-ES y diff aplicables; 109 pruebas sociales separadas. KERI experimental, H01 abierto, actualidad global no probada y ningún E/T completo. Sin commit/push, despliegue, contacto o datos reales.
+
+## F10: consulta nativa y SSE por HTTP ejecutados — 30 de octubre
+
+Git revisado; fetch de origin completado tras reintentar una revisión automática que agotó su plazo. Commits sin desfase y cambios locales conservados. Sin regreso humano desde la programación vigente; revisados balance e informe antes del primer paso F10.
+
+Añadido keri_native_query.py: consulta mbx firmada de destinatario conocido, POST a HttpEnd real, adaptador del ensayo ejecuta parser nativo y enlaza cue a QryRpyMailboxIterable. SSE nativo real con servidor hio/Falcon; cliente urllib y lector ASCII acotado. Se comprueban SAID/destinatario/tema del cue, bytes e índices cero/uno y segunda consulta desde uno. Corregida conversión bytearray/bytes del lector tras primera ejecución. No se modifican terceros.
+
+Una prueba focalizada superada con ResourceWarning como error. No es Poller/MailboxDirector, no hay entrada durable o recuperación entre procesos ni acceso privado demostrado; el criterio completo F10 sigue pendiente. Última batería completa 100; total previsto 103. Siguiente bloque: unir ruta nativa real, metadatos durables y recuperación sin confundirlos con autorización. 55 documentos es-ES y diff aplicables; 109 pruebas sociales separadas. KERI experimental, H01 abierto, actualidad global no probada y ningún E/T completo. Sin commit/push, despliegue, contacto o datos reales.
+
+## F10: ruta nativa con sobre durable y recuperación — 30 de octubre
+
+Git revisado, fetch de origin completado y commits sin desfase; cambios locales conservados. Sin regreso humano desde la programación vigente. Revisados balance e informe antes de unir la ruta nativa y el sobre.
+
+Segunda prueba de keri_native_query.py: consulta mbx prefirmada por destinatario conocido, HttpEnd/parser/cue y SSE reales; lector de otro proceso confirma fuente/destinatario/tema/ordinal/bytes/huella con progreso de recepción. Termina tras cuatro pendientes sin validar. Servidor/controlador se cierran; otros procesos validan y terminan tras aplicar corte antes del marcador, repiten dos pendientes y conservan revocación. Progreso local, no cursor de Poller; destinatario esperado se pasa explícitamente al validador, manteniendo su caso anterior por defecto. Sin exportar claves privadas.
+
+Dos pruebas nativas y siete del buzón superadas con ResourceWarning como error. Consolidación completa: **104 comprobaciones superadas en 82,110 segundos**, con aviso conocido de hio y sin parche a terceros. 55 documentos es-ES y diff verificados; 109 pruebas sociales separadas. F10 sigue parcial: faltan fallo de persistencia en esta ruta y consulta ajena; acceso privado, Poller/MailboxDirector completos y actualidad global no probados. Siguiente bloque: comprobar esas dos fronteras del contrato existente, sin inventar autorización de lectura. KERI experimental, H01 abierto y ningún E/T completo. Sin commit/push, despliegue, contacto o datos reales.
+
+## F10: consulta ajena y límite de lectura privada — 30 de octubre
+
+Git revisado, fetch de origin completado y commits sin desfase; cambios locales conservados. Sin regreso humano desde la programación vigente. Revisados balance e informe antes de ejecutar la frontera de consulta ajena.
+
+Tercera prueba nativa: otro firmante conocido consulta el buzón del destinatario sin concesión de lectura emitida y obtiene los mensajes públicos sintéticos por HttpEnd/parser/cue/SSE reales, incluida consulta desde índice uno. Se conserva la configuración nativa, sin inventar control de acceso en el adaptador. La ruta no acredita aislamiento de lectura y queda limitada a material público sintético; no se afirma vulnerabilidad general de KERIpy o exposición de datos reales. Una consulta firmada no demuestra permiso privado.
+
+Tres pruebas focalizadas superadas con ResourceWarning como error; última batería completa 104 y total previsto 105. Se documenta la brecha sin adoptar política de lectura, consenso o autoridad nueva. No bloquea continuar el ensayo público; antes de incorporar contenido privado será necesaria esa definición y su ensayo. Próxima unidad: rechazo de persistencia de la recepción nativa durable. KERI experimental, H01 abierto, actualidad global sin probar y ningún E/T completo. 55 documentos es-ES y diff aplicables; sin commit/push, despliegue, contacto o datos reales.
+
+## F10: fallo de persistencia durante SSE nativo y reanudación — 30 de octubre
+
+Git revisado y fetch de origin completado; commits sin desfase y cambios locales conservados. No hay regreso humano desde la programación vigente. Revisados balance e informe antes de comprobar la frontera pendiente.
+
+Cuarta prueba nativa: trigger SQLite aborta el tercer INSERT en receptor de SSE real. Proceso termina con error y conserva dos entradas/progreso dos. Retirar el trigger y volver a firmar explícitamente consulta desde dos permite a otro proceso recibir el corte y completar cuatro entradas/progreso cuatro. Servidor cerrado antes de validar; se repite corte tras terminación entre validación y marcador y se conserva revocación. No es fallo físico, cliente Poller o recuperación automática; los pasos de reparación y consulta son explícitos.
+
+Cuatro pruebas focalizadas superadas con ResourceWarning como error. Última batería completa 104; total previsto 106. La ruta pública queda comprobada en ese alcance, sin declarar F10 completo: consulta ajena sigue sin aislamiento, no se incorpora contenido privado y faltan Poller/MailboxDirector y controles de producción. Siguiente bloque: revisar acoplamiento del cliente nativo con sobre durable antes de su cursor, sin nueva política de lectura. 55 documentos es-ES y diff aplicables; 109 pruebas sociales separadas. KERI experimental, H01 abierto, actualidad global no probada y ningún E/T completo. Sin commit/push, despliegue, contacto o datos reales.
+
+## F10: Poller y cliente HTTP reales con sobre durable — 30 de octubre
+
+Git revisado, fetch de origin completado y commits sin desfase; cambios locales conservados. Sin regreso humano posterior a la programación vigente. Revisados balance e informe y el acoplamiento del cliente nativo antes de ejecutar.
+
+Quinta prueba nativa: Poller y planificador/cliente HTTP reales frente a HttpEnd/parser/cue/SSE reales. Dirección del controlador validada por destinatario preconfigurado. Fábrica envuelta por instrumentación que sigue creando cliente/doer reales y sustituye solo contenedor de eventos compartido con parser. Al retirar cada evento confirma sobre/progreso SQLite antes de devolverlo a Poller. Se comprueban dos entradas sin validar, bytes en cola y último ordinal nativo uno frente a siguiente local dos. Sin datos de aplicación privados, política de testigos nueva o dependencia parcheada. No se atribuye a este caso recuperación tras proceso terminado ni MailboxDirector completo.
+
+Cinco pruebas focalizadas superadas con ResourceWarning como error. Consolidación completa: **107 comprobaciones superadas en 76,436 segundos**, con aviso conocido de hio sin parche ajeno. 55 documentos es-ES y diff verificados; 109 pruebas sociales separadas. Próximo bloque: interrumpir este cliente nativo concreto y comprobar su recuperación con el sobre, sin extender permisos privados. Consulta ajena sigue sin aislamiento acreditado; KERI experimental, H01 abierto, actualidad global no probada y ningún E/T completo. Sin commit/push, despliegue, contacto o datos reales.
+
+## Regreso humano y preparación de publicación — 30 de octubre
+
+La petición humana «commit y push» termina la continuación autónoma vigente. Automatización continuar-spartakos-hasta-tu-regreso eliminada; no se inicia otro bloque autónomo. Usuario autoriza consolidar y publicar los cambios acumulados en prototipo-segunda-revision y la propuesta #2, sin integrar main.
+
+Fetch completado sin divergencias antes de preparar publicación. Revisados 19 archivos de documentación, inventario y código de laboratorio: sin secretos detectados, datos de usuario, bases, claves privadas, dependencias instaladas o artefactos regenerables que incorporar. AST Python y JSON válidos, licencias comprobadas; 55 documentos es-ES y diff sin errores. Batería completa repetida antes de publicar: **107 pruebas superadas en 80,128 segundos**. Persiste el aviso conocido de deprecación de hio sin parche ajeno; no se ha cambiado el simulador social.
+
+El siguiente trabajo pendiente continúa siendo recuperación del Poller real con el sobre; no se toma prestada del caso urllib. La ruta de lectura ensayada sigue restringida a material público sintético, KERI es experimental, H01 continúa abierto y ningún E/T está completo. No hay despliegue público ni contacto con terceros.

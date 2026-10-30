@@ -3,175 +3,152 @@ title: Spartakos — Balance de identidad y preparación del traslado
 lang: es-ES
 license: CC-BY-SA-4.0
 date: 2026-10-27
-version: 0.8
-status: Evaluación de laboratorio; sin elección de arquitectura de producción
+updated: 2026-10-30
+version: "0.43"
+status: Balance consolidado del laboratorio; sin elección de arquitectura de producción
 ---
 
-# Qué permite afirmar el laboratorio de identidad
+# Balance actual de identidad, entrega y traslado
 
-## 1. Conclusión y decisión provisional
+## 1. Conclusión y alcance
 
-KERIpy sigue siendo una candidata razonable para investigar el control de identidad. Las pruebas actuales no permiten elegirla como infraestructura de producción ni afirmar que Spartakos ya permite cambiar de proveedor. El ensayo de rol y dirección demuestra autorización de proveedores en la vista del observador, pero no exclusividad ni autoridad única para escribir el perfil. La siguiente unidad debe estudiar orden, vigencia y mensajes incompatibles antes de copiar un perfil entre dos alojamientos.
+El laboratorio ya ejecuta una integración pública acotada: control de claves, perfiles y objetos verificables, autorización de entrega y restauración desde copias. **No demuestra todavía un traslado social completo, independencia de toda autoridad común ni protección de producción. KERI sigue siendo candidata.**
 
-El [laboratorio](laboratorio-identidad/README.md) contiene 53 comprobaciones ejecutadas con KERIpy 1.3.6 fijada por commit. Incluye una reproducción de un comportamiento defectuoso, H01: que esa reproducción pase no significa que el defecto esté corregido. Las 109 pruebas del simulador social son otra batería y no añaden garantías distribuidas.
+La batería completa confirmada reúne **107 comprobaciones**. Incluye la reproducción de H01 y no equivale a garantías de seguridad aprobadas. Las 109 pruebas del simulador social son otra batería; no se han añadido capacidades distribuidas a ese cliente. **Ninguno de los quince casos E ni los diez T se considera completado.** La cobertura parcial actual se presenta abajo.
 
-**Ninguno de los quince casos E ni de los diez casos T se considera completado.** Algunas pruebas proporcionan evidencia parcial útil, que se detalla a continuación. La comparación de [nueve familias de identidad](ARQUITECTURA-04-CANDIDATOS-DE-IDENTIDAD.md) sigue vigente como investigación; este balance no acredita superioridad global de KERI.
+Este documento sustituye sus tablas iniciales, anteriores a los ensayos de inventario. La secuencia de cambios y autorizaciones se conserva en [el resumen acumulado](REVISION-PARA-EL-LUNES.md). El detalle reproducible y los límites por suite están en [el laboratorio](laboratorio-identidad/README.md) y [el informe de inventario público](ENSAYO-03-INVENTARIO-PUBLICO.md).
 
-## 2. Garantías y límites observados
+## 2. Qué está demostrado en escenarios locales
 
-| Aspecto | Evidencia ejecutada | Lo que todavía no demuestra |
+| Pieza | Evidencia ejecutada | Límite decisivo |
 | --- | --- | --- |
-| Identidad estable | Rotación y reapertura conservan identificador | Resolución pública de ubicación, continuidad de referencias sociales o disponibilidad global |
-| Control de claves | Rechazo de firmas ajenas, clave no comprometida y clave anterior tras rotación | Recuperación sin medios previos, delegación de servicios o seguridad del dispositivo |
-| Respaldo por testigos | Verificador externo exige recibos suficientes; duplicados e impostores no completan el umbral | Que dos de tres sea una política adecuada para Spartakos o que los operadores sean independientes |
-| Continuidad local | Procesos HTTP separados, caída de testigo, persistencia y reinicio del verificador | Pérdida de máquina, caída durante transacción, censura de red o coste real de operación |
-| Pendientes | Cola persistida, recibo posterior por HTTP y aceptación sin reenviar evento | Descubrimiento automático de destino, cancelación o ejecución única de publicaciones programadas |
-| Contradicciones | Dos verificadores detectan la otra rama cuando la reciben, incluso tras reiniciar | Detección durante aislamiento, elección automática de una rama o convergencia |
-| Caducidad | Sale la entrada temporal; el estado aceptado se conserva | Que el evento quede revocado o que una contradicción haya desaparecido |
-| Evidencia almacenada | Bytes y firma de la rama contradictoria sobreviven a reapertura y caducidad de su cola | Registro duradero de alertas, conservación indefinida o archivo resistente a manipulación |
-| Servicio de recibos | H01 reproducido; adaptador experimental exige evento exacto aceptado | Corrección oficial, seguridad concurrente o aprobación del servicio completo |
+| Control de identidad | Persistencia, rotación con ID estable y rechazo de clave ajena o anterior | No recuperación sin medios, seguridad de dispositivo o independencia global |
+| Recibos de testigos | Umbral sintético, rechazo de duplicados/impostores, procesos HTTP y caída/reinicio | No política de confianza aprobada, operadores independientes o consenso |
+| Historial contradictorio | Detección al recibir otra rama; evidencia conservada; registro local de conflicto | No detección durante aislamiento, arbitraje o convergencia automática |
+| Rol y dirección | Titular autoriza/revoca; proveedor firma dirección; proveedor no suplanta al titular | agent es múltiple; vistas no actualizadas conservan autorizaciones anteriores; igual fecha puede divergir |
+| Perfil y revisión | Huella anclada a eventos validados; copia, alteración, historial y rotación | Semántica de aplicación experimental; cabeza local no significa actualidad global |
+| Entrega pública | A/B HTTP, origen apagado; F09 añade concesión, dirección y corte por buzón con restauración real | Un proveedor/tema en F09; URL inicial y preparación coordinadas; sin descubrimiento independiente |
+| Inventario y referencias | Inventario autorizado, versiones, referencia guardada, ausencia/alteración, retiradas y rechazo de reescritura/retroceso | No todos los tipos sociales, relaciones ni datos privados; entrada básica sin puerta de acceso |
+| Composición autorizada | Rol/dirección y conflicto conocido antes de red y antes de aplicar; reintento en procesos nuevos | Composición con un objeto; no todas las variantes multiobjeto reunidas en un mismo flujo |
+| Persistencia y fallos | Recepción durable, marcas de validación, catálogo e intento separados; repetición tras terminación; corte durante descarga | Sin transacción global; cortes durante escrituras, corrupción y fallos de disco pendientes |
+| Diagnóstico | Solo lectura de registros, incógnitas explícitas y ausencia de cuerpos en salida | No revalidación criptográfica, permiso, actualidad o foto atómica entre almacenes |
 
-Referencias ejecutables: [claves y persistencia](laboratorio-identidad/keri_smoke.py), [recibos y discrepancias](laboratorio-identidad/keri_witnesses.py), [HTTP y adaptador](laboratorio-identidad/keri_http.py), [recuperación combinada](laboratorio-identidad/keri_pending.py) y [caducidad y contraste persistido](laboratorio-identidad/keri_lifecycle.py). El [inventario](laboratorio-identidad/entorno-verificado.json) fija entorno y resultados; la [revisión de H01](laboratorio-identidad/revision-h01.json) distingue inspección estática posterior de ejecución real.
+Las pruebas operan con datos sintéticos, procesos y directorios separados en el mismo equipo. No prueban caída del equipo completo ni independencia de administradores. La autorización para entregar no da claves del titular al proveedor ni permiso para editar el perfil. Múltiples proveedores son compatibles con Spartakos.
 
-## 3. Cobertura del programa estructural E
+## 3. Cobertura actual del programa E
 
-«Parcial» significa evidencia de una pieza, no aceptación del caso completo. «Sin ejecutar» significa que no existe una integración probada para ese caso; no es un fallo observado.
+«Parcial» identifica evidencia útil de piezas del caso; no cambia su condición de aceptación. «Sin ejecutar» se refiere a la integración estructural definida, aunque existan funciones locales del simulador con nombres parecidos.
 
-| Caso | Estado | Evidencia parcial y trabajo necesario |
+| Caso | Estado | Evidencia actual y brecha restante |
 | --- | --- | --- |
-| E01 — Identidades y dispositivos | Parcial | Identidad, claves y rotación probadas; faltan registro y revocación de dispositivos, ubicación y separación efectiva de alojamiento |
-| E02 — Entrega de publicaciones | Sin ejecutar | Repetir eventos KERI no equivale a entregar publicaciones entre A y B con versiones y deduplicación |
-| E03 — Grupo cifrado | Sin ejecutar | No se ha instalado ni probado MLS ni su enlace con las identidades |
-| E04 — Cambios con cliente desconectado | Sin ejecutar | Las caídas de testigos no prueban permisos comunitarios ni sincronización del cliente |
-| E05 — Revocación de dispositivo | Sin ejecutar | Invalidar una clave de identidad no prueba exclusión de mensajes de una época MLS posterior |
-| E06 — Nuevo miembro sin pasado | Sin ejecutar | No hay ensayo de claves y archivo comunitarios |
-| E07 — Persistencia de clientes | Parcial | Estado de identidad y verificador reabiertos; faltan cliente, dispositivos y estado criptográfico de grupos |
-| E08 — Traslado sin origen | Sin ejecutar | No existen dos alojamientos de perfil ni un cambio de destino validado |
-| E09 — Traslado interrumpido | Parcial | Rotación rechaza clave anterior y escrow se recupera; falta autoridad de servicios A/B, interrupción del traslado y rechazo de operaciones del origen |
-| E10 — Pérdida de autoridad común | Sin ejecutar | Caer un testigo no equivale a perder una autoridad de resolución; consulta y nuevos cambios no se han probado en ese escenario |
-| E11 — Recuperación de cuenta | Sin ejecutar | Rotación con medios disponibles no es recuperación tras pérdida de dispositivo o claves |
-| E12 — Archivo cifrado | Sin ejecutar | La reapertura de bases no prueba cifrado frente al proveedor ni restauración sin clave |
-| E13 — Búsqueda y denuncia privada | Sin ejecutar | No se han inspeccionado flujos distribuidos de esas funciones |
-| E14 — Entrega o credenciales alteradas | Parcial | Firmas falsas y contradicciones probadas; faltan credenciales sociales, nodo de entrega y análisis de metadatos |
-| E15 — Navegador | Sin ejecutar | Python local no acredita distribución del cliente, almacenamiento web ni múltiples pestañas |
+| E01 — Identidad y dispositivos | Parcial | Identidad, claves, roles y direcciones; faltan registro/revocación de dispositivos y recuperación integrada |
+| E02 — Publicación A/B y repetición | Parcial | Objetos públicos, IDs, revisiones, referencias y repetición de restauración; falta entrega social integrada y deduplicación de efectos |
+| E03 — Grupo cifrado | Sin ejecutar | MLS y vínculo con identidades sin integrar |
+| E04 — Cliente desconectado y permisos | Sin ejecutar | Caída de proveedor/testigo no prueba sincronización comunitaria y permisos del cliente |
+| E05 — Dispositivo expulsado | Sin ejecutar | Rotación de identidad no demuestra exclusión de mensajes de época MLS posterior |
+| E06 — Nuevo miembro sin archivo previo | Sin ejecutar | Sin ensayo criptográfico de incorporación y archivo comunitario |
+| E07 — Persistencia de clientes | Parcial | Historias, perfiles, inventario y registros reabiertos; falta estado de cliente/dispositivos y de cifrado de grupos |
+| E08 — Traslado sin origen | Parcial | F01 reúne inventario público, referencias y autorización de entrega con A apagado; faltan alcance social completo, contextos privados y distribución independiente |
+| E09 — Traslado interrumpido y autoridad anterior | Parcial | Estados parciales, revocación, conflictos y procesos nuevos; no traslado completo de todos los objetos/efectos ni escritura delegada |
+| E10 — Autoridad común ausente | Sin ejecutar | Pérdida de testigo o servidor de datos no equivale a perder una autoridad común de resolución y poder seguir cambiando destino |
+| E11 — Recuperación de cuenta | Sin ejecutar | No se recuperan claves/dispositivos perdidos mediante un procedimiento definido |
+| E12 — Archivo cifrado | Sin ejecutar | Catálogo público y SQLite no prueban privacidad frente al proveedor o restauración sin clave |
+| E13 — Búsqueda y denuncia privada | Sin ejecutar | Sin flujos distribuidos ni análisis de exposición de esas funciones |
+| E14 — Credenciales y entrega alteradas | Parcial | Firmas falsas, objetos alterados, identidad inesperada y ramas; faltan credenciales sociales y evaluación de metadatos |
+| E15 — Navegador | Sin ejecutar | Ensayos Python no acreditan distribución de cliente, múltiples pestañas o almacenamiento web seguro |
 
-El [programa E](ENSAYO-01-COMPONENTES-Y-VALIDACION.md) conserva sus condiciones de aceptación. No se modifica para hacer coincidir sus criterios con lo que ya ha resultado sencillo de probar.
+No se rebajan los requisitos del [programa E](ENSAYO-01-COMPONENTES-Y-VALIDACION.md) para hacerlos coincidir con los casos que ya pasan.
 
-## 4. Cobertura del traslado individual T
+## 4. Cobertura actual del traslado T
 
-| Caso | Estado | Evidencia y brecha |
+| Caso | Estado | Evidencia actual y brecha restante |
 | --- | --- | --- |
-| T01 — Línea base | Sin ejecutar | Falta inventario de perfil y objetos en A con referencias desde un observador social |
-| T02 — Traslado cooperante | Sin ejecutar | Falta cambio de destino autorizado, restauración en B y resolución del observador |
-| T03 — Origen indisponible | Sin ejecutar | Detener un testigo no demuestra traslado con A apagado y respaldo independiente |
-| T04 — Copia sin autoridad | Parcial | Firmas ajenas rechazadas; no se ha intentado activar en B un inventario íntegro sin control de identidad |
-| T05 — Interrupción y repetición | Parcial | Escrow persiste y se completa; faltan etapas persistidas del traslado y deduplicación de objetos y envíos |
-| T06 — Autoridad anterior | Parcial | Clave anterior deja de autorizar tras rotación; falta revocar autoridad de servicio sin entregar a A la clave del titular |
-| T07 — Autoridad principal caída | Sin ejecutar | No se ha demostrado resolución y cambio de ubicación con una autoridad común ausente |
-| T08 — Privacidad | Sin ejecutar | No hay traslado de borradores y permisos comunitarios; el aislamiento de los fixtures no prueba privacidad del producto |
-| T09 — Retiradas y consumidos | Sin ejecutar | No se han restaurado marcadores y pendientes consumidos entre alojamientos |
-| T10 — Incompletitud y corrupción | Sin ejecutar | Los hashes del entorno no son un inventario firmado de perfil ni validación de una restauración incompleta |
+| T01 — Línea base | Parcial | Perfil/objetos públicos, inventario y referencia guardada; faltan relaciones declaradas y todos los contextos/audiencias del contrato |
+| T02 — Traslado cooperante | Parcial | F01 integra inventario multiobjeto y observador; faltan otras entidades/audiencias sociales y distribución sin coordinador |
+| T03 — Origen indisponible | Parcial | F01 integra A apagado, B y control del titular separado, con actualización posterior al corte; no recuperación sin respaldo/medios ni alcance privado |
+| T04 — Copia sin autoridad | Parcial | Identidad falsa, cuerpo sin anclaje y proveedor sin rol rechazados; no activación integral de cuenta/servicios en B |
+| T05 — Interrupción y repetición | Parcial | Estados persistidos, procesos nuevos y fallos antes/después de aplicar; faltan etapas completas de traslado y efectos sociales/programados |
+| T06 — Autoridad anterior | Parcial | Clave anterior rechazada, rol revocado y retorno de A no restaura permiso en la vista actualizada; escritura delegada y observadores desactualizados no resueltos |
+| T07 — Autoridad principal caída | Sin ejecutar | Consulta y cambio de ubicación con autoridad común desaparecida no demostrados |
+| T08 — Privacidad | Sin ejecutar | Sin transporte de borradores, claves y permisos comunitarios; fixtures aislados no prueban esa privacidad |
+| T09 — Retiradas y consumidos | Parcial | Retirada y revisiones públicas no resucitan en restauración; faltan borradores consumidos, avisos, ediciones y programaciones |
+| T10 — Datos faltantes/corruptos | Parcial | Objeto ausente/alterado, inventario no autorizado y rechazo persistido; no cobertura completa de formatos, recursos o recuperación |
 
-Se mantienen las exclusiones del [ensayo T](ENSAYO-02-TRASLADO-INDIVIDUAL.md): cambiar de proveedor dentro de Spartakos no es importar historial y contactos de redes externas. Esa migración de entrada continúa siendo un requisito distinto y pendiente.
+Los [casos T](ENSAYO-02-TRASLADO-INDIVIDUAL.md) siguen siendo el contrato del ensayo. F01 y F09 aportan evidencia pública integrada parcial, sin completar privacidad, referencias sociales completas o independencia de autoridad común. La migración de historial y contactos desde redes externas es un requisito distinto, todavía no ensayado aquí.
 
-## 5. Obstáculos antes de los dos alojamientos
+## 5. Integración pública prioritaria ejecutada en su alcance
 
-### Autoridad del titular y del servicio
+**Un único flujo público que reúna las piezas existentes**, en vez de añadir más variantes de cada pieza por separado:
 
-Debe demostrarse qué operación existente autoriza un destino y cómo se revoca la capacidad del anterior. El alojamiento no debe poseer por defecto la clave que controla la identidad. Rotar esa clave en una prueba no basta para demostrar separación de responsabilidades.
+1. Titular con medios de control separados de A/B, servicios de entrega y un observador con referencias guardadas antes del cambio.
+2. Inventario multiobjeto de perfil, publicaciones, versiones y retirada, con autoridad validada. Las referencias del observador no se cambian para apuntar a B.
+3. Apagar A antes de solicitar el cambio de proveedor de entrega; recibir las declaraciones firmadas de autorización/dirección y recuperar desde B a través de la puerta autorizada.
+4. Emitir una actualización del inventario después del corte, no limitarse a servir una actualización fabricada antes de apagar A. Comprobar cuerpo, versión, referencia histórica y retirada en la nueva vista.
+5. Reabrir el verificador en otro proceso, repetir sin duplicar y volver a A con copia antigua, sin restablecer autorización ni resucitar contenido.
+6. Registrar de forma separada catálogo, recepción, último intento, conflicto y falta de prueba de actualidad. Un diagnóstico no sustituye una validación.
 
-Se investigarán las declaraciones de rol, autorización y localización de servicio que ya proporciona KERIpy, fijando sus API y sus reglas. No se dará autoridad a una URL por aparecer en un archivo firmado sin comprobar el alcance, la vigencia y la resolución exigidos por el componente. Si sus mecanismos no permiten cubrir el contrato, se declara la brecha; no se inventa consenso para ocultarla.
+**Condición de paso del bloque:** el informe debe mostrar esos hechos en la misma ejecución con datos sintéticos y direcciones obtenidas del estado autorizado. El coordinador puede distribuir mensajes, pero se declara. Si falla, se registra el fallo y no se sustituye por resultados de suites independientes. Este bloque no altera el formato del simulador ni publica una API estable.
 
-### Vigencia y contradicciones
+**Resultado actual:** F01 ejecuta esta secuencia acotada con inventario público, autorización y referencia en la misma prueba. [Informe](ENSAYO-03-INVENTARIO-PUBLICO.md). La condición de paso de este bloque se considera demostrada en ese alcance; no equivale a completar los E/T sociales ni sus variantes de fallo. F02–F09 han ampliado el transporte de declaraciones, la recepción durable y su integración con la entrega pública, con las fronteras que se resumen a continuación.
 
-El observador debe distinguir una autorización anterior, una vigente en su estado validado y una discrepancia. Una firma válida aislada no prueba que la autorización siga vigente. Durante una partición puede no ser posible establecer actualidad; el ensayo deberá registrar esa limitación, no llamar definitivo a un estado antiguo.
+## 6. Brechas que no debe ocultar ese éxito local
 
-La resolución de contradicciones y la aceptación de dependencias comunes son decisiones de arquitectura y gobierno. Aún no hace falta decidirlas para probar detección y negativa a presentar éxito ante evidencia contradictoria.
+- Distribución y descubrimiento independientes: recibir una autorización por el coordinador no demuestra que un contacto real se actualice sin configuración.
+- Conflictos y confianza: las ramas conocidas pueden bloquearse, pero no existe arbitraje o convergencia general. La política de confianza requiere decisión explícita antes de adoptarse.
+- Atomicidad y recuperación: resolución, historia KERI, catálogo y registros siguen separados. No se han probado cortes dentro de transacciones, pérdida de evidencia, disco lleno o corrupción general.
+- H01: el endpoint de recibos fijado conserva un comportamiento no aprobado; el adaptador es experimental y no una corrección oficial verificada. No se aprueba su uso público.
+- Dependencias: firma de distribución nativa pendiente; consulta de avisos PyPI sin incidencias no equivale a auditoría. No se actualizarán componentes silenciosamente para ocultar fallos.
+- Privacidad: faltan MLS, credenciales de grupos, revocación de dispositivos y archivo cifrado. Los roles de lectura/comentario/publicación no nacen automáticamente de la membresía criptográfica.
+- Experiencia y operación: faltan navegador, móvil, recuperación comprensible, distribución confiable del cliente y mediciones de coste para voluntarios. El prototipo social local no cubre esas garantías.
 
-### Recibos, archivo y operación
+No se decide todavía proveedor obligatorio, directorio común, umbral de testigos o mecanismo de recuperación. Si una integración solo funciona aceptando una dependencia común imprescindible, debe presentarse como decisión crítica, no como ajuste oculto.
 
-H01 permanece abierto en la implementación fijada. El adaptador permite un ensayo local acotado; no aprueba el servicio para producción. Siguen pendientes concurrencia, configuraciones completas y revisión independiente. La firma de distribución de libsodium no se verificó; la consulta OSV sin avisos para 34 versiones PyPI no sustituye una auditoría.
+## 7. Flujo público actual y contratos
 
-Un archivo íntegro no concede control de identidad. Los medios de control y el inventario restaurable deben estar disponibles antes de apagar A. La restauración debe conservar IDs, versiones y retiradas; las programaciones se mantienen inactivas. No se pretende recuperar datos que solo existían en el origen perdido.
+F09 une en una ejecución local la recepción por HTTP, persistencia, validación y restauración pública. El titular y el proveedor sintéticos firman creación, dirección, concesión y corte; sus almacenes se cierran antes del consumo. El servidor de buzón no recibe sus claves. Una publicación restaurada antes del corte conserva sus bytes después de revocar al proveedor.
 
-Los testigos del laboratorio comparten máquina y administrador. No hay medidas suficientes para afirmar costes asumibles, incentivos de voluntariado o independencia institucional. Esa evaluación necesita despliegues medidos, documentación de operación y escenarios de mantenimiento.
-
-## 6. Próximas unidades y condiciones de paso
-
-| Orden | Unidad concreta | Condición de paso | Si no se cumple |
+| Etapa | Registro o evidencia | Lo que permite afirmar | Frontera pendiente |
 | --- | --- | --- | --- |
-| 1 | Ensayo de autorización y resolución de destino con API existentes | Titular autoriza B; tercero verifica alcance; destino anterior no se presenta como vigente tras conocer el cambio; no hace falta la clave del titular en A | Registrar incompatibilidad o límite de integración; no construir un directorio propio para simular éxito |
-| 2 | Estados antiguos y contradictorios en resolución | Operaciones obsoletas se rechazan o se señala conflicto; una vista sin actualización no se presenta como confirmación reciente | Mantener explícito el estado no confirmado y revisar la integración |
-| 3 | Traslado cooperante de perfil mínimo público A → B | Misma identidad, IDs y referencias desde un observador que no se traslada; copia sin autoridad rechazada | No conectar el flujo al cliente social |
-| 4 | Repetir con A apagado antes de solicitar cambio | Respaldo y control independientes permiten el flujo; faltas de datos y control informadas | No afirmar independencia del alojamiento |
-| 5 | Interrupciones, origen que vuelve y archivo privado | Reanudación sin duplicados, autoridad anterior controlada, retiradas conservadas y permisos no ampliados | Mantener el resultado acotado y declarar los casos T pendientes |
+| Recibir por HTTP | Sobre de fuente local, destinatario, tema, ordinal, bytes y huella | Esos bytes se han recibido desde la ruta observada | La URL y el ordinal no acreditan autoridad o actualidad |
+| Confirmar recepción | Sobre y siguiente ordinal en una transacción SQLite | Hay una entrada durable para validar después | No garantiza durabilidad ante fallo físico ni integridad autenticada del disco |
+| Validar | Parser e historial nativos; marca local posterior | La creación/respuesta del escenario ha sido aceptada en esa vista | Historial nativo y marca SQLite no son una transacción conjunta |
+| Repetir tras terminación | Corte pendiente validado otra vez sin restablecer concesión | La repetición conserva el resultado en estos eventos | Sin efectos sociales exactamente una vez |
+| Comprobar entrega | Resolver de la misma vista, dirección validada y ausencia de pendientes/conflictos del ensayo | Se puede iniciar la restauración conforme a los registros locales comprobados | Bloqueo conservador para una fuente; no política general de toda la red |
+| Aplicar catálogo | Revisión de rol/dirección y precaución del buzón antes del commit | El corte recibido en el punto instrumentado impide aplicar | Existe ventana entre última comprobación y commit; no atomicidad global |
+| Diagnosticar | Lecturas de solo lectura separadas | Distingue recepción, marcas locales, intento anterior y copia guardada | No revalida firmas, autorización o actualidad; no foto atómica |
 
-Estas unidades ordenan la investigación; no son nuevas características aprobadas. El punto inmediato es **autorizar y resolver el destino**, no copiar archivos de perfil. Si solo funciona con un servicio común imprescindible, esa dependencia se presenta al usuario como decisión crítica antes de adoptarla para Spartakos.
+Un intento anterior completo puede coexistir con un corte recibido pendiente. Después de validarlo, un intento nuevo puede quedar bloqueado y la copia pública anterior seguir en catálogo. Estos estados no se reducen a un único indicador de «traslado correcto».
 
-## 7. Condiciones para una decisión posterior
+## 8. Qué aportan los ensayos de transporte
 
-Para aprobar una candidata para el prototipo distribuido deberán existir resultados reproducibles sobre destino, autoridad anterior, persistencia, conflictos y privacidad en su alcance. Para producción harán falta además revisión de seguridad, recuperación, navegador, operación y costes, y una política de confianza explícita. Las pruebas funcionales del simulador no cubren esos requisitos.
+| Ensayo | Resultado relevante | Límite que conserva |
+| --- | --- | --- |
+| F02 — Introducción OOBI | Transporta historia, rol y dirección por HTTP nativo | Volver a consultar no entrega por sí mismo el corte probado; no sincroniza revocaciones |
+| F03 — Entrada nativa de respuestas | Concesión/corte firmados cambian el estado al validar; firma ajena rechazada | Un 204 confirma cola en RAM; perderla puede exigir reenvío |
+| F04 — Buzón nativo | Mensajes prefirmados sobreviven al emisor y otros procesos los validan | Almacenamiento local con índices elegidos por coordinador |
+| F05 — Lector HTTP y cursor | Repetición ante terminación; rechazo de firma ajena/hueco; silencio obsoleto no revoca | Adaptación finita, sin MailboxDirector; rechazar puede bloquear un corte posterior |
+| F06 — Cursor del Poller | Progreso nativo puede persistir tras encolar sin haber validado | Generador real y base real con transporte sustituido por dobles; no fallo completo de MailboxDirector demostrado |
+| F07 — Entrada durable propuesta | Persistir antes del cursor y repetir tras validación; INSERT abortado no salta corte | Una fuente/tema, transporte sustituido; no fallo físico de disco |
+| F08 — HTTP y sobre durable | Validación posterior sin servidor; rechazo de alteración y conservación de conflicto | Fuente/tema acotados; huella local no autentica todo el almacén |
+| F09 — Entrega integrada | Dirección/concesión por buzón permiten descarga real; corte bloquea nuevos intentos sin borrar copia | Un objeto/proveedor/tema; no traslado social, descubrimiento o actualidad global |
 
-Por ahora se puede continuar autónomamente con la investigación y los ensayos reversibles de destino. No se adopta un directorio obligatorio, umbral de testigos, procedimiento de recuperación ni árbitro de conflictos. Tampoco se requiere que el usuario configure esos detalles para poder usar la futura red.
+El detalle reproducible, las terminaciones instrumentadas y los dobles de transporte se mantienen en el [informe de inventario](ENSAYO-03-INVENTARIO-PUBLICO.md). El balance no convierte resultados de piezas distintas en una prueba conjunta que no se haya ejecutado.
 
-## 8. Actualización tras ensayar roles y direcciones
+F10 ya reúne consulta mbx prefirmada, HttpEnd/parser/cue y SSE reales con sobre durable en otro proceso. Tras detener el servidor se valida y se repite el corte antes de su marcador, conservando revocación. El cliente es un lector urllib acotado; progreso de recepción local, sin Poller/MailboxDirector, consulta ajena o fallo de persistencia de esta ruta todavía probados.
 
-Cinco pruebas adicionales con API existentes elevan el laboratorio a 27 comprobaciones. La dirección anunciada por el proveedor y la autorización firmada por el titular se verifican por separado. A no consigue autorizarse como si fuese el titular ni sustituir la dirección de B; una revocación recibida persiste y el reenvío de la autorización anterior no la anula en el escenario ordenado probado. Los proveedores no reciben las claves del titular.
+## 9. Bloqueo local y conflictos: precaución experimental
 
-La cobertura sigue siendo parcial: no cambia el estado completo de ningún E/T. La primera unidad de la tabla anterior queda **parcialmente ejecutada**. No se ha demostrado su condición de destino vigente con autoridad de escritura: el rol `agent` admite A y B a la vez, y un observador que no recibe la revocación sigue resolviendo A. Autorización de endpoint y exclusividad de escritor son propiedades distintas.
+El flujo de un único buzón se detiene ante entradas pendientes o una contradicción conocida de posición. Conserva los bytes originales y la evidencia contradictoria sin elegir una rama ni atribuir culpa. La precaución se comprueba al iniciar y de nuevo antes de aplicar catálogo. Si impide recibir un corte válido posterior, el ensayo muestra ese bloqueo; no lo oculta bajo un descarte automático.
 
-Siguiente paso ajustado: ensayar fechas iguales, orden inverso de entrega y actualización de claves con la política nativa de aceptación. Después precisar el alcance del servicio frente al contrato. No iniciar una copia de perfiles presentándola como traslado con autoridad resuelta, ni convertir por cuenta propia un rol múltiple en una regla de consenso.
+Esto no autoriza a cualquier fuente a paralizar toda la cuenta o la red. Extenderlo a varias fuentes exige separar alcance, procedencia observada, validación y efectos; no se adopta todavía orden global, equivalencia de cursores, cuarentena o arbitraje. Una decisión de confianza que resulte necesaria se presentará expresamente.
 
-## 9. Resultado de orden y vigencia; precisión del criterio
+La introducción positiva, un cursor avanzado, una cola vacía, la ausencia de conflictos conocidos y un intento previo completo no demuestran actualidad global. Ni el diagnóstico ni una huella local sustituyen comprobación criptográfica de contenido o protección del dispositivo.
 
-Cuatro pruebas adicionales elevan el laboratorio a 31 comprobaciones. Con fechas distintas y la misma época de firma, el escenario de concesión/revocación converge al entregar los mensajes en ambos órdenes. Con igual fecha y época, los observadores conservan el primer valor aceptado y no convergen al reabrir. Una declaración en una época de claves posterior prevalece en el caso probado incluso con fecha menor; rotar sin nueva declaración no revoca el rol existente.
+## 10. Próximos bloques y decisiones abiertas
 
-No se adopta la respuesta de rol como registro exclusivo de alojamiento. Tampoco se exige que Spartakos tenga un único proveedor: la multiplicidad es compatible con servicios separados y réplicas. Las referencias anteriores a autoridad única de escritura deben entenderse como autoridad y revisión de cada objeto, no como prohibición de varios servidores. Lo pendiente es delimitar qué puede modificar cada servicio y cómo se valida el estado del perfil sin confiar en un proveedor por el mero hecho de alojarlo.
+1. Conservar el contrato revisado del buzón de una fuente: las marcas desconocidas se rechazan sin promover permisos; bytes o tema alterados y contradicciones conocidas bloquean el ensayo. La recuperación explícita y protección autenticada del almacén siguen pendientes.
+2. Completar F10 tras reunir consulta, cue/SSE reales y recepción durable con recuperación entre procesos. La consulta ajena de otra identidad conocida obtiene los mensajes públicos en la configuración ensayada: esta ruta no acredita aislamiento de lectura. El INSERT abortado durante SSE conserva progreso dos y otra consulta firmada explícita recupera el corte; Poller y su cliente HTTP reales ya conservan el sobre antes del cursor mediante un adaptador experimental; su recuperación tras terminar y MailboxDirector completo siguen pendientes. La lectura privada continúa sin aislamiento acreditado.
+3. Preparar el ensayo de grupos privados antes de instalar componentes: verificar fuentes, versión, licencia y dependencias; separar membresía criptográfica de permisos de leer, comentar o publicar. KERI no sustituye MLS.
+4. Tratar recuperación, vigilancia/censura, incentivos para voluntarios y migración externa como trabajos con requisitos propios. Un archivo público portable no resuelve pérdida de contactos, seguridad de dispositivos o recuperación sin medios.
 
-La siguiente unidad investigará la vinculación de una revisión del perfil mínimo con eventos ordenados del mecanismo existente, separando autorización, integridad, entrega y actualidad de la vista. El ensayo deberá rechazar una copia sin autoridad y registrar ramas incompatibles o ausencia de actualización sin atribuirse consenso. No se diseña criptografía nueva ni se da por cumplido el traslado con un hash firmado aislado.
-
-## 10. Ensayo del perfil público vinculado a eventos
-
-Siete pruebas adicionales verifican el enlace experimental entre bytes del perfil, ID del titular y huella incluida en eventos KERI aceptados. Las copias mantienen autoridad y referencia; la modificación sin anclaje o firma válida no se acepta. Una revisión anterior queda identificada como histórica después de conocer una posterior. Rotar conserva el ID de perfil y la clave anterior no puede autorizar otra revisión. El enlace semántico y el formato mínimo pertenecen al arnés de aplicación; no se atribuyen a KERI como protocolo nativo de perfil.
-
-El resultado no completa E02, E08 ni T01–T03: no existen servicios A/B de perfil en este ensayo. Sigue pendiente persistir el enlace y el estado duradero de conflicto antes de presentar un traslado. La cabeza local del perfil no demuestra actualidad global ni ausencia de bifurcaciones; tampoco concede permiso automático para una acción sensible. Las pruebas de vista atrasada y ramas firmadas conservan ese límite.
-
-Siguiente unidad: persistencia de revisiones y señalización de conflicto del perfil; después entrega desde dos servicios locales, separada del control del titular, con origen apagado. No se amplían permisos comunitarios ni se trasladan datos privados en ese primer flujo.
-
-## 11. Persistencia de perfil y conflicto local
-
-Tres pruebas adicionales verifican reapertura del cuerpo y su vínculo con el historial KERI en procesos distintos, bloqueo por conflicto conservado después de caducar la cola temporal y rechazo de firma ajena al registrar evidencia. Se usa un registro SQLite local del arnés, separado de las colas de KERI; no es consenso ni registro distribuido. Su verificación de ramas se limita a dos interacciones sn=1 sin rotación, testigos o delegación.
-
-Se añade evidencia parcial a E07, sin completar persistencia de cliente o cifrado. No se completa ningún E/T. Los cortes entre detección en KERI y registro SQLite siguen pendientes, así como pérdida del registro, corrupción y recuperación general. No estar bloqueado por ese registro no confirma actualidad ni concede permiso de actuar.
-
-Próximo ensayo: servir el mismo perfil público desde A y B mediante HTTP local, recuperar la entrega con A apagado y verificarlo desde un tercero con estado propio. Se registrará como recuperación de entrega, sin elevarla a traslado completo ni a actualización globalmente confirmada. La autoridad del titular sigue separada de las funciones de almacenamiento.
-
-## 12. Entrega HTTP recuperada con origen apagado
-
-Cinco pruebas adicionales ejecutan dos servicios de perfil público de solo lectura y verificadores en procesos separados. Con A apagado y la copia de B preparada previamente, se obtiene el mismo perfil y su historia firmada. El observador valida la identidad esperada por separado; rechaza cuerpo alterado, ausencia de anclaje validado y sustitución por otra identidad aun con firmas válidas. Una revisión antigua queda histórica cuando el observador conoce la nueva.
-
-La prueba aporta evidencia parcial a T01, T03 y T04, sin completar esos casos: solo hay perfil público, sin publicaciones, relaciones ni inventario de traslado; no se cambia el destino mediante el mecanismo de identidad y no se activa una autoridad de escritura de B. E08 sigue sin completarse. No se confunde redundancia de entrega con traslado ni se revoca un permiso que los servicios de solo lectura nunca recibieron.
-
-El siguiente paso es componer autorización de rol y resolución de dirección con la petición HTTP, preservando que múltiples proveedores pueden ser legítimos. Después se ensayará actualización con A apagado y entrega antigua cuando vuelva. La actualidad global seguirá declarándose desconocida si no puede probarse. No se adopta una arquitectura de producción.
-
-## 13. Composición de autorización y entrega
-
-Tres pruebas nuevas unen rol autorizado, dirección validada y lectura HTTP. Con A apagado, la vista que recibe revocación de A y autorización de B permite obtener el perfil desde B. Una nueva revisión firmada por el titular se verifica con A apagado. Cuando A vuelve con su copia anterior y otra dirección firmada no recupera el rol ni convierte su cuerpo antiguo en la cabeza conocida. La falta de autorización se comprueba antes de abrir HTTP.
-
-Aumenta la evidencia parcial de T02, T03, T05 y T06: hay composición y reapertura de almacenes, pero no inventario de traslado, interrupción entre etapas en procesos nuevos ni autoridad de escritura delegada a los servicios. No se completa ningún E/T. La vigencia se refiere a la vista que ha recibido los cambios; el coordinador distribuye las declaraciones. Siguen pendientes propagación automática, actualidad de observadores y gestión general de ramas.
-
-Próxima unidad: interrupción y reanudación de esa composición entre procesos nuevos y cambios parciales de autorización. No se asumirá atomicidad del par revocar A/autorizar B ni se confundirá coexistencia legítima de servicios con capacidad de editar el perfil.
-
-## 14. Vistas parciales entre procesos
-
-Cuatro pruebas adicionales verifican cinco procesos sucesivos en cada escenario: ninguna declaración nueva conserva A; solo revocación deja sin proveedor autorizado; solo autorización de B mantiene ambos. Un nuevo proceso comprueba cada vista parcial antes de completar mensajes. La entrega repetida de ambas declaraciones termina con B autorizado y A revocado, sin duplicar el cuerpo de perfil almacenado.
-
-También se verifica terminación abrupta del proceso después de commits, sin cierres normales; el proceso nuevo conserva la vista parcial. No se prueba corte durante transacción ni atomicidad distribuida. Los servicios siguen disponibles en este bloque; las caídas de proveedor se ensayaron separadamente.
-
-Se amplía evidencia parcial para T05 y E09, sin completar traslado de objetos, referencias o autoridad de escritura. Las vistas parciales deben expresarse como tales; no se inventa éxito definitivo, actualización global o exclusividad de alojamiento. Próxima unidad: consolidar condiciones de aceptación del perfil público mínimo y comportamiento explícito ante incompletitud antes de extender el inventario social.
-
-## 15. Cierre del alcance público mínimo
-
-Preparadas [las condiciones de aceptación del perfil público](PERFIL-01-ACEPTACION-DEL-ENSAYO-PUBLICO.md): doce criterios con evidencia y límites, dimensiones separadas de cuerpo, historia, autorización, entrega, conflicto y actualidad, y propuestas de integración. No se implementa un indicador agregado ni se atribuye actualidad global a una cabeza local. Tampoco se exige un servidor único o una elección técnica del usuario para resolver estados parciales.
-
-El banco local puede continuar con inventario de objetos públicos y referencias estables desde un observador que no se traslada. Debe incorporar autoridad del inventario, alteración/ausencias y retiradas antes de atribuir traslado completo. Ningún E/T se completa y el total de comprobaciones ejecutadas permanece en 53. Esta unidad es documental y no cambia la adopción provisional de componentes.
+No hay elección definitiva de KERI, directorio común, proveedor obligatorio, umbral de testigos o recuperación. Si avanzar requiere adoptar una autoridad común imprescindible o una política de confianza nueva, será una decisión crítica del proyecto. La arquitectura se decide por evidencia y compromisos explícitos, sin equiparar número de pruebas a garantías.

@@ -19,7 +19,7 @@ def stamp(offset):
 
 
 @contextmanager
-def store(root, name):
+def store(root, name, with_environment=False):
     path = (root / name).resolve()
     path.mkdir(mode=0o700, exist_ok=True)
     cf = configing.Configer(name=name, base='lab', temp=False, headDirPath=str(path), reopen=True)
@@ -28,7 +28,8 @@ def store(root, name):
         for resource in (hby.cf, hby.db, hby.ks):
             if not Path(resource.path).resolve().is_relative_to(path):
                 raise RuntimeError('Recurso fuera del ensayo.')
-        yield hby.habByName(name) or hby.makeHab(name=name)
+        hab = hby.habByName(name) or hby.makeHab(name=name)
+        yield (hby, hab) if with_environment else hab
     finally:
         hby.close()
 
